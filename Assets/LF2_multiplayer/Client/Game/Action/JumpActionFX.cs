@@ -36,7 +36,7 @@ namespace LF2.Visual
             //     m_Parent.OurAnimator.Play("Land_anim");
                 
             // }
-            Debug.Log("Jump");
+            Debug.Log("JumpANIMATION");
             return ActionConclusion.Continue;
         }
 
@@ -44,9 +44,6 @@ namespace LF2.Visual
         public override void AnticipateAction()
         {
             base.AnticipateAction();
-
-            //note: because the hit-react is driven from the animation, this means we can anticipatively trigger a hit-react too. That
-            //will make combat feel responsive, but of course the actual damage won't be applied until the server tells us about it.
             PlayAnim();
         }
     }

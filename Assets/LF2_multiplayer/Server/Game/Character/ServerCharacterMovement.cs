@@ -1,3 +1,4 @@
+using System.Collections;
 using MLAPI;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -21,7 +22,7 @@ namespace LF2.Server
     [RequireComponent(typeof(NetworkCharacterState), typeof(ServerCharacter)), RequireComponent(typeof(Rigidbody))]
     public class ServerCharacterMovement : NetworkBehaviour
     {
-
+        [SerializeField] AnimationCurve m_gravity;
         [SerializeField]
         private float JumpSpeed = 10f;
         private Rigidbody m_Rigidbody;
@@ -30,6 +31,7 @@ namespace LF2.Server
 
 
         private MovementState m_MovementState;
+
         private ServerCharacter m_CharLogic;
 
         // when we are in charging and knockback mode, we use these additional variables
@@ -38,6 +40,7 @@ namespace LF2.Server
 
         // this one is specific to knockback mode
         private Vector3 m_KnockbackVector;
+        private float m_startTime;
         private Vector3 workSpace;
       
 
@@ -80,12 +83,21 @@ namespace LF2.Server
         public void SetMovementTarget(Vector2 position)
         {
             workSpace.Set(position.x , 0, position.y);
-            if ( !(m_MovementState == MovementState.Air)){
+            if (IsGounded()){
                 if (position != Vector2.zero){
                     m_MovementState = MovementState.Move;    
+                }  
+                else {
+                    m_MovementState = MovementState.Idle;
                 }
-                else m_MovementState = MovementState.Idle;
             }
+            
+            // if ( !(m_MovementState == MovementState.Air)){
+            //     if (position != Vector2.zero){
+            //         m_MovementState = MovementState.Move;    
+            //     }
+            //     else m_MovementState = MovementState.Idle;
+            // }
 
         }
 
@@ -95,8 +107,12 @@ namespace LF2.Server
         /// <param name="position">Position in world space to path to. </param>
         public void SetJump(Vector3 position)
         {
+            if ( m_MovementState == MovementState.Air )   {return ; }   
+
+            m_startTime = Time.time;
             m_MovementState = MovementState.Air;
             workSpace = position;
+            
             m_Rigidbody.AddForce(JumpSpeed*workSpace,ForceMode.Impulse);
 
         }
@@ -130,24 +146,17 @@ namespace LF2.Server
         }    
 
 
-        private void OnDrawGizmos() {
-        if (DebugPlayer){
-            // Gizmos.DrawSphere(AttackTransform.position,PlayerData.attackRadius);
-            // Gizmos.DrawCube(m_BoxCollider.bounds.center,boxCollider.bounds.extents);
-            // Gizmos.DrawLine(m_BoxCollider.bounds.center,m_BoxCollider.bounds.extents);
+        // private void OnDrawGizmos() {
+        // if (DebugPlayer){
+        //     // Gizmos.DrawSphere(AttackTransform.position,PlayerData.attackRadius);
+        //     // Gizmos.DrawCube(m_BoxCollider.bounds.center,boxCollider.bounds.extents);
+        //     // Gizmos.DrawLine(m_BoxCollider.bounds.center,m_BoxCollider.bounds.extents);
 
-        // Debug.Log(hit_ground);
-        }
-    }
-        /// <summary>
-        /// Follow the given transform until it is reached.
-        /// </summary>
-        // /// <param name="followTransform">The transform to follow</param>
-        // public void FollowTransform(Transform followTransform)
-        // {
-        //     // m_MovementState = MovementState.Move;
-
+        // // Debug.Log(hit_ground);
         // }
+        // }
+        
+
 
         /// <summary>
         /// Returns true if the current movement-mode is unabortable (e.g. a knockback effect)
@@ -195,8 +204,6 @@ namespace LF2.Server
         private void FixedUpdate()
         {
             PerformMovement();
-            Debug.Log("ServerCharacterMovement");
-            Debug.Log(m_MovementState);
             // Send new position values to the client
             m_NetworkCharacterState.NetworkPosition.Value = transform.position;
             m_NetworkCharacterState.NetworkRotationY.Value = transform.rotation.eulerAngles.y;
@@ -227,64 +234,38 @@ namespace LF2.Server
                     CheckIfShouldFlip((int)Mathf.Sign(workSpace.x));
                     break;
                 case MovementState.Air:
-                    if (IsGounded() && Mathf.Abs(m_Rigidbody.velocity.y) < 0.01f){
-                        m_MovementState = MovementState.Idle;
-                    }
+                    if ((m_Rigidbody.velocity.y) < 0f)  {
+                        SetFallingDown();
+                    }             
+                    if (IsGounded() &&   Time.time - m_startTime > 0.2f ){
+                       m_MovementState = MovementState.Idle;
+                    }       
+
+                    // Debug.Log(m_Rigidbody.velocity.y);
                     break;
             }
+
             Debug.Log(m_MovementState);
             
-            // IsGounded();
-
-            // After moving adjust the position of the dynamic rigidbody.
-            // m_Rigidbody.position = transform.position;
-            // m_Rigidbody.rotation = transform.rotation;
-            // Vector3 movementVector;
-
-            // if (m_MovementState == MovementState.Charging)
-            // {
-            //     // if we're done charging, stop moving
-            //     m_SpecialModeDurationRemaining -= Time.fixedDeltaTime;
-            //     if (m_SpecialModeDurationRemaining <= 0)
-            //     {
-            //         m_MovementState = MovementState.Idle;
-            //         return;
-            //     }
-
-            //     var desiredMovementAmount = m_ForcedSpeed * Time.fixedDeltaTime;
-            //     movementVector = transform.forward * desiredMovementAmount;
-            // }
-            // else if (m_MovementState == MovementState.Knockback)
-            // {
-            //     m_SpecialModeDurationRemaining -= Time.fixedDeltaTime;
-            //     if (m_SpecialModeDurationRemaining <= 0)
-            //     {
-            //         m_MovementState = MovementState.Idle;
-            //         return;
-            //     }
-
-            //     var desiredMovementAmount = m_ForcedSpeed * Time.fixedDeltaTime;
-            //     movementVector = m_KnockbackVector * desiredMovementAmount;
-            // }
-
-
-            // m_NavMeshAgent.Move(movementVector);
-            // transform.rotation = Quaternion.LookRotation(movementVector);
-
 
         }
 
+
         public void SetFallingDown()
         {
-            if (m_Rigidbody.velocity.y < 0f && !IsGounded())
-                m_Rigidbody.velocity += gaviti * Physics.gravity.y * Vector3.up * Time.deltaTime;
-                // if (IsGounded()) m_MovementState = MovementState.Idle;
-                Debug.Log("FallingDown");
+            gaviti = m_gravity.Evaluate(Time.deltaTime);
+            m_Rigidbody.velocity += gaviti * Physics.gravity.y * Vector3.up * Time.deltaTime;
         }
 
         public void SetMovementState(MovementState movementState){
             m_MovementState = movementState;
         }
+        public MovementState GetMovementState(){
+            
+            return m_MovementState;
+
+        }
+
 
         private float GetMaxMovementSpeed()
         {

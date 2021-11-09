@@ -176,46 +176,17 @@ namespace LF2.Visual
         private void OnActionInput(ActionRequestData data)
         {
             m_ActionViz.AnticipateAction(ref data);
-            // Debug.Log("ActionClient");
         }
 
         private void OnMoveInput(Vector2 position)
         {
-            // Debug.Log("OnMoveInput");
-            // if (position != Vector2.zero){
-
-            //     if (!IsAnimating())
-            //     {
-            //         // OurAnimator.Play(m_VisualizationConfiguration.AnticipateMoveTriggerID);
-            //         OurAnimator.Play("Walk_anim");
-            //     }
-            // }
-            // else{
-            //     OurAnimator.Play("Idle_anim");
-            // }
-
-            // switch(m_NetState.MovementStatus.Value){
-            //     case MovementStatus.Walking : 
-            //         if (!IsAnimating())
-            //             {
-            //                 // OurAnimator.Play(m_VisualizationConfiguration.AnticipateMoveTriggerID);
-            //                 OurAnimator.Play("Walk_anim");
-            //             }
-            //         return;
-            //     case MovementStatus.Air : 
-                    
-            //         return;
-            // }
-
-            if (m_NetState.MovementStatus.Value == MovementStatus.Move && position != Vector2.zero){
+            if (m_NetState.MovementStatus.Value == MovementStatus.Idle && position != Vector2.zero){
                         // OurAnimator.Play(m_VisualizationConfiguration.AnticipateMoveTriggerID);
                 OurAnimator.Play("Walk_anim");
             }
-            else if (m_NetState.MovementStatus.Value == MovementStatus.Idle && position == Vector2.zero){
+            else if (m_NetState.MovementStatus.Value == MovementStatus.Move && position == Vector2.zero){
                 OurAnimator.Play("Idle_anim");
             }
-            
-
         }
 
         /// <summary>
@@ -247,10 +218,6 @@ namespace LF2.Visual
                 m_NetState.OnStopChargingUpClient -= OnStoppedChargingUp;
                 m_NetState.IsStealthy.OnValueChanged -= OnStealthyChanged;
 
-                // if (Parent != null && Parent.TryGetComponent(out ClientInputSender sender))
-                // {
-                    
-                // }
                 inputSender.ActionInputEvent -= OnActionInput;
                 inputSender.ClientMoveEvent -= OnMoveInput;
             }
@@ -266,7 +233,6 @@ namespace LF2.Visual
         private void PerformActionFX(ActionRequestData data)
         {
             m_ActionViz.PlayAction(ref data);
-            
         }
 
         private void CancelAllActionFXs()
@@ -331,18 +297,6 @@ namespace LF2.Visual
         {
             if (m_CharacterSwapper)
             {
-                // var specialMaterialMode = CharacterSwap.SpecialMaterialMode.None;
-                // if (m_NetState.IsStealthy.Value)
-                // {
-                //     if (m_NetState.IsOwner)
-                //     {
-                //         specialMaterialMode = CharacterSwap.SpecialMaterialMode.StealthySelf;
-                //     }
-                //     else
-                //     {
-                //         specialMaterialMode = CharacterSwap.SpecialMaterialMode.StealthyOther;
-                //     }
-                // }
 
                 m_CharacterSwapper.SwapToModel(m_NetState.CharacterAppearance.Value);
             }
@@ -382,28 +336,13 @@ namespace LF2.Visual
 
         void Update()
         {
-            // if (Parent == null)
-            // {
-            //     // since we aren't in the transform hierarchy, we have to explicitly die when our parent dies.
-            //     Destroy(gameObject);
-            //     return;
-            // }
-
-            // VisualUtils.SmoothMove(transform, Parent.transform, Time.deltaTime, ref m_SmoothedSpeed, k_MaxRotSpeed);
-
-            // if (m_ClientVisualsAnimator)
-            // {
-            //     // set Animator variables here
-            //     // m_ClientVisualsAnimator.SetFloat(m_VisualizationConfiguration.SpeedVariableID, GetVisualMovementSpeed());
-            // }
-            // Debug.Log("ClientCharacterVisualization");
-            // Debug.Log(m_NetState.MovementStatus.Value);
 
             m_ActionViz.Update();
-            if (m_NetState.MovementStatus.Value == MovementStatus.Idle && !IsAnimating("Idle_anim")){
-                        // OurAnimator.Play(m_VisualizationConfiguration.AnticipateMoveTriggerID);
-                OurAnimator.Play("Idle_anim");
-            }
+            // if (m_NetState.MovementStatus.Value == MovementStatus.Idle && !IsAnimating("Idle_anim")){
+            //     // OurAnimator.Play(m_VisualizationConfiguration.AnticipateMoveTriggerID);
+            //     OurAnimator.Play("Idle_anim");
+            // }
+            
         }
 
         public void OnAnimEvent(string id)

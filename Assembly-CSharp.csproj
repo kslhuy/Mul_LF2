@@ -193,6 +193,8 @@
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Character\AIBrainNew.cs" />
      <Compile Include="Assets\_\Stuff\CodeMonkey\Utils\UI_Sprite.cs" />
      <Compile Include="Assets\Images\Deep\Deep Movement\PlayerStates\SubState\Combo\DUJstate.cs" />
+     <Compile Include="Assets\LF2_multiplayer\Client\Game\Action\DefenseActionFX.cs" />
+     <Compile Include="Assets\LF2_multiplayer\Shared\Game\Action\ActionAnimation.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\Game\Entity\NetworkCharacterState.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Entity\IDamageable.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Game\Character\ClientInputSender.cs" />
@@ -212,8 +214,7 @@
      <Compile Include="Assets\Images\Deep\Deep Movement\Core\Core.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Net\DisconnectReason.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\Game\State\CharSelectData.cs" />
-     <Compile Include="Assets\LF2_multiplayer\Client\Game\Action\DefenseActionFX.cs" />
-     <Compile Include="Assets\LF2_multiplayer\Shared\Game\Action\ActionAnimation.cs" />
+     <Compile Include="Assets\LF2_multiplayer\Client\Game\Action\LandActionFX.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />

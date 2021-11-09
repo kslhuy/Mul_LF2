@@ -181,6 +181,7 @@ namespace LF2.Server
                 // case ActionLogic.Stunned: return new StunnedAction(parent, ref data);
                 // case ActionLogic.Emote: return new EmoteAction(parent, ref data);
 
+
                 default: throw new System.NotImplementedException();
             }
         }

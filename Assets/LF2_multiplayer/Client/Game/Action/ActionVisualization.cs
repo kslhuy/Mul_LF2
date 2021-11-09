@@ -26,6 +26,13 @@ namespace LF2.Visual
 
         public void Update()
         {
+            if ( m_PlayingActions.Count == 0 ){
+                // if (Parent.m_NetState.MovementStatus.Value == MovementStatus.Idle && !IsAnimating("Idle_anim")){
+                // // OurAnimator.Play(m_VisualizationConfiguration.AnticipateMoveTriggerID);
+                Parent.OurAnimator.Play("Idle_anim");
+                // }
+            }
+
             //do a reverse-walk so we can safely remove inside the loop.
             for (int i = m_PlayingActions.Count - 1; i >= 0; --i)
             {

@@ -38,6 +38,8 @@ namespace LF2
 
         DefenseGeneral,
 
+        Land,
+
         // DDA
         DavidDDA,
         DeepDDA,

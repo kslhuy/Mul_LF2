@@ -45,20 +45,12 @@ namespace LF2.Server
         /// </summary>
         public void PlayAction(ref ActionRequestData action)
         {
-            // if (!action.ShouldQueue  && m_Queue.Description.ActionInterruptible )
-            // {
-            //     ClearActions(false);
-            // }
 
-            // if( GetQueueTimeDepth() >= k_MaxQueueTimeDepth )
-            // {
-            //     //the queue is too big (in execution seconds) to accommodate any more actions, so this action must be discarded. 
-            //     return;
-            // }
             if (m_Queue.Count > 2 ) { return ;  }
 
             var newAction = Action.MakeAction(m_Parent, ref action);
             m_Queue.Add(newAction);
+            // Debug.Log(m_Queue.Count);
             if (m_Queue.Count == 1) { StartAction(); }
         }
 
@@ -109,22 +101,22 @@ namespace LF2.Server
         /// </summary>
         /// <param name="actionType">the action we want to run</param>
         /// <returns>true if the action can be run now, false if more time must elapse before this action can be run</returns>
-        public bool IsReuseTimeElapsed(ActionType actionType)
-        {
-            if (m_LastUsedTimestamps.TryGetValue(actionType, out float lastTimeUsed))
-            {
-                if (GameDataSource.Instance.ActionDataByType.TryGetValue(actionType, out ActionDescription description))
-                {
-                    float reuseTime = description.ReuseTimeSeconds;
-                    if (reuseTime > 0 && Time.time - lastTimeUsed < reuseTime)
-                    {
-                        // still needs more time!
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
+        // public bool IsReuseTimeElapsed(ActionType actionType)
+        // {
+        //     if (m_LastUsedTimestamps.TryGetValue(actionType, out float lastTimeUsed))
+        //     {
+        //         if (GameDataSource.Instance.ActionDataByType.TryGetValue(actionType, out ActionDescription description))
+        //         {
+        //             float reuseTime = description.ReuseTimeSeconds;
+        //             if (reuseTime > 0 && Time.time - lastTimeUsed < reuseTime)
+        //             {
+        //                 // still needs more time!
+        //                 return false;
+        //             }
+        //         }
+        //     }
+        //     return true;
+        // }
 
         /// <summary>
         /// Returns how many actions are actively running. This includes all non-blocking actions,
@@ -154,9 +146,6 @@ namespace LF2.Server
                     AdvanceQueue(false); // note: this will call StartAction() recursively if there's more stuff in the queue ...
                     return;              // ... so it's important not to try to do anything more here
                 }
-
-         
-
                 m_Queue[0].TimeStarted = Time.time;
                 bool play = m_Queue[0].Start();
                 if (!play)

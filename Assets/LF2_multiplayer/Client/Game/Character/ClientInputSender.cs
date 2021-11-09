@@ -133,10 +133,6 @@ namespace LF2.Client
         }
 
 
-        private void Update()
-        {
-            CheckJumpInutHoldTime();
-        }
 
 
 
@@ -199,9 +195,7 @@ namespace LF2.Client
                 // Same with Jump
                 RequestAction(ActionType.AttackGeneral);
             }
-            // if (context.canceled){
-            //     AttackInput = false;
-            // }
+        
         }
 
         public void OnDefenseInput(InputAction.CallbackContext context){
@@ -209,20 +203,13 @@ namespace LF2.Client
                 // DefenseInput = true;
                 RequestAction(ActionType.DefenseGeneral);
             }
-            // if (context.canceled){
-            //     DefenseInput = false;
-            // }
+       
         }
 
 
         public void UseJumpInput() => JumpInput = false;
 
 
-        private void CheckJumpInutHoldTime(){
-            if ( Time.time >= jumpInputStartTime + inputHoldTime){
-                JumpInput = false;
-            }
-        }
 
         public void ResetRun(){
             canRun = false;
@@ -318,7 +305,7 @@ namespace LF2.Client
 
         private void FixedUpdate() {
    
-            Debug.Log("ClientInputSender");
+            // Debug.Log("ClientInputSender");
             for (int i = 0; i < m_ActionRequestCount; ++i)
             {
                 // Debug.Log(m_ActionRequests);

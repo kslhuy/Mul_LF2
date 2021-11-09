@@ -122,29 +122,12 @@ namespace LF2.Server
 
                 // StateMachine.AdvanceQueue(ref action);
             }
-
-
         }
 
         private void OnClientMoveRequest(Vector2 targetPosition)
         {
             if (NetState.LifeState == LifeState.Alive && !m_Movement.IsPerformingForcedMovement())
             {
-                // // if we're currently playing an interruptible action, interrupt it!
-                // if (m_ActionPlayer.GetActiveActionInfo(out ActionRequestData data))
-                // {
-                //     if (GameDataSource.Instance.ActionDataByType.TryGetValue(data.ActionTypeEnum, out ActionDescription description))
-                //     {
-                //         if (description.ActionInterruptible)
-                //         {
-                //             m_ActionPlayer.ClearActions(false);
-                //         }
-                //     }
-                // }
-
-                // m_ActionPlayer.CancelRunningActionsByLogic(ActionLogic.Target, true); //clear target on move.
-                // m_inputResquest = targetPosition;
-                
                 m_Movement.SetMovementTarget(targetPosition);
             }
         }
@@ -160,32 +143,7 @@ namespace LF2.Server
 
         private void OnActionPlayRequest(ActionRequestData data)
         {
-            // if (!GameDataSource.Instance.ActionDataByType[data.ActionTypeEnum].IsFriendly)
-            // {
-            //     // notify running actions that we're using a new attack. (e.g. so Stealth can cancel itself)
-            //     RunningActions.OnGameplayActivity(Action.GameplayActivity.UsingAttackAction);
-            // }
-            // if (m_statePlayer == State.NormalState){
-            //     PlayAction(ref data);
-            // }
 
-            // if (actionTypeNow =! data.ActionTypeEnum){
-            //     PlayAction(ref data);
-            // }
-            // if (!StateOccuped){
-
-            //     switch (data.ActionTypeEnum)  {
-            //         case ActionType.AttackGeneral:
-            //             StateMachine.ChangeState(AttackType);
-            //         break;
-
-            //         case ActionType.JumpGeneral :
-            //         break;
-
-            //         case ActionType.DefenseGeneral:
-            //         break;
-            //     }
-            // }
             PlayAction(ref data);
 
         }

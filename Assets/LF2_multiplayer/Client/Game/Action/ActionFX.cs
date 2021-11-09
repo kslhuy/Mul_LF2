@@ -68,7 +68,8 @@ namespace LF2.Visual
                 case ActionLogic.Melee: return new MeleeActionFX(ref data, parent);
                 case ActionLogic.Jump: return new JumpActionFX(ref data, parent);
                 case ActionLogic.Defense: return new DefenseActionFX(ref data, parent);
-                
+                case ActionLogic.Land: return new LandActionFX(ref data, parent);
+
                 // case ActionLogic.RangedFXTargeted: return new FXProjectileTargetedActionFX(ref data, parent);
                 // case ActionLogic.Trample: return new TrampleActionFX(ref data, parent);
                 // case ActionLogic.AoE: return new AoeActionFX(ref data, parent);
