@@ -25,7 +25,7 @@ namespace LF2.Server
                 return  ActionConclusion.Stop;
             }
             // ChainIntoNewAction()
-            Debug.Log("Still in loop JumpAction");
+            // Debug.Log("Still in loop JumpAction");
             return ActionConclusion.Continue;
         }
 

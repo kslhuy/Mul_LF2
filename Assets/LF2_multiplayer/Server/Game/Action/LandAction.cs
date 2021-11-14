@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace LF2.Server
 {
     internal class LandAction : Action
@@ -13,6 +15,7 @@ namespace LF2.Server
 
         public override bool Update()
         {
+            Debug.Log("Land");
             return true;
         }
     }

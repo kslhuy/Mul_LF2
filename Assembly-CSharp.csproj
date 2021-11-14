@@ -104,6 +104,7 @@
      <Compile Include="Assets\Images\Deep\Deep Movement\Core\CoreComponents\CollisonSenses.cs" />
      <Compile Include="Assets\Scritp\Skill_data\effet\Balldissapear_Partical.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\Action.cs" />
+     <Compile Include="Assets\LF2_multiplayer\Client\Game\Action\LandActionFX.cs" />
      <Compile Include="Assets\Images\Deep\Deep Movement\UI\Button\ButtonClass.cs" />
      <Compile Include="Assets\Images\Deep\Deep Movement\PlayerStates\SubState\PlayerHurtState.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\NetworkNameState.cs" />
@@ -214,7 +215,7 @@
      <Compile Include="Assets\Images\Deep\Deep Movement\Core\Core.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Net\DisconnectReason.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\Game\State\CharSelectData.cs" />
-     <Compile Include="Assets\LF2_multiplayer\Client\Game\Action\LandActionFX.cs" />
+     <Compile Include="Assets\azeaz.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />

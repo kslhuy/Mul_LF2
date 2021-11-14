@@ -21,6 +21,7 @@ namespace LF2.Visual
             }
 
             base.Start();
+            Debug.Log("land");
 
 
             return true;
@@ -33,7 +34,16 @@ namespace LF2.Visual
 
         public override bool Update()
         {
+            Debug.Log("LandActionFX");
             return true;
+        }
+        public override void End()
+        {
+            m_Parent.OurAnimator.Play("Idle_anim");
+        }
+        public override void Cancel()
+        {
+            m_Parent.OurAnimator.Play("Idle_anim");
         }
     }
 }

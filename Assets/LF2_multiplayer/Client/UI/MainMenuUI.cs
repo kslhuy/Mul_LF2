@@ -1,6 +1,7 @@
 using LF2.Client;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.UI;
 
 namespace LF2.Visual
 {
@@ -15,8 +16,13 @@ namespace LF2.Visual
         private const string k_DefaultIP = "127.0.0.1";
 
         private GameNetPortal m_GameNetPortal;
+        private System.Action<string, int, string, OnlineMode> m_ConfirmFunction;
+
 
         private Client.ClientGameNetPortal m_ClientNetPortal;
+        
+        [SerializeField]
+        Toggle m_TestButton;
 
         /// <summary>
         /// This will get more sophisticated as we move to a true relay model.
@@ -31,6 +37,8 @@ namespace LF2.Visual
             m_GameNetPortal = GamePortalGO.GetComponent<GameNetPortal>();
             m_ClientNetPortal = GamePortalGO.GetComponent<Client.ClientGameNetPortal>();
 
+            m_TestButton.gameObject.SetActive(true);
+
             m_ClientNetPortal.NetworkTimedOut += OnNetworkTimeout;
             m_ClientNetPortal.ConnectFinished += OnConnectFinished;
 
@@ -43,27 +51,39 @@ namespace LF2.Visual
         
         public void OnHostClicked()
         {
-            m_ResponsePopup.SetupEnterGameDisplay(true, "Host Game", "Input the Host IP <br> or select drop down to use relay", "", "iphost", "Confirm",
-                (string connectInput, int connectPort, string playerName, OnlineMode onlineMode) =>
-            {
-                m_GameNetPortal.PlayerName = playerName;
-                switch (onlineMode)
-                {
-                    case OnlineMode.Relay:
-                        m_GameNetPortal.StartRelayHost(connectInput);
-                        break;
+            // Debug.Log(m_TestButton.isOn); 
+             if (m_TestButton.isOn){
+                // m_ConfirmFunction.Invoke(k_DefaultIP, k_ConnectPort, "huy", OnlineMode.IpHost);
+                m_GameNetPortal.StartHost(PostProcessIpInput(k_DefaultIP), k_ConnectPort);
 
-                    case OnlineMode.IpHost:
-                        m_GameNetPortal.StartHost(PostProcessIpInput(connectInput), connectPort);
-                        break;
-                }
-            }, k_DefaultIP, k_ConnectPort);
+
+            }
+            
+            else {
+
+                m_ResponsePopup.SetupEnterGameDisplay(true, "Host Game", "Input the Host IP <br> or select drop down to use relay", "", "iphost", "Confirm",
+                    (string connectInput, int connectPort, string playerName, OnlineMode onlineMode) =>
+                {
+                    m_GameNetPortal.PlayerName = playerName;
+                    switch (onlineMode)
+                    {
+                        case OnlineMode.Relay:
+                            m_GameNetPortal.StartRelayHost(connectInput);
+                            break;
+
+                        case OnlineMode.IpHost:
+                            m_GameNetPortal.StartHost(PostProcessIpInput(connectInput), connectPort);
+                            break;
+                    }
+                }, k_DefaultIP, k_ConnectPort);
+            }
         }
 
         // *** Event on button client
 
         public void OnConnectClicked()
         {
+
             m_ResponsePopup.SetupEnterGameDisplay(false, "Join Game", "Input the host IP below", "Input the room name below", "iphost", "Join",
                 (string connectInput, int connectPort, string playerName, OnlineMode onlineMode) =>
             {
@@ -85,6 +105,7 @@ namespace LF2.Visual
                 }
                 m_ResponsePopup.SetupNotifierDisplay("Connecting", "Attempting to Join...", true, false);
             }, k_DefaultIP, k_ConnectPort);
+    
         }
         // *** 
         private string PostProcessIpInput(string ipInput)

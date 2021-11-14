@@ -178,6 +178,13 @@ namespace LF2.Visual
             m_ActionViz.AnticipateAction(ref data);
         }
 
+        
+        private void PerformActionFX(ActionRequestData data)
+        {
+            m_ActionViz.PlayAction(ref data);
+        }
+
+
         private void OnMoveInput(Vector2 position)
         {
             if (m_NetState.MovementStatus.Value == MovementStatus.Idle && position != Vector2.zero){
@@ -187,6 +194,9 @@ namespace LF2.Visual
             else if (m_NetState.MovementStatus.Value == MovementStatus.Move && position == Vector2.zero){
                 OurAnimator.Play("Idle_anim");
             }
+            // else if (m_NetState.MovementStatus.Value == MovementStatus.Uncontrolled && position != Vector2.zero){
+            //     return;
+            // }
         }
 
         /// <summary>
@@ -228,11 +238,6 @@ namespace LF2.Visual
         private void OnPerformHitReaction()
         {
             m_ClientVisualsAnimator.SetTrigger(m_HitStateTriggerID);
-        }
-
-        private void PerformActionFX(ActionRequestData data)
-        {
-            m_ActionViz.PlayAction(ref data);
         }
 
         private void CancelAllActionFXs()

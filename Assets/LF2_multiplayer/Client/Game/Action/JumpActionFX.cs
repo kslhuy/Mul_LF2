@@ -40,6 +40,14 @@ namespace LF2.Visual
             return ActionConclusion.Continue;
         }
 
+        public override void End(){
+            m_Parent.OurAnimator.Play("Land_anim");
+        }
+
+        public override void Cancel(){
+            m_Parent.OurAnimator.Play("Land_anim");
+        }
+
         
         public override void AnticipateAction()
         {

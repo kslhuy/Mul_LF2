@@ -8,12 +8,12 @@ namespace LF2.Server
 
         public override bool Start()
         {
-            throw new System.NotImplementedException();
+            return true;
         }
 
         public override bool Update()
         {
-            throw new System.NotImplementedException();
+            return true;
         }
     }
 }

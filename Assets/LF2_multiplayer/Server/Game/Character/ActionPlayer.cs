@@ -246,6 +246,7 @@ namespace LF2.Server
                     if (m_Queue[0].ChainIntoNewAction(ref m_PendingSynthesizedAction))
                     {
                         m_HasPendingSynthesizedAction = true;
+                        Debug.Log("m_HasPendingSynthesizedAction");
                     }
                 }
                 m_Queue.RemoveAt(0);
@@ -254,6 +255,7 @@ namespace LF2.Server
             // now start the new Action! ... unless we now have a pending Action that will supercede it
             if (!m_HasPendingSynthesizedAction || m_PendingSynthesizedAction.ShouldQueue)
             {
+                Debug.Log("m_HasPendingSynthesizedAction");
                 StartAction();
             }
         }

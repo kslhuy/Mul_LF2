@@ -57,7 +57,7 @@ namespace LF2.Server
 
         public override bool Update()
         {
-            Debug.Log("On Attack Loop");
+            // Debug.Log("On Attack Loop");
             if (!m_ExecutionFired && (Time.time - TimeStarted) >= Description.ExecTimeSeconds)
             {
                 m_ExecutionFired = true;

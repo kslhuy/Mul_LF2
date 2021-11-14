@@ -56,7 +56,7 @@ namespace LF2.Visual
 
         public override bool Update()
         {
-            Debug.Log("Attack");
+            Debug.Log("AttackAnimation");
             return ActionConclusion.Continue;
         }
 
@@ -73,7 +73,6 @@ namespace LF2.Visual
             //if this didn't already happen, make sure it gets a chance to run. This could have failed to run because
             //our animationclip didn't have the "impact" event properly configured (as one possibility).
             PlayHitReact();
-            m_Parent.OurAnimator.Play("Idle_anim");
             base.End();
         }
 
@@ -90,6 +89,8 @@ namespace LF2.Visual
             //         }
             //     }
             // }
+            m_Parent.OurAnimator.Play("Idle_anim");
+
         }
 
         private void PlayAnim()

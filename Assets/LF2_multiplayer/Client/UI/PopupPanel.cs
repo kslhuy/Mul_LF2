@@ -43,6 +43,10 @@ namespace LF2.Visual
         [SerializeField]
         private Dropdown m_OnlineModeDropdown;
 
+        
+        [SerializeField]
+        Toggle m_TestButton;
+
         bool m_EnterAsHost;
 
         string m_IpHostMainText;
