@@ -15,6 +15,7 @@ namespace LF2.Server
 
         // private Action m_Queue;
         private List<Action> m_Queue ;
+        
 
 
         // private List<Action> m_NonBlockingActions;
@@ -47,7 +48,7 @@ namespace LF2.Server
         {
 
             if (m_Queue.Count > 2 ) { return ;  }
-
+            Debug.Log(m_Queue.Count);
             var newAction = Action.MakeAction(m_Parent, ref action);
             m_Queue.Add(newAction);
             // Debug.Log(m_Queue.Count);

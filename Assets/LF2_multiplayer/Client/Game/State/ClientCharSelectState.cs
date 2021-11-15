@@ -394,6 +394,10 @@ namespace LF2.Client
         {
             // request to lock in or unlock if already locked in
             CharSelectData.ChangeSeatServerRpc(NetworkManager.Singleton.LocalClientId, m_LastSeatSelected, !m_HasLocalPlayerLockedIn );
+            if (!m_HasLocalPlayerLockedIn){
+                CharSelectData.ChangeSeatServerRpc(NetworkManager.Singleton.LocalClientId, 0, true );
+
+            }
         }
 
         /// <summary>

@@ -57,6 +57,7 @@ namespace LF2.Client
             public ActionType RequestedAction;
             public ulong TargetId;
         }
+ 
         private readonly ActionRequest[] m_ActionRequests = new ActionRequest[1];
         public event Action<Vector2> ClientMoveEvent;
 
@@ -140,7 +141,7 @@ namespace LF2.Client
             
 
             RawMovementInput = context.ReadValue<Vector2>();
-
+            Debug.Log(RawMovementInput);
             if (context.started){
                 // Debug.Log("OnMoveInput");
                 // RequestAction(ActionType.MoveGeneral);
@@ -310,16 +311,13 @@ namespace LF2.Client
             {
                 // Debug.Log(m_ActionRequests);
                 var actionData = GameDataSource.Instance.ActionDataByType[m_ActionRequests[0].RequestedAction];
-                if (actionData.ActionInput != null)
-                {
-                //     var skillPlayer = Instantiate(actionData.ActionInput);
-                //     skillPlayer.Initiate(m_NetworkCharacter, actionData.ActionTypeEnum, SendInput, FinishSkill);
-                //     m_CurrentSkillInput = skillPlayer;
-                }
-                else
-                {
-                    PerformSkill(actionData.ActionTypeEnum,  m_ActionRequests[0].TargetId);
-                }
+                // if (actionData.ActionInput != null)
+                // {
+                // //     var skillPlayer = Instantiate(actionData.ActionInput);
+                // //     skillPlayer.Initiate(m_NetworkCharacter, actionData.ActionTypeEnum, SendInput, FinishSkill);
+                // //     m_CurrentSkillInput = skillPlayer;
+                // }
+                PerformSkill(actionData.ActionTypeEnum,  m_ActionRequests[0].TargetId); 
             }
             m_ActionRequestCount = 0;
         }

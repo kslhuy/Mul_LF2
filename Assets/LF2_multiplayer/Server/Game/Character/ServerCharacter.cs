@@ -143,7 +143,7 @@ namespace LF2.Server
 
         private void OnActionPlayRequest(ActionRequestData data)
         {
-
+            Debug.Log("ActionRequestData");
             PlayAction(ref data);
 
         }

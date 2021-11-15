@@ -56,7 +56,7 @@ namespace LF2.Visual
 
         public override bool Update()
         {
-            Debug.Log("AttackAnimation");
+            // Debug.Log("AttackAnimation");
             return ActionConclusion.Continue;
         }
 

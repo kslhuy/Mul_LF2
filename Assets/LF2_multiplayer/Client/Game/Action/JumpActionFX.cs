@@ -31,11 +31,7 @@ namespace LF2.Visual
 
         public override bool Update()
         {
-            // Debug.Log();
-            // if (){
-            //     m_Parent.OurAnimator.Play("Land_anim");
-                
-            // }
+            
             Debug.Log("JumpANIMATION");
             return ActionConclusion.Continue;
         }

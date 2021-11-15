@@ -245,7 +245,7 @@ namespace LF2.Server
                     break;
             }
 
-            Debug.Log(m_MovementState);
+            // Debug.Log(m_MovementState);
             
 
         }

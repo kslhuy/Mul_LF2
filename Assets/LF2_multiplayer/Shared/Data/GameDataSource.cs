@@ -25,7 +25,6 @@ namespace LF2
         /// static accessor for all GameData.
         /// </summary>
         public static GameDataSource Instance { get; private set; }
-
         /// <summary>
         /// Contents of the CharacterData list, indexed by CharacterType for convenience.
         /// </summary>

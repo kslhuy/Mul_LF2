@@ -124,7 +124,7 @@ namespace LF2.Visual
             if ( ActionFX.ShouldAnticipate(this, ref data))
             {
                 var actionFX = ActionFX.MakeActionFX(ref data, Parent);
-                Debug.Log(actionFX);
+                // Debug.Log(actionFX);
                 actionFX.AnticipateAction();
                 m_PlayingActions.Add(actionFX);
             }
