@@ -26,12 +26,11 @@ namespace LF2.Visual
 
         private void PlayAnim()
         {
-            m_Parent.OurAnimator.Play("Jump_anim");
+            // m_Parent.OurAnimator.Play(AnimId);
         }
 
         public override bool Update()
         {
-            
             Debug.Log("JumpANIMATION");
             return ActionConclusion.Continue;
         }
@@ -44,6 +43,10 @@ namespace LF2.Visual
             m_Parent.OurAnimator.Play("Land_anim");
         }
 
+        public override bool WantToMoveNextAction(ActionFX actionFX){
+            if (actionFX.Data.ActionTypeEnum == ActionType.AttackGeneral ) return true;
+            return false;
+        }
         
         public override void AnticipateAction()
         {

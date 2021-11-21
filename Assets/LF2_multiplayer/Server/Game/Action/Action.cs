@@ -83,6 +83,9 @@ namespace LF2.Server
         /// <returns>true if there's a new action, false otherwise</returns>
         public virtual bool ChainIntoNewAction(ref ActionRequestData newAction) { return false;  }
 
+        public virtual bool WantToMoveNextAction(Action action ) { return false;  }
+
+
         /// <summary>
         /// Called on the active ("blocking") Action when this character collides with another.
         /// </summary>
@@ -139,7 +142,7 @@ namespace LF2.Server
         /// When a GameplayActivity of AttackedByEnemy or Healed happens, OnGameplayAction() is called BEFORE BuffValue() is called.
         /// </remarks>
         /// <param name="actionType"></param>
-        public virtual void OnGameplayActivity(GameplayActivity activityType) {}
+        // public virtual void OnGameplayActivity(GameplayActivity activityType) {}
 
         /// <summary>
         /// Factory method that creates Actions from their request data.
@@ -159,7 +162,7 @@ namespace LF2.Server
             switch (logic)
             {
                 case ActionLogic.Melee: return new MeleeAction(parent, ref data);
-                case ActionLogic.Jump: return new JumpAction(parent, ref data);
+                // case ActionLogic.Jump: return new JumpAction(parent, ref data);
                 case ActionLogic.Defense: return new DefenseAction(parent , ref data);
                 case ActionLogic.Land: return new LandAction(parent, ref data);
                 // case ActionLogic.AoE: return new AoeAction(parent, ref data);

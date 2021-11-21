@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4adb72a0c832cf743ba31d5204d6feb1, type: 3}
   m_Name: huy
   m_EditorClassIdentifier: 
-  CharacterType: 0
+  CharacterType: 1
   BaseHP: {fileID: 0}
   BaseMana: 0
   Speed: 0

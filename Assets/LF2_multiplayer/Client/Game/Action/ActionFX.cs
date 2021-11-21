@@ -9,6 +9,7 @@ namespace LF2.Visual
     public abstract class ActionFX : ActionBase
     {
         protected ClientCharacterVisualization m_Parent;
+        private ClientCharacterVisualization parent;
 
         /// <summary>
         /// The default hit react animation; several different ActionFXs make use of this.
@@ -20,10 +21,14 @@ namespace LF2.Visual
         /// </summary>
         public bool Anticipated { get; protected set; }
 
-        public ActionFX(ref ActionRequestData data, ClientCharacterVisualization parent) : base(ref data)
+        // public int AnimId { get; private set; }
+        public ActionFX(ref ActionRequestData data, ClientCharacterVisualization parent ) : base(ref data)
         {
             m_Parent = parent;
+            // AnimId = animID;
         }
+
+
 
         /// <summary>
         /// Starts the ActionFX. Derived classes may return false if they wish to end immediately without their Update being called.
@@ -40,6 +45,12 @@ namespace LF2.Visual
         }
 
         public abstract bool Update();
+
+        // public virtual void PlayAnim(int animID)
+        // {
+        //     // m_Parent.OurAnimator.SetTrigger(Description.Anim);
+        //     m_Parent.OurAnimator.Play(animID);
+        // }
 
         /// <summary>
         /// End is always called when the ActionFX finishes playing. This is a good place for derived classes to put
@@ -60,14 +71,16 @@ namespace LF2.Visual
         /// </summary>
         public virtual void Cancel() { }
 
+        public virtual bool WantToMoveNextAction(ActionFX newAction) { return false;  }
+
         public static ActionFX MakeActionFX(ref ActionRequestData data, ClientCharacterVisualization parent)
         {
             ActionLogic logic = GameDataSource.Instance.ActionDataByType[data.ActionTypeEnum].Logic;
             switch (logic)
             {
-                case ActionLogic.Melee: return new MeleeActionFX(ref data, parent);
+                case ActionLogic.Melee: return new MeleeActionFX(ref data, parent );
                 case ActionLogic.Jump: return new JumpActionFX(ref data, parent);
-                case ActionLogic.Defense: return new DefenseActionFX(ref data, parent);
+                case ActionLogic.Defense: return new DefenseActionFX(ref data, parent );
                 case ActionLogic.Land: return new LandActionFX(ref data, parent);
 
                 // case ActionLogic.RangedFXTargeted: return new FXProjectileTargetedActionFX(ref data, parent);
@@ -104,7 +117,7 @@ namespace LF2.Visual
 
             //for actions with ShouldClose set, we check our range locally. If we are out of range, we shouldn't anticipate, as we will
             //need to execute a ChaseAction (synthesized on the server) prior to actually playing the skill. 
-            bool isTargetEligible = true;
+            // bool isTargetEligible = true;
             // if( data.ShouldClose == true )
             // {
             //     ulong targetId = (data.TargetIds != null && data.TargetIds.Length > 0) ? data.TargetIds[0] : 0;
@@ -117,7 +130,7 @@ namespace LF2.Visual
 
             //at present all Actionts anticipate except for the Target action, which runs a single instance on the client and is
             //responsible for action anticipation on its own. 
-            return isTargetEligible;
+            return true;
         }
 
         /// <summary>
@@ -172,6 +185,7 @@ namespace LF2.Visual
         {
             Anticipated = true;
             TimeStarted = UnityEngine.Time.time;
+
         }
     }
 }

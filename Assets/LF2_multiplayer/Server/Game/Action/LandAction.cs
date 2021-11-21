@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace LF2.Server
 {
-    internal class LandAction : Action
+    public class LandAction : Action
     {
         public LandAction(ServerCharacter parent, ref ActionRequestData data) : base(parent, ref data)
         {
@@ -10,6 +10,8 @@ namespace LF2.Server
 
         public override bool Start()
         {
+            m_Parent.NetState.RecvDoActionClientRPC(Data);
+
             return true;
         }
 
@@ -18,5 +20,8 @@ namespace LF2.Server
             Debug.Log("Land");
             return true;
         }
+
+
+
     }
 }

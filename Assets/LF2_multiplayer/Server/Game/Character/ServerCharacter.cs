@@ -33,9 +33,9 @@ namespace LF2.Server
         [Tooltip("Setting negative value disables destroying object after it is killed.")]
         private float m_KilledDestroyDelaySeconds = 3.0f;
 
-        [SerializeField]
-        [Tooltip("If set, the ServerCharacter will automatically play the StartingAction when it is created. ")]
-        private ActionType actionTypeNow ;
+        // [SerializeField]
+        // [Tooltip("If set, the ServerCharacter will automatically play the StartingAction when it is created. ")]
+        // private ActionType actionTypeNow ;
 
         private ActionPlayer m_ActionPlayer;
 
@@ -43,11 +43,12 @@ namespace LF2.Server
         // ***** ***
 
 
-        private AIBrainNew m_AIBrain;
+        // private AIBrainNew m_AIBrain;
 
         // Cached component reference
         private ServerCharacterMovement m_Movement;
-        private State m_statePlayer;
+        public SetMovement SetMovement;
+        private PlayerState m_statePlayer;
         public bool StateOccuped;
 
 
@@ -57,9 +58,10 @@ namespace LF2.Server
         private void Awake()
         {
             m_Movement = GetComponent<ServerCharacterMovement>();
-
+            SetMovement = GetComponent<SetMovement>();
             NetState = GetComponent<NetworkCharacterState>();
             m_ActionPlayer = new ActionPlayer(this);
+            m_statePlayer = new PlayerState(this,m_Movement);
 
             
             // if (IsNpc)
@@ -69,7 +71,7 @@ namespace LF2.Server
         }
         private void Start() {
 
-            actionTypeNow = ActionType.None;
+            // actionTypeNow = ActionType.None;
         }
 
         public override void NetworkStart()
@@ -114,11 +116,13 @@ namespace LF2.Server
             if (NetState.LifeState == LifeState.Alive && !m_Movement.IsPerformingForcedMovement())
             {
                 // if action reqiure to stop move  
-                if (action.CancelMovement)
-                {
-                    m_Movement.CancelMove();
-                }
-                m_ActionPlayer.PlayAction(ref action);
+                // if (action.CancelMovement)
+                // {
+                //     m_Movement.CancelMove();
+                // }
+                // m_ActionPlayer.PlayAction(ref action);
+
+                m_statePlayer.RequestToState(ref action);
 
                 // StateMachine.AdvanceQueue(ref action);
             }
@@ -128,7 +132,8 @@ namespace LF2.Server
         {
             if (NetState.LifeState == LifeState.Alive && !m_Movement.IsPerformingForcedMovement())
             {
-                m_Movement.SetMovementTarget(targetPosition);
+                // m_Movement.SetMovementTarget(targetPosition);
+                m_statePlayer.SetMovementDirection(targetPosition);
             }
         }
 
@@ -143,7 +148,7 @@ namespace LF2.Server
 
         private void OnActionPlayRequest(ActionRequestData data)
         {
-            Debug.Log("ActionRequestData");
+            // Debug.Log("ActionRequestData");
             PlayAction(ref data);
 
         }
@@ -241,12 +246,20 @@ namespace LF2.Server
             // StateMachine.CurrentState.LogicUpdate();
 
             m_ActionPlayer.Update();
+            m_statePlayer.Update();
             // ********** AI ***********
             // if (m_AIBrain != null && NetState.LifeState == LifeState.Alive && m_BrainEnabled)
             // {
             //     m_AIBrain.currentState.LogicUpdate();
             // }
         }
+
+        private void FixedUpdate() {
+            m_statePlayer.PhysicsUpdate();
+
+        }
+
+
 
         private void OnCollisionEnter(Collision collision)
         {
@@ -274,6 +287,6 @@ namespace LF2.Server
         /// <summary>
         /// This character's AIBrain. Will be null if this is not an NPC.
         /// </summary>
-        public AIBrainNew AIBrain { get { return m_AIBrain; } }
+        // public AIBrainNew AIBrain { get { return m_AIBrain; } }
     }
 }

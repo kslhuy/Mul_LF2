@@ -11,26 +11,7 @@ namespace LF2
     {
         None,
 
-
-        ImpBaseAttack,
-        ImpBossBaseAttack,
-        GeneralChase,
-        GeneralRevive,
-        DriveArrow,
-        TankTestability,
-        TankShieldBuff,
-        ImpBossTrampleAttack,
-        Stun,
-
-        GeneralTarget,
-        MageHeal,
-        ArcherChargedShot,
-        RogueStealthMode,
-        ArcherVolley,
-        RogueDashAttack,
-
         AttackGeneral,
-
 
         JumpGeneral,
 

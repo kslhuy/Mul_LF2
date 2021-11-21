@@ -1,5 +1,11 @@
 ﻿public enum TypeSkills //All the Avilable Moves
 {
+    AttackNormal,
+    AttackJump,
+    AttackRun,
+
+
+    
     DefUpAttack,
     DefDownAttack,
     // DefLeftAttack,

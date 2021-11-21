@@ -48,7 +48,6 @@ namespace LF2.Server
         {
 
             if (m_Queue.Count > 2 ) { return ;  }
-            Debug.Log(m_Queue.Count);
             var newAction = Action.MakeAction(m_Parent, ref action);
             m_Queue.Add(newAction);
             // Debug.Log(m_Queue.Count);
@@ -244,21 +243,21 @@ namespace LF2.Server
                 if (endRemoved)
                 {
                     m_Queue[0].End();
-                    if (m_Queue[0].ChainIntoNewAction(ref m_PendingSynthesizedAction))
-                    {
-                        m_HasPendingSynthesizedAction = true;
-                        Debug.Log("m_HasPendingSynthesizedAction");
-                    }
+                    // if (m_Queue[0].ChainIntoNewAction(ref m_PendingSynthesizedAction))
+                    // {
+                    //     m_HasPendingSynthesizedAction = true;
+                    //     // Debug.Log("m_HasPendingSynthesizedAction");
+                    // }
                 }
                 m_Queue.RemoveAt(0);
             }
 
             // now start the new Action! ... unless we now have a pending Action that will supercede it
-            if (!m_HasPendingSynthesizedAction || m_PendingSynthesizedAction.ShouldQueue)
-            {
-                Debug.Log("m_HasPendingSynthesizedAction");
-                StartAction();
-            }
+            // if (!m_HasPendingSynthesizedAction || m_PendingSynthesizedAction.ShouldQueue)
+            // {
+            //     // Debug.Log("m_HasPendingSynthesizedAction");
+            //     StartAction();
+            // }
         }
 
         public void Update()
@@ -307,6 +306,9 @@ namespace LF2.Server
         private bool UpdateAction(Action action)
         {
             bool keepGoing = action.Update();
+            if (m_Queue.Count == 2) {
+                keepGoing = action.WantToMoveNextAction(m_Queue[1]);
+            }
             bool expirable = action.Description.DurationSeconds > 0f; //non-positive value is a sentinel indicating the duration is indefinite.
             var timeElapsed = Time.time - action.TimeStarted;
             bool timeExpired = expirable && timeElapsed >= action.Description.DurationSeconds;
@@ -373,18 +375,18 @@ namespace LF2.Server
         /// getting healed, dying, etc. Actions can change their behavior as a result.
         /// </summary>
         /// <param name="activityThatOccurred">The type of event that has occurred</param>
-        public void OnGameplayActivity(GameplayActivity activityThatOccurred)
-        {
-            if (m_Queue.Count > 0)
-            {
-                m_Queue[0].OnGameplayActivity(activityThatOccurred);
-            }
-            // foreach (var action in m_NonBlockingActions)
-            // {
-            //     action.OnGameplayActivity(activityThatOccurred);
-            // }
-            // m_Queue.OnGameplayActivity(activityThatOccurred);
-        }
+        // public void OnGameplayActivity(GameplayActivity activityThatOccurred)
+        // {
+        //     if (m_Queue.Count > 0)
+        //     {
+        //         m_Queue[0].OnGameplayActivity(activityThatOccurred);
+        //     }
+        //     // foreach (var action in m_NonBlockingActions)
+        //     // {
+        //     //     action.OnGameplayActivity(activityThatOccurred);
+        //     // }
+        //     // m_Queue.OnGameplayActivity(activityThatOccurred);
+        // }
 
 
         /// <summary>

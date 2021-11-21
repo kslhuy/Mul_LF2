@@ -35,17 +35,17 @@ namespace LF2.Visual
         /// <summary>
         /// Returns the targeting-reticule prefab for this character visualization
         /// </summary>
-        public GameObject TargetReticulePrefab { get { return m_VisualizationConfiguration.TargetReticule; } }
+        // public GameObject TargetReticulePrefab { get { return m_VisualizationConfiguration.TargetReticule; } }
 
         /// <summary>
         /// Returns the Material to plug into the reticule when the selected entity is hostile
         /// </summary>
-        public Material ReticuleHostileMat { get { return m_VisualizationConfiguration.ReticuleHostileMat; } }
+        // public Material ReticuleHostileMat { get { return m_VisualizationConfiguration.ReticuleHostileMat; } }
 
         /// <summary>
         /// Returns the Material to plug into the reticule when the selected entity is friendly
         /// </summary>
-        public Material ReticuleFriendlyMat { get { return m_VisualizationConfiguration.ReticuleFriendlyMat; } }
+        // public Material ReticuleFriendlyMat { get { return m_VisualizationConfiguration.ReticuleFriendlyMat; } }
 
         // /// <summary>
         // /// Returns our pseudo-Parent, the object that owns the visualization.
@@ -58,6 +58,8 @@ namespace LF2.Visual
         private NetworkCharacterState m_NetState;
 
         private ActionVisualization m_ActionViz;
+
+        private PlayerStateFX m_statePlayerViz;
 
         private const float k_MaxRotSpeed = 280;  //max angular speed at which we will rotate, in degrees/second.
 
@@ -83,6 +85,7 @@ namespace LF2.Visual
             // m_HitStateTriggerID = Animator.StringToHash(ActionFX.k_DefaultHitReact);
 
             m_ActionViz = new ActionVisualization(this);
+            m_statePlayerViz = new PlayerStateFX(this);
 
             // Parent = transform.parent;
 
@@ -90,7 +93,7 @@ namespace LF2.Visual
             m_NetState.DoActionEventClient += PerformActionFX;
             m_NetState.CancelAllActionsEventClient += CancelAllActionFXs;
             m_NetState.CancelActionsByTypeEventClient += CancelActionFXByType;
-            m_NetState.NetworkLifeState.LifeState.OnValueChanged += OnLifeStateChanged;
+            // m_NetState.NetworkLifeState.LifeState.OnValueChanged += OnLifeStateChanged;
             m_NetState.OnPerformHitReaction += OnPerformHitReaction;
             m_NetState.OnStopChargingUpClient += OnStoppedChargingUp;
             m_NetState.IsStealthy.OnValueChanged += OnStealthyChanged;
@@ -124,7 +127,7 @@ namespace LF2.Visual
             SetAppearanceSwap();
 
             // sync our animator to the most up to date version received from server
-            SyncEntryAnimation(m_NetState.LifeState);
+            // SyncEntryAnimation(m_NetState.LifeState);
 
             if (!m_NetState.IsNpc)
             {
@@ -137,10 +140,15 @@ namespace LF2.Visual
 
                 if (IsLocalPlayer)
                 {
-                    ActionRequestData data = new ActionRequestData { ActionTypeEnum = ActionType.GeneralTarget };
+                    //// ko co y nghia
+                    // ActionRequestData data = new ActionRequestData { ActionTypeEnum = ActionType.GeneralTarget };
                     // m_ActionViz.PlayAction(ref data);
 
+
+
                     // gameObject.AddComponent<CameraController>();
+                    
+                    // // UI 
                     // m_PartyHUD.SetHeroData(m_NetState);
 
                     // if (Parent.TryGetComponent(out ClientInputSender inputSender))
@@ -175,28 +183,31 @@ namespace LF2.Visual
 
         private void OnActionInput(ActionRequestData data)
         {
-            m_ActionViz.AnticipateAction(ref data);
+            // m_ActionViz.AnticipateAction(ref data);
+            m_statePlayerViz.AnticipateState(ref data);
         }
 
         
         private void PerformActionFX(ActionRequestData data)
         {
-            m_ActionViz.PlayAction(ref data);
+            // That event do actual State from Server .
+            // m_ActionViz.PlayAction(ref data);
+            m_statePlayerViz.PlayState(ref data);
         }
 
 
         private void OnMoveInput(Vector2 position)
         {
-            if (m_NetState.MovementStatus.Value == MovementStatus.Idle && position != Vector2.zero){
-                        // OurAnimator.Play(m_VisualizationConfiguration.AnticipateMoveTriggerID);
-                OurAnimator.Play("Walk_anim");
-            }
-            else if (m_NetState.MovementStatus.Value == MovementStatus.Move && position == Vector2.zero){
-                OurAnimator.Play("Idle_anim");
-            }
-            // else if (m_NetState.MovementStatus.Value == MovementStatus.Uncontrolled && position != Vector2.zero){
-            //     return;
+            // if (m_NetState.MovementStatus.Value == MovementStatus.Idle && position != Vector2.zero){
+            //             // OurAnimator.Play(m_VisualizationConfiguration.AnticipateMoveTriggerID);
+            //     OurAnimator.Play("Walk_anim");
             // }
+            // else if (m_NetState.MovementStatus.Value == MovementStatus.Move && position == Vector2.zero){
+            //     OurAnimator.Play("Idle_anim");
+            // }
+            m_statePlayerViz.OnMoveInput(position);
+
+
         }
 
         /// <summary>
@@ -204,18 +215,19 @@ namespace LF2.Visual
         /// and sends an NPC/PC to their eventual looping animation. This is necessary for mid-game player connections.
         /// </summary>
         /// <param name="lifeState"> The last LifeState received by server. </param>
-        void SyncEntryAnimation(LifeState lifeState)
-        {
-            switch (lifeState)
-            {
-                case LifeState.Dead: // ie. NPCs already dead
-                    m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.EntryDeathTriggerID);
-                    break;
-                case LifeState.Fainted: // ie. PCs already fainted
-                    m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.EntryFaintedTriggerID);
-                    break;
-            }
-        }
+        // void SyncEntryAnimation(LifeState lifeState)
+        // {
+        //     // switch (lifeState)
+        //     // {
+        //     //     case LifeState.Dead: // ie. NPCs already dead
+        //     //         m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.EntryDeathTriggerID);
+        //     //         break;
+        //     //     case LifeState.Fainted: // ie. PCs already fainted
+        //     //         m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.EntryFaintedTriggerID);
+
+        //     //         break;
+        //     // }
+        // }
         private void OnDestroy()
         {
             if (m_NetState)
@@ -223,7 +235,7 @@ namespace LF2.Visual
                 m_NetState.DoActionEventClient -= PerformActionFX;
                 m_NetState.CancelAllActionsEventClient -= CancelAllActionFXs;
                 m_NetState.CancelActionsByTypeEventClient -= CancelActionFXByType;
-                m_NetState.NetworkLifeState.LifeState.OnValueChanged -= OnLifeStateChanged;
+                // m_NetState.NetworkLifeState.LifeState.OnValueChanged -= OnLifeStateChanged;
                 m_NetState.OnPerformHitReaction -= OnPerformHitReaction;
                 m_NetState.OnStopChargingUpClient -= OnStoppedChargingUp;
                 m_NetState.IsStealthy.OnValueChanged -= OnStealthyChanged;
@@ -255,23 +267,23 @@ namespace LF2.Visual
             // m_ActionViz.OnStoppedChargingUp(finalChargeUpPercentage);
         }
 
-        private void OnLifeStateChanged(LifeState previousValue, LifeState newValue)
-        {
-            switch (newValue)
-            {
-                case LifeState.Alive:
-                    m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.AliveStateTriggerID);
-                    break;
-                case LifeState.Fainted:
-                    m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.FaintedStateTriggerID);
-                    break;
-                case LifeState.Dead:
-                    m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.DeadStateTriggerID);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(newValue), newValue, null);
-            }
-        }
+        // private void OnLifeStateChanged(LifeState previousValue, LifeState newValue)
+        // {
+        //     switch (newValue)
+        //     {
+        //         case LifeState.Alive:
+        //             m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.AliveStateTriggerID);
+        //             break;
+        //         case LifeState.Fainted:
+        //             m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.FaintedStateTriggerID);
+        //             break;
+        //         case LifeState.Dead:
+        //             m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.DeadStateTriggerID);
+        //             break;
+        //         default:
+        //             throw new ArgumentOutOfRangeException(nameof(newValue), newValue, null);
+        //     }
+        // }
 
         // private void OnHealthChanged(int previousValue, int newValue)
         // {
@@ -311,32 +323,32 @@ namespace LF2.Visual
         /// Returns the value we should set the Animator's "Speed" variable, given current
         /// gameplay conditions.
         /// </remarks>
-        private float GetVisualMovementSpeed()
-        {
-            Assert.IsNotNull(m_VisualizationConfiguration);
-            if (m_NetState.NetworkLifeState.LifeState.Value != LifeState.Alive)
-            {
-                return m_VisualizationConfiguration.SpeedDead;
-            }
+        // private float GetVisualMovementSpeed()
+        // {
+        //     Assert.IsNotNull(m_VisualizationConfiguration);
+        //     if (m_NetState.NetworkLifeState.LifeState.Value != LifeState.Alive)
+        //     {
+        //         return m_VisualizationConfiguration.SpeedDead;
+        //     }
 
-            switch (m_NetState.MovementStatus.Value)
-            {
-                case MovementStatus.Idle:
-                    return m_VisualizationConfiguration.SpeedIdle;
-                case MovementStatus.Normal:
-                    return m_VisualizationConfiguration.SpeedNormal;
-                case MovementStatus.Uncontrolled:
-                    return m_VisualizationConfiguration.SpeedUncontrolled;
-                case MovementStatus.Slowed:
-                    return m_VisualizationConfiguration.SpeedSlowed;
-                case MovementStatus.Hasted:
-                    return m_VisualizationConfiguration.SpeedHasted;
-                case MovementStatus.Move:
-                    return m_VisualizationConfiguration.SpeedWalking;
-                default:
-                    throw new Exception($"Unknown MovementStatus {m_NetState.MovementStatus.Value}");
-            }
-        }
+        //     switch (m_NetState.MovementStatus.Value)
+        //     {
+        //         case MovementStatus.Idle:
+        //             return m_VisualizationConfiguration.SpeedIdle;
+        //         case MovementStatus.Normal:
+        //             return m_VisualizationConfiguration.SpeedNormal;
+        //         case MovementStatus.Uncontrolled:
+        //             return m_VisualizationConfiguration.SpeedUncontrolled;
+        //         case MovementStatus.Slowed:
+        //             return m_VisualizationConfiguration.SpeedSlowed;
+        //         case MovementStatus.Hasted:
+        //             return m_VisualizationConfiguration.SpeedHasted;
+        //         case MovementStatus.Move:
+        //             return m_VisualizationConfiguration.SpeedWalking;
+        //         default:
+        //             throw new Exception($"Unknown MovementStatus {m_NetState.MovementStatus.Value}");
+        //     }
+        // }
 
 
         void Update()
@@ -359,9 +371,9 @@ namespace LF2.Visual
             // m_ActionViz.OnAnimEvent(id);
         }
 
-        public bool IsAnimating(string animationName)
+        public bool IsAnimating()
         {
-            if (OurAnimator.GetCurrentAnimatorStateInfo(0).IsName(animationName)) { return true; }
+            // if (OurAnimator.GetCurrentAnimatorStateInfo(0).IsName()) { return true; }
 
             // for (int i = 0; i < OurAnimator.layerCount; i++)
             // {
