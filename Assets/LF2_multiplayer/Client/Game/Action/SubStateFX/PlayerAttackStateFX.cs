@@ -10,9 +10,10 @@ namespace LF2.Visual{
         // Transform attackTransform ;
         float attack12distance;
 
-        public PlayerAttackStateFX(PlayerStateFX m_PlayerFX) : base(m_PlayerFX)
+        public PlayerAttackStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX) : base(characterType, m_PlayerFX)
         {
         }
+
 
         // public override void CanChangeState(ActionRequestData actionRequestData)
         // {
@@ -35,22 +36,7 @@ namespace LF2.Visual{
 
         public override void LogicUpdate()
         {
-            // switch (stateMachine.CurrentState.attackType)
-            // {
-            //     case AttackType.Attack1:
-            //         AttackToIdle();
-            //         break;
-            //     case AttackType.Attack3:
-            //         AttackToIdle();
-            //         break;
-            //     case AttackType.Attack4:
-            //         FlyAttackLand();
-            //         break;
-            //     case AttackType.Attack5:
-            //         FlyAttackLand();
-            //         break;
-            // }
-            // AttackToIdle();
+
             Debug.Log("Attack Visual");
         
         }

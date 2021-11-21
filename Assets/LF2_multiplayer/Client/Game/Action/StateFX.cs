@@ -8,12 +8,12 @@ namespace LF2.Visual{
 
         protected PlayerStateFX m_PlayerFX;
 
-
-        protected StateFX(PlayerStateFX m_PlayerFX) 
+        protected StateFX(CharacterTypeEnum characterType,PlayerStateFX m_PlayerFX) : base(characterType)
         {
             this.m_PlayerFX = m_PlayerFX;
-
         }
+
+
 
         public bool Anticipated { get; protected set; }
 

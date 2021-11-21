@@ -33,11 +33,8 @@ namespace LF2.Server
         [Tooltip("Setting negative value disables destroying object after it is killed.")]
         private float m_KilledDestroyDelaySeconds = 3.0f;
 
-        // [SerializeField]
-        // [Tooltip("If set, the ServerCharacter will automatically play the StartingAction when it is created. ")]
-        // private ActionType actionTypeNow ;
 
-        private ActionPlayer m_ActionPlayer;
+        private PlayerState m_statePlayer;
 
 
         // ***** ***
@@ -48,7 +45,7 @@ namespace LF2.Server
         // Cached component reference
         private ServerCharacterMovement m_Movement;
         public SetMovement SetMovement;
-        private PlayerState m_statePlayer;
+        
         public bool StateOccuped;
 
 
@@ -60,7 +57,7 @@ namespace LF2.Server
             m_Movement = GetComponent<ServerCharacterMovement>();
             SetMovement = GetComponent<SetMovement>();
             NetState = GetComponent<NetworkCharacterState>();
-            m_ActionPlayer = new ActionPlayer(this);
+
             m_statePlayer = new PlayerState(this,m_Movement);
 
             
@@ -68,10 +65,6 @@ namespace LF2.Server
             // {
             //     m_AIBrain = new AIBrainNew(this);
             // }
-        }
-        private void Start() {
-
-            // actionTypeNow = ActionType.None;
         }
 
         public override void NetworkStart()
@@ -112,19 +105,10 @@ namespace LF2.Server
         // /// </summary>
         public void PlayAction(ref ActionRequestData action)
         {
-            //the character needs to be alive ( (HUY) and rest still )in order to be able to play actions
+            //the character needs to be alive and not be state uncontrol =>  in order to be able to play actions
             if (NetState.LifeState == LifeState.Alive && !m_Movement.IsPerformingForcedMovement())
             {
-                // if action reqiure to stop move  
-                // if (action.CancelMovement)
-                // {
-                //     m_Movement.CancelMove();
-                // }
-                // m_ActionPlayer.PlayAction(ref action);
-
                 m_statePlayer.RequestToState(ref action);
-
-                // StateMachine.AdvanceQueue(ref action);
             }
         }
 
@@ -243,9 +227,7 @@ namespace LF2.Server
 
         void Update()
         {
-            // StateMachine.CurrentState.LogicUpdate();
 
-            m_ActionPlayer.Update();
             m_statePlayer.Update();
             // ********** AI ***********
             // if (m_AIBrain != null && NetState.LifeState == LifeState.Alive && m_BrainEnabled)
@@ -256,17 +238,16 @@ namespace LF2.Server
 
         private void FixedUpdate() {
             m_statePlayer.PhysicsUpdate();
-
         }
 
 
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (m_ActionPlayer != null)
-            {
-                m_ActionPlayer.OnCollisionEnter(collision);
-            }
+            // if (m_ActionPlayer != null)
+            // {
+            //     m_ActionPlayer.OnCollisionEnter(collision);
+            // }
         }
 
         // private void OnStoppedChargingUp()

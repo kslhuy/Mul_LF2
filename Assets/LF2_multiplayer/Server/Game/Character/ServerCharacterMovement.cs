@@ -104,7 +104,8 @@ namespace LF2.Server
         public void SetVelocityXZ(Vector3 targetposition){
       
             transform.position += targetposition*Time.deltaTime;
-            CheckIfShouldFlip((int)(targetposition.x));
+            CheckIfShouldFlip(Mathf.RoundToInt(targetposition.x));
+
         }
 
         /// <summary>
@@ -204,8 +205,8 @@ namespace LF2.Server
             // Send new position values to the client
             m_NetworkCharacterState.NetworkPosition.Value = transform.position;
             m_NetworkCharacterState.NetworkRotationY.Value = transform.rotation.eulerAngles.y;
-            m_NetworkCharacterState.NetworkMovementSpeed.Value = GetMaxMovementSpeed();
-            m_NetworkCharacterState.MovementStatus.Value = GetMovementStatus();
+            // m_NetworkCharacterState.NetworkMovementSpeed.Value = GetMaxMovementSpeed();
+            // m_NetworkCharacterState.MovementStatus.Value = GetMovementStatus();
         }
 
 
@@ -285,6 +286,7 @@ namespace LF2.Server
         public void CheckIfShouldFlip(int xInput){
             if (xInput != 0 && xInput != FacingDirection){
                 Flip();
+
             }
         }
         public void Flip(){

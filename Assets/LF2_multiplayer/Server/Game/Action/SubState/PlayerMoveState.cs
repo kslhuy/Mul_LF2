@@ -7,7 +7,7 @@ namespace LF2.Server{
     {
         public float SpeedWalk = 1f ;
 
-        public PlayerMoveState(PlayerState player, SetMovement setMovement) : base(player, setMovement)
+        public PlayerMoveState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
         {
         }
 
@@ -20,17 +20,11 @@ namespace LF2.Server{
 
         }
         public override void PhysicsUpdate() {
-            // if (currentMovementState == MovementState.Move){
-            //     // setMovement.SetVelocityXZ(workSpace.x , workSpace.y);
-            //     Debug.Log("Run");
-            //     // serverCharacterMovement.transform.position += workSpace*Time.deltaTime*SpeedWalk;
 
-            // }
-            // else {
-            //     player.stateMachine.ChangeState(StateType.Idle);
-            // }
             Debug.Log("MoveState");
             // setMovement.SetVelocityXZ(workSpace);
+            // player.ServerCharacterMovement.CheckIfShouldFlip((int)workSpace.x);
+            
             player.ServerCharacterMovement.SetVelocityXZ(workSpace);
             // Debug.Log(IsMove);
             

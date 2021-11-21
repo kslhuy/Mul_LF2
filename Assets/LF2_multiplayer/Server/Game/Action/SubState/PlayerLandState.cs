@@ -5,7 +5,8 @@ namespace LF2.Server{
     public class PlayerLandState : State
     {
         float timenow;
-        public PlayerLandState(PlayerState player, SetMovement setMovement) : base(player, setMovement)
+
+        public PlayerLandState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
         {
         }
 

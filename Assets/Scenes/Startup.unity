@@ -554,11 +554,8 @@ MonoBehaviour:
   m_CharacterData:
   - {fileID: 11400000, guid: c4bca58da2bd1e7429512482e4d8477b, type: 2}
   - {fileID: 11400000, guid: 5e72887e71cddf44384bb9236a7bf547, type: 2}
-  m_ActionData:
-  - {fileID: 11400000, guid: 6626bcb2ae814d749b7ed5b532a44bb4, type: 2}
-  - {fileID: 11400000, guid: d022a95c86c9e884d89364043e9d63bb, type: 2}
-  - {fileID: 11400000, guid: 1f04ed38135a453478ef374c4e62a081, type: 2}
-  - {fileID: 11400000, guid: f9023439405bcdb48b11d50b02963520, type: 2}
+  m_CharacterSkillsDescription:
+  - {fileID: 11400000, guid: 4380b0622dad9ea4387c4ca0c341b3ec, type: 2}
 --- !u!4 &1102659860
 Transform:
   m_ObjectHideFlags: 0

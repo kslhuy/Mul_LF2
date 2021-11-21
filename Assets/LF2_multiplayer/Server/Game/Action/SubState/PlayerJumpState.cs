@@ -8,7 +8,7 @@ namespace LF2.Server{
         private int amountOfJumpLeft ;
         float timeStartJump;
 
-        public PlayerJumpState(PlayerState player, SetMovement setMovement) : base(player, setMovement)
+        public PlayerJumpState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
         {
         }
 
@@ -27,11 +27,11 @@ namespace LF2.Server{
                 return true;
             }else return false;
         }
+
         public override void PhysicsUpdate() {
 
             Debug.Log("JumpState");
             player.ServerCharacterMovement.SetFallingDown();
-            
             // player.ServerCharacterMovement.IsGounded();
             if (player.ServerCharacterMovement.IsGounded() && Time.time - timeStartJump > 0.5f ){
                 player.stateMachine.ChangeState(StateType.Land);

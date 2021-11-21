@@ -10,7 +10,7 @@ namespace LF2.Server{
         // Transform attackTransform ;
         float attack12distance;
 
-        public PlayerAttackState(PlayerState player, SetMovement setMovement) : base(player, setMovement)
+        public PlayerAttackState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
         {
         }
 
@@ -22,6 +22,7 @@ namespace LF2.Server{
         public override void Enter()
         {
             player.serverplayer.NetState.RecvDoActionClientRPC(m_ActionRequestData);
+          
         }
 
         public override StateType GetId()
@@ -46,25 +47,16 @@ namespace LF2.Server{
             //         FlyAttackLand();
             //         break;
             // }
-            AttackToIdle();
+            Debug.Log("AttackState");
         
         }
 
-
-        private void AttackToIdle()
+        public override void End()
         {
-            // TODO 
-            // if (isAnimationFinished || isFinishedAnimation())
-            // {
-            //     isAnimationFinished = false;
-            //     stateMachine.ChangeState(player.IdleState);
-            // }
-
-            // bool expirable = action.Description.DurationSeconds > 0f; //non-positive value is a sentinel indicating the duration is indefinite.
-            // bool timeExpired = expirable && action.TimeRunning >= action.Description.DurationSeconds;
-            // bool timedOut = !action.Anticipated && action.TimeRunning >= k_AnticipationTimeoutSeconds;
-
+            player.stateMachine.ChangeState(StateType.Idle);
+          
         }
+
 
         private void FlyAttackLand()
         {

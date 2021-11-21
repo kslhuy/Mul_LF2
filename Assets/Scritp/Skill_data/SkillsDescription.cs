@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace LF2{
 
-    [CreateAssetMenu(fileName = "SkillsDescription", menuName = "SkillsDescription")]
+    [CreateAssetMenu(fileName = "GameData/CharacterClass", menuName = "SkillsDescription")]
     [System.Serializable]
     public class SkillsDescription : ScriptableObject
     {
-        [SerializeField] CharacterTypeEnum characterType;
+        // [SerializeField] CharacterTypeEnum characterType;
 
-        public TypeSkills TypeAction; //The kind of the move
+        public StateType StateType; //The kind of the move
         
         public int damageAmount;
 
@@ -22,6 +22,8 @@ namespace LF2{
         // public AnimationCurve animationCurve;
 
         public float DurationSeconds;
+
+        public bool expirable;
 
         // [SerializeField] int ComboPriorty = 0; //the more complicated the move the higher the Priorty
         

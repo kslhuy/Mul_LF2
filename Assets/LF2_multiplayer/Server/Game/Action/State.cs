@@ -10,25 +10,29 @@ namespace LF2.Server
         protected Vector3 workSpace;
         protected MovementState currentMovementState;
         
-        protected  SetMovement setMovement;
 
         protected ActionRequestData m_ActionRequestData;
+
+        protected State(CharacterTypeEnum characterType, PlayerState player) : base(characterType)
+        {
+            this.player = player;
+        }
 
         public bool IsMove { get; private set; }
 
         /// <summary>
         /// constructor. The "data" parameter should not be retained after passing in to this method, because we take ownership of its internal memory.
         /// </summary>
-        public State( PlayerState player , SetMovement setMovement) 
-        {
-            this.player = player;
-            this.setMovement = setMovement;
+        // public State( PlayerState player ) 
+        // {
+        //     this.player = player;
+          
            
-        }
+        // }
 
         public abstract StateType GetId();
         public virtual void Enter(){
-
+            TimeStarted = Time.time;
         }
         public virtual void LogicUpdate() {}
 
@@ -48,5 +52,11 @@ namespace LF2.Server
             // workSpace = position;
             IsMove  = position.x != 0 || position.y != 0;
         }
+
+        public virtual void End()
+        {
+        }
+
+
     }
 }

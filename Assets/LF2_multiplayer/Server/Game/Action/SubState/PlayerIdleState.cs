@@ -7,11 +7,13 @@ namespace LF2.Server{
 
     public class PlayerIdleState : State
     {
-        // bool isAttack;
-
-        public PlayerIdleState(PlayerState player, SetMovement setMovement) : base(player, setMovement)
+        public PlayerIdleState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
         {
         }
+
+        // bool isAttack;
+
+
 
         public override void CanChangeState(ActionRequestData actionRequestData)
         {
@@ -80,7 +82,7 @@ namespace LF2.Server{
             //     stateMachine.ChangeState(player.DefenseState);
             // }
 
-            // Debug.Log("IdleState");
+            Debug.Log("IdleState");
 
 
         }

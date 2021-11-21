@@ -13,15 +13,15 @@ namespace LF2.Visual{
         
         public ClientCharacterVisualization m_ClientVisual { get; private set; }
 
-        public PlayerStateFX(ClientCharacterVisualization parent)
+        public PlayerStateFX(ClientCharacterVisualization parent , CharacterTypeEnum characterType)
         {
             m_ClientVisual = parent;
             stateMachineViz = new PlayerStateMachineFX();
-            stateMachineViz.RegisterState(new PlayerIdleStateFX(this));
-            stateMachineViz.RegisterState(new PlayerMoveStateFX(this));
-            stateMachineViz.RegisterState(new PlayerJumpStateFX(this));
-            stateMachineViz.RegisterState(new PlayerAttackStateFX(this));
-            stateMachineViz.RegisterState(new PlayerLandStateFX(this));
+            stateMachineViz.RegisterState(new PlayerIdleStateFX(characterType,this));
+            stateMachineViz.RegisterState(new PlayerMoveStateFX(characterType,this));
+            stateMachineViz.RegisterState(new PlayerJumpStateFX(characterType,this));
+            stateMachineViz.RegisterState(new PlayerAttackStateFX(characterType,this));
+            stateMachineViz.RegisterState(new PlayerLandStateFX(characterType,this));
 
             
             stateMachineViz.ChangeState(StateType.Idle);

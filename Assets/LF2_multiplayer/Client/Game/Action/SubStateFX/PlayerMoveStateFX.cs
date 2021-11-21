@@ -6,7 +6,7 @@ using UnityEngine;
 namespace LF2.Visual{
     public class PlayerMoveStateFX : StateFX
     {
-        public PlayerMoveStateFX(PlayerStateFX m_PlayerFX) : base(m_PlayerFX)
+        public PlayerMoveStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX) : base(characterType, m_PlayerFX)
         {
         }
 
@@ -18,7 +18,7 @@ namespace LF2.Visual{
         //     if (actionRequestData.ActionTypeEnum == ActionType.JumpGeneral){
         //         m_PlayerFX.stateMachineViz.ChangeState(StateType.Jump);
         //     }
-            
+
         // }
 
         public override void SetMovementTarget(Vector2 position)

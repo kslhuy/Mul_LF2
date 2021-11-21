@@ -8,7 +8,7 @@ namespace LF2.Visual{
     {
         private int amountOfJumpLeft ;
 
-        public PlayerLandStateFX(PlayerStateFX m_PlayerFX) : base(m_PlayerFX)
+        public PlayerLandStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX) : base(characterType, m_PlayerFX)
         {
         }
 

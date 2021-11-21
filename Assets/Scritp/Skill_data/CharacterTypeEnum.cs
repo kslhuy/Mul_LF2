@@ -5,9 +5,10 @@
 public enum CharacterTypeEnum
 {
     //heroes
+    Deep,
+
     David,
     Dennis,
-    Deep,
     John,
     Freeze,
     Louis,

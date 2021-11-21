@@ -8,7 +8,7 @@ namespace LF2.Visual{
     {
         private int amountOfJumpLeft ;
 
-        public PlayerJumpStateFX(PlayerStateFX m_PlayerFX) : base(m_PlayerFX)
+        public PlayerJumpStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX) : base(characterType, m_PlayerFX)
         {
         }
 
@@ -41,6 +41,10 @@ namespace LF2.Visual{
         public override StateType GetId()
         {
             return StateType.Jump;
+        }
+
+        public override void LogicUpdate() {
+            Debug.Log("JumpStateVisual");
         }
 
         // public override void CanChangeState(ActionRequestData actionRequestData)

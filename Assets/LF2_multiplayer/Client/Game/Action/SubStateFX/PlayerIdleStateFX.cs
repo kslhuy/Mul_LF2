@@ -6,18 +6,20 @@ using UnityEngine;
 namespace LF2.Visual{
     public class PlayerIdleStateFX : StateFX
     {
-        public PlayerIdleStateFX(PlayerStateFX m_PlayerFX) : base(m_PlayerFX)
+        public PlayerIdleStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX) : base(characterType, m_PlayerFX)
         {
         }
 
+
         // public override void CanChangeState(ActionRequestData actionRequestData)
         // {
-            
+
         // }
 
         public override void AnticipateState(ActionRequestData data)
         {
             if (data.ActionTypeEnum == ActionType.AttackGeneral){
+                // m_PlayerFX.stateMachineViz.GetState(StateType.Attack).
                 m_PlayerFX.m_ClientVisual.OurAnimator.Play("Attack1_anim");
             }
 

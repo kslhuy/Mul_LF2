@@ -15,25 +15,25 @@ namespace LF2
 
         JumpGeneral,
 
-        MoveGeneral,
+        // MoveGeneral,
 
         DefenseGeneral,
 
-        Land,
+        // Land,
 
-        // DDA
-        DavidDDA,
-        DeepDDA,
-        // DDJ
-        DavidDDJ,
-        DeepDDJ,
-        // DUA
-        DavidDUA,
-        DeepDUA,
+        // // DDA
+        // DavidDDA,
+        // DeepDDA,
+        // // DDJ
+        // DavidDDJ,
+        // DeepDDJ,
+        // // DUA
+        // DavidDUA,
+        // DeepDUA,
 
-        // DUJ
-        DavidDUJ,
-        DeepDUJ,
+        // // DUJ
+        // DavidDUJ,
+        // DeepDUJ,
         
     }
 
