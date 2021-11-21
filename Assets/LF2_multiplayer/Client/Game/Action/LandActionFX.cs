@@ -12,7 +12,6 @@ namespace LF2.Visual
         {
         }
 
-        
         public override bool Start()
         {
             if(!Anticipated)
@@ -21,7 +20,7 @@ namespace LF2.Visual
             }
 
             base.Start();
-            Debug.Log("land");
+            Debug.Log("landVisual");
 
 
             return true;
@@ -29,13 +28,13 @@ namespace LF2.Visual
 
         private void PlayAnim()
         {
-            m_Parent.OurAnimator.SetTrigger(Description.Anim);
+            // m_Parent.OurAnimator.Play(AnimId);
         }
 
         public override bool Update()
         {
             Debug.Log("LandActionFX");
-            return true;
+            return false;
         }
         public override void End()
         {

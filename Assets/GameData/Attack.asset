@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df47e860a6531ea4b91130e395ac15ab, type: 3}
   m_Name: Attack
   m_EditorClassIdentifier: 
-  ActionTypeEnum: 16
+  ActionTypeEnum: 1
   Logic: 16
   Amount: 0
   ManaCost: 0

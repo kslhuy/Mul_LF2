@@ -11,7 +11,6 @@ namespace LF2.Visual
     /// </summary>
     public class MeleeActionFX : ActionFX
     {
-        public MeleeActionFX(ref ActionRequestData data, ClientCharacterVisualization parent) : base(ref data, parent) { }
 
         //have we actually played an impact? This won't necessarily happen for all swings. Sometimes you're just swinging at space.
         private bool m_ImpactPlayed;
@@ -20,6 +19,13 @@ namespace LF2.Visual
         /// When we detect if our original target is still around, we use a bit of padding on the range check.
         /// </summary>
         private const float k_RangePadding = 3f;
+
+        public MeleeActionFX(ref ActionRequestData data, ClientCharacterVisualization parent) : base(ref data, parent)
+        {
+        }
+
+
+
 
         // /// <summary>
         // /// List of active special graphics playing on the target.
@@ -31,7 +37,7 @@ namespace LF2.Visual
         {
             if( !Anticipated)
             {
-                PlayAnim();
+                // PlayAnim(AnimId);
             }
 
             base.Start();
@@ -56,7 +62,7 @@ namespace LF2.Visual
 
         public override bool Update()
         {
-            // Debug.Log("AttackAnimation");
+            Debug.Log("AttackAnimation");
             return ActionConclusion.Continue;
         }
 
@@ -93,11 +99,10 @@ namespace LF2.Visual
 
         }
 
-        private void PlayAnim()
-        {
-            // m_Parent.OurAnimator.SetTrigger(Description.Anim);
-            m_Parent.OurAnimator.Play("Attack1_anim");
-        }
+        // public void PlayAnim(int animID)
+        // {
+        //     base.PlayAnim(animID);
+        // }
 
         private void PlayHitReact()
         {
@@ -135,7 +140,7 @@ namespace LF2.Visual
 
             //note: because the hit-react is driven from the animation, this means we can anticipatively trigger a hit-react too. That
             //will make combat feel responsive, but of course the actual damage won't be applied until the server tells us about it.
-            PlayAnim();
+            // PlayAnim(AnimId);
         }
     }
 }

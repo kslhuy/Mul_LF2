@@ -24,7 +24,7 @@ namespace LF2.Server
     {
         [SerializeField] AnimationCurve m_gravity;
         [SerializeField]
-        private float JumpSpeed = 10f;
+        private float JumpHieght = 10f;
         private Rigidbody m_Rigidbody;
         private BoxCollider m_BoxCollider;
         private NetworkCharacterState m_NetworkCharacterState;
@@ -101,19 +101,26 @@ namespace LF2.Server
 
         }
 
+        public void SetVelocityXZ(Vector3 targetposition){
+      
+            transform.position += targetposition*Time.deltaTime;
+            CheckIfShouldFlip((int)(targetposition.x));
+        }
+
         /// <summary>
         /// Sets Jump
         /// </summary>
         /// <param name="position">Position in world space to path to. </param>
-        public void SetJump(Vector3 position)
+        public void SetJump(Vector3 moveDir)
         {
-            if ( m_MovementState == MovementState.Air )   {return ; }   
+            // if ( m_MovementState == MovementState.Air )   {return ; }   
 
-            m_startTime = Time.time;
-            m_MovementState = MovementState.Air;
-            workSpace = position;
-            
-            m_Rigidbody.AddForce(JumpSpeed*workSpace,ForceMode.Impulse);
+            // m_startTime = Time.time;
+            // m_MovementState = MovementState.Air;
+            // workSpace = position;
+            // m_Rigidbody.velocity = Vector3.up*JumpHieght + moveDir ;
+            m_Rigidbody.AddForce(JumpHieght*Vector3.up + moveDir,ForceMode.Impulse); 
+            // m_Rigidbody.AddForce(JumpHieght*Vector3.up +  moveDir,ForceMode.Impulse);
 
         }
 
@@ -146,16 +153,6 @@ namespace LF2.Server
         }    
 
 
-        // private void OnDrawGizmos() {
-        // if (DebugPlayer){
-        //     // Gizmos.DrawSphere(AttackTransform.position,PlayerData.attackRadius);
-        //     // Gizmos.DrawCube(m_BoxCollider.bounds.center,boxCollider.bounds.extents);
-        //     // Gizmos.DrawLine(m_BoxCollider.bounds.center,m_BoxCollider.bounds.extents);
-
-        // // Debug.Log(hit_ground);
-        // }
-        // }
-        
 
 
         /// <summary>
@@ -203,7 +200,7 @@ namespace LF2.Server
 
         private void FixedUpdate()
         {
-            PerformMovement();
+            
             // Send new position values to the client
             m_NetworkCharacterState.NetworkPosition.Value = transform.position;
             m_NetworkCharacterState.NetworkRotationY.Value = transform.rotation.eulerAngles.y;
@@ -217,45 +214,21 @@ namespace LF2.Server
 
         }
 
-        private void PerformMovement()
-        {
  
-            switch (m_MovementState){
-                case MovementState.Idle:
-                    break;
-
-                case MovementState.Knockback:
-                    break;
-                case MovementState.Charging:
-                    break;
-
-                case MovementState.Move:
-                    transform.position += workSpace*Time.deltaTime*SpeedWalk;
-                    CheckIfShouldFlip((int)Mathf.Sign(workSpace.x));
-                    break;
-                case MovementState.Air:
-                    if ((m_Rigidbody.velocity.y) < 0f)  {
-                        SetFallingDown();
-                    }             
-                    if (IsGounded() &&   Time.time - m_startTime > 0.2f ){
-                       m_MovementState = MovementState.Idle;
-                    }       
-
-                    // Debug.Log(m_Rigidbody.velocity.y);
-                    break;
-            }
-
-            // Debug.Log(m_MovementState);
-            
-
-        }
-
 
         public void SetFallingDown()
         {
-            gaviti = m_gravity.Evaluate(Time.deltaTime);
-            m_Rigidbody.velocity += gaviti * Physics.gravity.y * Vector3.up * Time.deltaTime;
+            if ((m_Rigidbody.velocity.y) < 0f)
+            {
+                gaviti = m_gravity.Evaluate(Time.deltaTime);
+                m_Rigidbody.velocity += gaviti * Physics.gravity.y * Vector3.up * Time.deltaTime;
+            }
+            // if (IsGounded() && Time.time - m_startTime > 0.2f)
+            // {
+            //     m_MovementState = MovementState.Idle;
+            // }
         }
+
 
         public void SetMovementState(MovementState movementState){
             m_MovementState = movementState;

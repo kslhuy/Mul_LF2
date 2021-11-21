@@ -2,27 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SkillsDescription", menuName = "SkillsDescription")]
-[System.Serializable]
-public class SkillsDescription : ScriptableObject
-{
-    [SerializeField] CharacterTypeEnum characterType;
+namespace LF2{
 
-    public TypeSkills TypeCombo; //The kind of the move
-    
-    public int damageAmount;
+    [CreateAssetMenu(fileName = "SkillsDescription", menuName = "SkillsDescription")]
+    [System.Serializable]
+    public class SkillsDescription : ScriptableObject
+    {
+        [SerializeField] CharacterTypeEnum characterType;
 
-    public int ManaCost;
+        public TypeSkills TypeAction; //The kind of the move
+        
+        public int damageAmount;
 
-    public float Range;
+        public int ManaCost;
 
-    public Vector3 velocity;
-    // public AnimationCurve animationCurve;
+        public float Range;
 
-    public float DurationSeconds;
+        public Vector3 velocity;
+        // public AnimationCurve animationCurve;
 
-    // [SerializeField] int ComboPriorty = 0; //the more complicated the move the higher the Priorty
+        public float DurationSeconds;
 
-
-    
+        // [SerializeField] int ComboPriorty = 0; //the more complicated the move the higher the Priorty
+        
+    }
 }
+

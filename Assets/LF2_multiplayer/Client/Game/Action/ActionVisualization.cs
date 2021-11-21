@@ -10,6 +10,7 @@ namespace LF2.Visual
     public class ActionVisualization
     {
         private List<ActionFX> m_PlayingActions = new List<ActionFX>();
+        
 
         /// <summary>
         /// Don't let anticipated actionFXs persist longer than this. This is a safeguard against scenarios
@@ -34,30 +35,67 @@ namespace LF2.Visual
             // }
 
             //do a reverse-walk so we can safely remove inside the loop.
-            for (int i = m_PlayingActions.Count - 1; i >= 0; --i)
-            {
-                var action = m_PlayingActions[i];
-                bool keepGoing = action.Anticipated || action.Update(); // only call Update() on actions that are past anticipation
-                bool expirable = action.Description.DurationSeconds > 0f; //non-positive value is a sentinel indicating the duration is indefinite.
-                bool timeExpired = expirable && action.TimeRunning >= action.Description.DurationSeconds;
-                bool timedOut = action.Anticipated && action.TimeRunning >= k_AnticipationTimeoutSeconds;
+
+
+            // for (int i = m_PlayingActions.Count - 1; i >= 0; --i)
+            // {
+            //     var action = m_PlayingActions[i];
+            //     bool keepGoing = action.Anticipated || action.Update(); // only call Update() on actions that are past anticipation , Trick of OR 
+            //     bool expirable = action.Description.DurationSeconds > 0f; //non-positive value is a sentinel indicating the duration is indefinite.
+            //     bool timeExpired = expirable && action.TimeRunning >= action.Description.DurationSeconds;
+            //     bool timedOut = action.Anticipated && action.TimeRunning >= k_AnticipationTimeoutSeconds;
+
+            //     // Debug.Log( timeExpired);
+            //     // Debug.Log(timedOut);
+            //     // Debug.Log(action.Anticipated);
                 
-                if (!keepGoing || timeExpired || timedOut)
-                {
-                    if (timedOut) { 
-                        action.Cancel(); 
-                        Debug.Log("CancelActionVisua");
-                        } //an anticipated action that timed out shouldn't get its End called. It is canceled instead. 
+            //     if (!keepGoing || timeExpired || timedOut)
+            //     {
+            //         if (timedOut) { 
+            //             action.Cancel(); 
+            //             Debug.Log("CancelActionVisua");
+            //             } //an anticipated action that timed out shouldn't get its End called. It is canceled instead. 
 
-                    else { 
-                        action.End();
-                        Debug.Log("EndActionVisua");
-                    } //an anticipated action that timed out shouldn't get its End called. It is canceled instead. 
- 
+            //         else { 
+            //             action.End();
+            //             Debug.Log("EndActionVisua");
+            //         } //an anticipated action that timed out shouldn't get its End called. It is canceled instead. 
+            //         m_PlayingActions.RemoveAt(i);
+            //     }
+            //     Debug.Log(m_PlayingActions.Count);
+            // }
 
-                    m_PlayingActions.RemoveAt(i);
-                }
+
+            /* HUY Code */
+            if ( m_PlayingActions.Count == 0){
+                return;
             }
+            var action = m_PlayingActions[0];
+            bool keepGoing = action.Anticipated || action.Update(); // only call Update() on actions that are past anticipation , Trick of OR 
+            bool expirable = action.Description.DurationSeconds > 0f; //non-positive value is a sentinel indicating the duration is indefinite.
+            bool timeExpired = expirable && action.TimeRunning >= action.Description.DurationSeconds;
+            bool timedOut = !action.Anticipated && action.TimeRunning >= k_AnticipationTimeoutSeconds;
+
+            // Debug.Log( timeExpired);
+            // Debug.Log(timedOut);
+            // Debug.Log(action.Anticipated);
+            
+            if (!keepGoing || timeExpired || timedOut)
+            {
+                if (timedOut) { 
+                    action.Cancel(); 
+                    Debug.Log("CancelActionVisua");
+                    } //an anticipated action that timed out shouldn't get its End called. It is canceled instead. 
+
+                else { 
+                    action.End();
+                    Debug.Log("EndActionVisua");
+                } 
+                m_PlayingActions.RemoveAt(0);
+            }
+            // Debug.Log(m_PlayingActions[0]);
+
+
         }
 
         //helper wrapper for a FindIndex call on m_PlayingActions. 
@@ -119,15 +157,29 @@ namespace LF2.Visual
         public void AnticipateAction(ref ActionRequestData data)
         {
             // if (!Parent.IsAnimating() && ActionFX.ShouldAnticipate(this, ref data))
-            
+            // if (m_PlayingActions.Count > 2) {return;}
             // HUY *9**************
+
             if ( ActionFX.ShouldAnticipate(this, ref data))
             {
-                var actionFX = ActionFX.MakeActionFX(ref data, Parent);
-                // Debug.Log(actionFX);
-                actionFX.AnticipateAction();
-                m_PlayingActions.Add(actionFX);
+                // if (m_ActionsPlayed.Count == 0 || data.ActionTypeEnum == m_){
+                //     m_ActionsPlayed[0] = ActionFX.MakeActionFX(ref data, Parent);  
+                //     m_PlayingActions[0] =  m_ActionsPlayed[0];
+                // }
+                // else{
+
+                // }
+                // var actionFX = ActionFX.MakeActionFX(ref data, Parent);                 
+                // if (m_PlayingActions.Count == 0){
+                //     m_PlayingActions.Add(actionFX);
+                //     actionFX.AnticipateAction();
+
+                // }else if(m_PlayingActions.Count == 1 && m_PlayingActions[0].WantToMoveNextAction(actionFX)){
+                //     m_PlayingActions[0] =  actionFX;
+                //     actionFX.AnticipateAction();
+                // }
             }
+            // Debug.Log(m_PlayingActions.Count );
         }
 
         public void PlayAction(ref ActionRequestData data)
@@ -135,14 +187,18 @@ namespace LF2.Visual
             var anticipatedActionIndex = FindAction(data.ActionTypeEnum, true);
 
             var actionFX = anticipatedActionIndex>=0 ? m_PlayingActions[anticipatedActionIndex] : ActionFX.MakeActionFX(ref data, Parent);
-            if (actionFX.Start())
-            {
-                m_PlayingActions.Add(actionFX);
-            }
-            else if (anticipatedActionIndex >= 0)
-            {
-                m_PlayingActions.RemoveAt(anticipatedActionIndex);
-            }
+            actionFX.Start();
+            // if (actionFX.Start())
+            // {
+            //     Debug.Log("call");
+            //     m_PlayingActions.Add(actionFX);
+            // }
+            // else if (anticipatedActionIndex >= 0)
+            // {
+            //     m_PlayingActions.RemoveAt(anticipatedActionIndex);
+            // }
+            // m_PlayingActions[0].Start();
+
         }
 
         public void CancelAllActions()
