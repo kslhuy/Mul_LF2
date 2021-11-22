@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58beba8069618df499690c32ca3bf74b, type: 3}
   m_Name: AttackNormal
   m_EditorClassIdentifier: 
-  characterType: 0
-  TypeCombo: 0
+  StateType: 5
   damageAmount: 0
   ManaCost: 0
   Range: 0
   velocity: {x: 0, y: 0, z: 0}
   DurationSeconds: 0
+  expirable: 0

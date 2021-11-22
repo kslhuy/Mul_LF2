@@ -78,9 +78,9 @@ namespace LF2.Client
             // ConfigureSkillIcon(m_Skill3, characterClass.Skill3);
         }
 
-        // private void ConfigureSkillIcon(Image iconSlot, ActionType type)
+        // private void ConfigureSkillIcon(Image iconSlot, StateType type)
         // {
-        //     if (type == ActionType.None)
+        //     if (type == StateType.None)
         //     {
         //         iconSlot.gameObject.SetActive(false);
         //     }

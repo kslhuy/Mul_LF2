@@ -14,11 +14,10 @@ namespace LF2.Client
 
     public class ClientInputSender : NetworkBehaviour {
         
-        #region Movement
+        #region Movement (Keyborad not importance)
             
-        public Vector2 RawMovementInput { get ; private set;}
+        public Vector2 RawMovementInput { get ; private set;} // For keyborad
 
-        #endregion
         // JUMP
         public bool JumpInput{get;private set;}
         [SerializeField] private float inputHoldTime = 0.2f;
@@ -36,13 +35,16 @@ namespace LF2.Client
         public bool AttackInput{get;private set;}
         public bool DefenseInput{get;private set;}
 
+        
+        #endregion
+
         //COMBO  
         // public KeyPress currentKeyPress{get;private set;}
         // public List<KeyPress> currentCombo = new List<KeyPress>();
         // public List<ComboAttack> avilableSkills;
     
 
-        public event Action<TypeSkills> ComboTrigger;
+        // public event Action<TypeSkills> ComboTrigger;
 
         ////// ********* NEW ****** ///
         private NetworkCharacterState m_NetworkCharacter;
@@ -52,7 +54,7 @@ namespace LF2.Client
         private struct ActionRequest
         {
             // public SkillTriggerStyle TriggerStyle;
-            public ActionType RequestedAction;
+            public StateType RequestedAction;
             public ulong TargetId;
         }
  
@@ -69,7 +71,7 @@ namespace LF2.Client
         /// <summary>
         /// This event fires at the time when an action request is sent to the server.
         /// </summary>
-        public Action<ActionRequestData> ActionInputEvent;
+        public Action<StateRequestData> ActionInputEvent;
         private int m_ActionRequestCount;
 
 
@@ -107,29 +109,29 @@ namespace LF2.Client
             // classAttackCombo.classAttackComboEvent += PerformCombo;
 
             // NGU , only need is run or not , dont need direction
-            var runLeftButton = GameObject.FindObjectOfType<RunLeftButton>().GetComponent<RunLeftButton>();            
-            var runRightButton = GameObject.FindObjectOfType<RunRightButton>().GetComponent<RunRightButton>();           
+            // var runLeftButton = GameObject.FindObjectOfType<RunLeftButton>().GetComponent<RunLeftButton>();            
+            // var runRightButton = GameObject.FindObjectOfType<RunRightButton>().GetComponent<RunRightButton>();           
 
-            runLeftButton.runLeftEvent += GoRun;
-            runRightButton.runRightEvent += GoRun;
+            // runLeftButton.runLeftEvent += GoRun;
+            // runRightButton.runRightEvent += GoRun;
 
         }
 
-        private void SendInput(ActionRequestData action)
+        private void SendInput(StateRequestData action)
         {
             ActionInputEvent?.Invoke(action);
             m_NetworkCharacter.RecvDoActionServerRPC(action);
         }
 
-        private void GoRun()
-        {
-            canRun = true;
-        }
+        // private void GoRun()
+        // {
+        //     canRun = true;
+        // }
 
-        private void PerformCombo(TypeSkills typeCombo)
-        {
-            ComboTrigger?.Invoke(typeCombo);
-        }
+        // private void PerformCombo(TypeSkills typeCombo)
+        // {
+        //     ComboTrigger?.Invoke(typeCombo);
+        // }
 
 
 
@@ -139,12 +141,10 @@ namespace LF2.Client
             
 
             RawMovementInput = context.ReadValue<Vector2>();
-            Debug.Log(RawMovementInput);
+            // Debug.Log(RawMovementInput);
             if (context.started){
-                // Debug.Log("OnMoveInput");
-                // RequestAction(ActionType.MoveGeneral);
+            
                 m_NetworkCharacter.SendCharacterInputServerRpc(RawMovementInput);
-
                 //Send to client 
                 ClientMoveEvent?.Invoke(RawMovementInput);
             }
@@ -176,13 +176,15 @@ namespace LF2.Client
                        
         }
 
+        #region KEyboard (Not importance)
+             
         public void OnJumpInput(InputAction.CallbackContext context){
             if (context.started){
                 JumpInput = true;
                 jumpInputStartTime = Time.time;
                 // IF some character can jump different with other , 
                 // Need to specifie in CharacterData.Skill or .Jump (specific)
-                RequestAction(ActionType.JumpGeneral);
+                RequestAction(StateType.Jump);
             }
 
         }
@@ -192,7 +194,7 @@ namespace LF2.Client
                 Debug.Log("OnAttackInput");
                 AttackInput = true;
                 // Same with Jump
-                RequestAction(ActionType.AttackGeneral);
+                RequestAction(StateType.Attack);
             }
         
         }
@@ -200,7 +202,7 @@ namespace LF2.Client
         public void OnDefenseInput(InputAction.CallbackContext context){
             if (context.started){
                 // DefenseInput = true;
-                RequestAction(ActionType.DefenseGeneral);
+                RequestAction(StateType.Defense);
             }
        
         }
@@ -213,28 +215,19 @@ namespace LF2.Client
         public void ResetRun(){
             canRun = false;
         }
+        #endregion
 
 
         /// <summary>
-        /// Request an action be performed. This will occur on the next FixedUpdate.
+        /// Request an State be performed. This will occur on the next FixedUpdate.
         /// </summary>
         /// <param name="action">the action you'd like to perform. </param>
+
+            // In the furture may be we can developp this feature
         /// <param name="triggerStyle">What input style triggered this action.</param>
-        public void RequestAction(ActionType action, ulong targetId = 0)
+        public void RequestAction(StateType action, ulong targetId = 0)
         {
-            // do not populate an action request unless said action is valid
-            if (action == ActionType.None)
-            {
-                return;
-            }
 
-            Assert.IsTrue(GameDataSource.Instance.ActionDataByType.ContainsKey(action),
-                $"Action {action} must be part of ActionData dictionary!");
-
-
-            // m_ActionRequests[0].RequestedAction = action;
-            // // m_ActionRequests.TriggerStyle = triggerStyle;
-            // m_ActionRequests[0].TargetId = targetId;
 
             if (m_ActionRequestCount < m_ActionRequests.Length)
             {
@@ -248,116 +241,34 @@ namespace LF2.Client
         }
 
         /// <summary>
-        /// Perform a skill in response to some input trigger. This is the common method to which all input-driven skill plays funnel.
+        /// Perform a skill in response to some input trigger. This is the common method to which ALL (Keyborad , UI ....) input-driven skill plays funnel.
         /// </summary>
         /// <param name="actionType">The action you want to play. Note that "Skill1" may be overriden contextually depending on the target.</param>
         /// <param name="triggerStyle">What sort of input triggered this skill?</param>
         /// <param name="targetId">(optional) Pass in a specific networkID to target for this action</param>
-        private void PerformSkill(ActionType actionType, ulong targetId = 0)
+        private void PerformSkill(StateType actionType, ulong targetId = 0)
         {
-            // Transform hitTransform = null;
+            // In that time we can extend data more 
+            // But now only StateType are send 
+            var data = new StateRequestData();
+            data.StateTypeEnum = actionType;
 
-            // if (targetId != 0)
-            // {
-            //     // if a targetId is given, try to find the object
-            //     NetworkObject targetNetObj;
-            //     if (NetworkSpawnManager.SpawnedObjects.TryGetValue(targetId, out targetNetObj))
-            //     {
-            //         hitTransform = targetNetObj.transform;
-            //     }
-            // }
-            // else
-            // {
-            //     // otherwise try to find an object under the input position
-            //     int numHits = 0;
-            //     if (triggerStyle == SkillTriggerStyle.MouseClick)
-            //     {
-            //         var ray = m_MainCamera.ScreenPointToRay(Input.mousePosition);
-            //         numHits = Physics.RaycastNonAlloc(ray, k_CachedHit, k_MouseInputRaycastDistance, k_ActionLayerMask);
-            //     }
+            SendInput(data);
 
-            //     int networkedHitIndex = -1;
-            //     for (int i = 0; i < numHits; i++)
-            //     {
-            //         if (k_CachedHit[i].transform.GetComponent<NetworkObject>())
-            //         {
-            //             networkedHitIndex = i;
-            //             break;
-            //         }
-            //     }
-
-            //     hitTransform = networkedHitIndex >= 0 ? k_CachedHit[networkedHitIndex].transform : null;
-            // }
-
-            if(actionType != ActionType.MoveGeneral )
-            {
-                // clicked on nothing... perform an "untargeted" attack on the spot they clicked on.
-                // (Different Actions will deal with this differently. For some, like archer arrows, this will fire an arrow
-                // in the desired direction. For others, like mage's bolts, this will fire a "miss" projectile at the spot clicked on.)
-
-                var data = new ActionRequestData();
-                PopulateSkillRequest( actionType, ref data);
-
-                SendInput(data);
-            }
         }
 
         private void FixedUpdate() {
    
-            // Debug.Log("ClientInputSender");
+            // It really make any sense to use for 
+            // So this code may be can change (I dont know)
             for (int i = 0; i < m_ActionRequestCount; ++i)
             {
-                // Debug.Log(m_ActionRequests);
-                var actionData = GameDataSource.Instance.ActionDataByType[m_ActionRequests[0].RequestedAction];
-                // if (actionData.ActionInput != null)
-                // {
-                // //     var skillPlayer = Instantiate(actionData.ActionInput);
-                // //     skillPlayer.Initiate(m_NetworkCharacter, actionData.ActionTypeEnum, SendInput, FinishSkill);
-                // //     m_CurrentSkillInput = skillPlayer;
-                // }
-                PerformSkill(actionData.ActionTypeEnum,  m_ActionRequests[0].TargetId); 
+                PerformSkill(m_ActionRequests[i].RequestedAction,  m_ActionRequests[0].TargetId); 
             }
             m_ActionRequestCount = 0;
         }
 
         
-        /// <summary>
-        /// Populates the ActionRequestData with additional information. The TargetIds of the action should already be set before calling this.
-        /// </summary>
-        /// <param name="hitPoint">The point in world space where the click ray hit the target.</param>
-        /// <param name="action">The action to perform (will be stamped on the resultData)</param>
-        /// <param name="resultData">The ActionRequestData to be filled out with additional information.</param>
-        private void PopulateSkillRequest(ActionType action, ref ActionRequestData resultData)
-        {
-            resultData.ActionTypeEnum = action;
-            var actionInfo = GameDataSource.Instance.ActionDataByType[action];
-
-            // //most skill types should implicitly close distance. The ones that don't are explicitly set to false in the following switch.
-            // resultData.ShouldClose = true;
-
-            // // figure out the Direction in case we want to send it
-            // Vector3 offset = hitPoint - transform.position;
-            // offset.y = 0;
-            // Vector3 direction = offset.normalized;
-
-            switch (actionInfo.Logic)
-            {
-                //for projectile logic, infer the direction from the click position.
-                case ActionLogic.LaunchProjectile:
-                    // resultData.Direction = direction;
-                    resultData.ShouldClose = false; //why? Because you could be lining up a shot, hoping to hit other people between you and your target. Moving you would be quite invasive.
-                    return;
-                case ActionLogic.Melee:
-                    // resultData.Direction = direction;
-                    return;
-        
-                case ActionLogic.DashAttack:
-                    // resultData.Position = hitPoint;
-                    return;
-                case ActionLogic.Jump:
-                    resultData.Direction = direction;
-                    return;
-            }
-        }
+       
     }
 }

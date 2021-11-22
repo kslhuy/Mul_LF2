@@ -7,7 +7,7 @@ namespace LF2
     /// </summary>
     public abstract class StateBase
     {
-        protected ActionRequestData m_Data;
+        protected CharacterTypeEnum CharacterType;
 
         /// <summary>
         /// Time when this Action was started (from Time.time) in seconds. Set by the ActionPlayer or ActionVisualization.
@@ -19,32 +19,41 @@ namespace LF2
         /// </summary>
         public float TimeRunning { get { return (Time.time - TimeStarted); } }
 
-        /// <summary>
-        /// RequestData we were instantiated with. Value should be treated as readonly.
-        /// </summary>
-        // public ref ActionRequestData Data => ref m_Data;
+        // /// <summary>
+        // /// RequestData we were instantiated with. Value should be treated as readonly.
+        // /// </summary>
+        // public ref StateRequestData Data => ref m_Data;
 
-        /// <summary>
-        /// Data Description for this action.
-        /// </summary>
-        // public SkillsDescription Description
-        // {
-        //     get
-        //     {
-        //         SkillsDescription result;
-        //         var found = GameDataSource.Instance.ActionDataByType.TryGetValue(Data.ActionTypeEnum, out result);
-        //         Debug.AssertFormat(found, "Tried to find ActionType %s but it was missing from GameDataSource!", Data.ActionTypeEnum);
+        // / <summary>
+        // / Data Description for this action.
+        // / </summary>
+        private CharacterSkillsDescription m_CharacterSkillsDescription
+        {
+            get
+            {
+                CharacterSkillsDescription result;
+                var found = GameDataSource.Instance.CharacterSkillDataByType.TryGetValue(CharacterType , out result);
+                // Debug.Log(result);
+                Debug.AssertFormat(found, "Tried to find StateType but it was missing from GameDataSource!");
+                return result;
+            }
+        }
 
-        //         return GameDataSource.Instance.ActionDataByType[Data.ActionTypeEnum];
-        //     }
-        // }
+        public virtual SkillsDescription SkillDescription(StateType stateType){
+            SkillsDescription value ;
+            var found = m_CharacterSkillsDescription.SkillDataByType.TryGetValue(stateType , out value);
+            Debug.AssertFormat(found, "Tried to find StateType %s but it was missing from GameDataSource!", stateType);
+            return value;
+                //           Debug.Log(result);
+                // Debug.AssertFormat(found, "Tried to find StateType %s but it was missing from GameDataSource!", Data.StateTypeEnum);
+        }
 
 
         public bool AnimationActionTrigger;
-        // public StateBase(ref ActionRequestData data)
-        // {
-        //     m_Data = data;
-        // }
+        public StateBase(CharacterTypeEnum characterType)
+        {
+            CharacterType = characterType;
+        }
 
     }
 

@@ -5,18 +5,19 @@ using UnityEngine;
 
 namespace LF2.Visual{
 
+
     public class PlayerStateMachineFX 
     {
-        public StateFX[] statesViz;
-        public StateType CurrentStateViz{ get ; private set;}
+        public StateFX[] statesViz; // All State we declare 
+        public StateType CurrentStateViz; // CurrentState visual we are 
 
-        public Dictionary<StateType , StateFX> m_logic;
+        // private List<StateType> m_StateExpirable; // 
 
 
         public PlayerStateMachineFX(){
             int numberStates = System.Enum.GetNames(typeof(StateType)).Length;
             statesViz =  new StateFX[numberStates];
-
+            // m_StateExpirable = new List<StateType>();
 
         }
 
@@ -33,26 +34,36 @@ namespace LF2.Visual{
             return statesViz[index];
         }
 
+        
+        /// Every frame:  Check current Animation to end the animation , 
+        // If recevie request form Server can active  LogicUpdate() of this State
         public void Update() {
-            GetState(CurrentStateViz)?.LogicUpdate();
+            // Check ALL State that have actual Action correspond ( See in Game Data Soucre Objet )
+            if(CurrentStateViz != StateType.Idle && CurrentStateViz != StateType.Move  ){
+                Debug.Log(CurrentStateViz + "Visual");
+                SkillsDescription skillsDescription =  GetState(CurrentStateViz).SkillDescription(CurrentStateViz); // Get All Skills Data of actual Player Charater we current play.
+                bool keepGoing = GetState(CurrentStateViz).Anticipated || GetState(CurrentStateViz).LogicUpdate(); // (Trick of || (or) )only call Update() on actions that are past anticipation , 
+                bool timeExpired =  GetState(CurrentStateViz).TimeRunning >= skillsDescription.DurationSeconds ;
+                // Check if this State Can End Naturally (Mean time Expired )
+                if (!keepGoing || timeExpired ){
+                    GetState(CurrentStateViz)?.End();
+                }
+            }
         }
 
-
+        // Switch to Another State , (we force to Change State , so that mean this State may be not End naturally , be interruped by some logic  ) 
         public void ChangeState(StateType newState){
             GetState(CurrentStateViz)?.Exit();
             CurrentStateViz = newState;
             GetState(CurrentStateViz)?.Enter();
         }
 
-
+        // Movement in Client 
         public void OnMoveInput(Vector2 position)
         {
             GetState(CurrentStateViz).SetMovementTarget(position);
         }
 
-        // public void AnticipateState(ActionRequestData data)
-        // {
-        //     GetState(CurrentStateViz).AnticipateState(data);
-        // }
+
     }
 }

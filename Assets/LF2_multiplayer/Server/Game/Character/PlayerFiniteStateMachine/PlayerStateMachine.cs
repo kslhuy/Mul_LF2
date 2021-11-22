@@ -30,6 +30,18 @@ namespace LF2.Server{
 
         public void Update() {
             GetState(CurrentState)?.LogicUpdate();
+            if(CurrentState != StateType.Idle && CurrentState != StateType.Move && CurrentState !=StateType.Land ){
+                SkillsDescription skillsDescription = GetState(CurrentState).SkillDescription(CurrentState);
+                if (skillsDescription.expirable ){
+                    var timeElapsed = Time.time - GetState(CurrentState).TimeStarted;
+                    bool timeExpired =  timeElapsed >= skillsDescription.DurationSeconds ;
+                    if (timeExpired){
+                        GetState(CurrentState)?.End();
+                    }
+                }
+            }
+
+
         }
 
 
@@ -42,6 +54,7 @@ namespace LF2.Server{
         public void SetMovementDirection(Vector2 targetPosition)
         {
             GetState(CurrentState).SetMovementTarget( targetPosition);
+
         }
 
         public void PhysicUpdate()
@@ -49,8 +62,8 @@ namespace LF2.Server{
             GetState(CurrentState)?.PhysicsUpdate();
         }
 
-        public void RequestChangeState(ActionRequestData data){
-            // Debug.Log(GetState(CurrentState));
+        public void RequestChangeState(StateRequestData data){
+            // Change for some state Eligible
             GetState(CurrentState).CanChangeState(data);
         }
 

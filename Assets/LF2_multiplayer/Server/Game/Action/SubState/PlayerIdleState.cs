@@ -4,22 +4,25 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace LF2.Server{
 
-
+    //In this State :  Player Stand Still  , do nothing , wait to request. 
+    //                  Can do some initilize (for Exemple reset number Jump)
     public class PlayerIdleState : State
     {
-        // bool isAttack;
-
-        public PlayerIdleState(PlayerState player, SetMovement setMovement) : base(player, setMovement)
+        public PlayerIdleState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
         {
         }
 
-        public override void CanChangeState(ActionRequestData actionRequestData)
+        // bool isAttack;
+        // float lastTimeAttack ;
+
+
+
+        public override void CanChangeState(StateRequestData actionRequestData)
         {
-            if (actionRequestData.ActionTypeEnum == ActionType.JumpGeneral){
+            if (actionRequestData.StateTypeEnum == StateType.Jump){
                 player.stateMachine.ChangeState(StateType.Jump);
             }
-            if (actionRequestData.ActionTypeEnum == ActionType.AttackGeneral){
-                m_ActionRequestData = actionRequestData;
+            else if (actionRequestData.StateTypeEnum == StateType.Attack){
                 player.stateMachine.ChangeState(StateType.Attack);
             } 
         }
@@ -33,12 +36,14 @@ namespace LF2.Server{
 
         }
 
-        // float lastTimeAttack ;
+     
 
 
         public override void Enter()
         {
             base.Enter();
+
+           
             // player.JumpState.ResetAmountOfJumpsLeft();
             // isAttack = false;
         }
@@ -80,7 +85,7 @@ namespace LF2.Server{
             //     stateMachine.ChangeState(player.DefenseState);
             // }
 
-            // Debug.Log("IdleState");
+            Debug.Log("IdleState");
 
 
         }

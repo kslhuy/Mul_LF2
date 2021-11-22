@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace LF2{
-
-    [CreateAssetMenu(fileName = "SkillsDescription", menuName = "SkillsDescription")]
+    /// <summary>
+    /// Data description of a single State of sigle Player (For exemple Attack of David), including the information to visualize it (animations etc), and the information
+    /// to play it back on the server.
+    /// </summary>
+    [CreateAssetMenu(fileName = "GameData/CharacterClass", menuName = "SkillsDescription")]
     [System.Serializable]
     public class SkillsDescription : ScriptableObject
     {
-        [SerializeField] CharacterTypeEnum characterType;
-
-        public TypeSkills TypeAction; //The kind of the move
+        public StateType StateType; //The kind of the move
         
         public int damageAmount;
 
@@ -22,6 +23,8 @@ namespace LF2{
         // public AnimationCurve animationCurve;
 
         public float DurationSeconds;
+
+        public bool expirable;
 
         // [SerializeField] int ComboPriorty = 0; //the more complicated the move the higher the Priorty
         

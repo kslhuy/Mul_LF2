@@ -3,25 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace LF2.Server{
-    
+    //in this State :  Player Actack  , can change to desied State follow some request. 
+    //                 It is not explicitly targeted (so can attack to all time ), but rather detects the foe (enemy ) that was hit with a physics check.
     public class PlayerAttackState : State
     {
         // private List<IDamageable> dectectedDamageable = new List<IDamageable>();
         // Transform attackTransform ;
         float attack12distance;
 
-        public PlayerAttackState(PlayerState player, SetMovement setMovement) : base(player, setMovement)
+        public PlayerAttackState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
         {
         }
 
-        public override void CanChangeState(ActionRequestData actionRequestData)
+        public override void CanChangeState(StateRequestData actionRequestData)
         {
            
         }
 
         public override void Enter()
-        {
+        {          
+            TimeStarted = Time.time;
+
+            m_ActionRequestData.StateTypeEnum = StateType.Attack;
             player.serverplayer.NetState.RecvDoActionClientRPC(m_ActionRequestData);
+          
         }
 
         public override StateType GetId()
@@ -31,40 +36,15 @@ namespace LF2.Server{
 
         public override void PhysicsUpdate()
         {
-            // switch (stateMachine.CurrentState.attackType)
-            // {
-            //     case AttackType.Attack1:
-            //         AttackToIdle();
-            //         break;
-            //     case AttackType.Attack3:
-            //         AttackToIdle();
-            //         break;
-            //     case AttackType.Attack4:
-            //         FlyAttackLand();
-            //         break;
-            //     case AttackType.Attack5:
-            //         FlyAttackLand();
-            //         break;
-            // }
-            AttackToIdle();
-        
+            Debug.Log("AttackState");
         }
 
-
-        private void AttackToIdle()
+        public override void End()
         {
-            // TODO 
-            // if (isAnimationFinished || isFinishedAnimation())
-            // {
-            //     isAnimationFinished = false;
-            //     stateMachine.ChangeState(player.IdleState);
-            // }
-
-            // bool expirable = action.Description.DurationSeconds > 0f; //non-positive value is a sentinel indicating the duration is indefinite.
-            // bool timeExpired = expirable && action.TimeRunning >= action.Description.DurationSeconds;
-            // bool timedOut = !action.Anticipated && action.TimeRunning >= k_AnticipationTimeoutSeconds;
-
+            player.stateMachine.ChangeState(StateType.Idle);
+          
         }
+
 
         private void FlyAttackLand()
         {

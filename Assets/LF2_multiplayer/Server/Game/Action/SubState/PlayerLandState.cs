@@ -5,11 +5,12 @@ namespace LF2.Server{
     public class PlayerLandState : State
     {
         float timenow;
-        public PlayerLandState(PlayerState player, SetMovement setMovement) : base(player, setMovement)
+
+        public PlayerLandState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
         {
         }
 
-        public override void CanChangeState(ActionRequestData actionRequestData)
+        public override void CanChangeState(StateRequestData actionRequestData)
         {
 
         }
@@ -17,6 +18,8 @@ namespace LF2.Server{
         public override void Enter()
         {
             base.Enter();
+            m_ActionRequestData.StateTypeEnum = StateType.Land;
+            player.serverplayer.NetState.RecvDoActionClientRPC(m_ActionRequestData);
             timenow = Time.time;
         }
 

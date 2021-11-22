@@ -485,11 +485,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LobbySeatConfigurations:
-  - Class: 2
-    CharacterArtIdx: 0
   - Class: 0
-    CharacterArtIdx: 1
+    CharacterArtIdx: 0
   - Class: 1
+    CharacterArtIdx: 1
+  - Class: 2
     CharacterArtIdx: 2
   - Class: 4
     CharacterArtIdx: 3

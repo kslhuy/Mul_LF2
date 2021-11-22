@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace LF2.Server{
-
+    
     public class PlayerState 
     {
         public ServerCharacter serverplayer;
@@ -24,11 +24,13 @@ namespace LF2.Server{
             stateMachine = new PlayerStateMachine();
             stateMachine.ChangeState(StateType.Idle);
 
-            stateMachine.RegisterState(new PlayerIdleState(this, serverplayer.SetMovement ));
-            stateMachine.RegisterState(new PlayerMoveState(this , serverplayer.SetMovement));
-            stateMachine.RegisterState(new PlayerAttackState(this, serverplayer.SetMovement ));
-            stateMachine.RegisterState(new PlayerJumpState(this , serverplayer.SetMovement));
-            stateMachine.RegisterState(new PlayerLandState(this , serverplayer.SetMovement));
+            CharacterTypeEnum chacterType =  serverplayer.NetState.CharacterType;
+            
+            stateMachine.RegisterState(new PlayerIdleState(chacterType, this ));
+            stateMachine.RegisterState(new PlayerMoveState(chacterType,this ));
+            stateMachine.RegisterState(new PlayerAttackState(chacterType,this ));
+            stateMachine.RegisterState(new PlayerJumpState(chacterType,this ));
+            stateMachine.RegisterState(new PlayerLandState(chacterType,this ));
 
         }
 
@@ -40,7 +42,7 @@ namespace LF2.Server{
             stateMachine.PhysicUpdate();
         }
 
-        public void RequestToState(ref ActionRequestData action)
+        public void RequestToState(ref StateRequestData action)
         {
             stateMachine.RequestChangeState(action);
         }
@@ -48,6 +50,7 @@ namespace LF2.Server{
         public void SetMovementDirection(Vector2 targetPosition)
         {
             stateMachine.SetMovementDirection(targetPosition);
+            
         }
     }
 }

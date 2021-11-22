@@ -14,7 +14,6 @@ namespace LF2
         [Tooltip("which character this data represents")]
         public CharacterTypeEnum CharacterType;
 
-        public List<SkillsDescription> SkillsDescription; //The kind of the move
 
         [Tooltip("Starting HP of this character class")]
         public IntVariable BaseHP;
@@ -34,35 +33,13 @@ namespace LF2
         [Tooltip("For players, this is the displayed \"class name\". (Not used for monsters)")]
         public string DisplayedName;
 
-        [Tooltip("For players, this is the class banner (when active). (Not used for monsters)")]
-        public Sprite ClassBannerLit;
+        // [Tooltip("For players, this is the class banner (when active). (Not used for monsters)")]
+        // public Sprite ClassBannerLit;
 
-        [Tooltip("For players, this is the class banner (when inactive). (Not used for monsters)")]
-        public Sprite ClassBannerUnlit;
+        // [Tooltip("For players, this is the class banner (when inactive). (Not used for monsters)")]
+        // public Sprite ClassBannerUnlit;
 
-        
-        private Dictionary<TypeSkills, SkillsDescription> m_SkillDataMap;
 
-        public  Dictionary<TypeSkills, SkillsDescription> SkillDataByType{
-            get
-                {
-                    if( m_SkillDataMap == null )
-                    {
-                        m_SkillDataMap = new Dictionary<TypeSkills, SkillsDescription>();
-                        // Hoi bi rac roi cach viet
-                        // co 1 list SkillsDescription o tren , lay tung cai 1 .
-                        foreach (SkillsDescription data in SkillsDescription)
-                        {
-                            if (m_SkillDataMap.ContainsKey(data.TypeAction))
-                            {
-                                throw new System.Exception($"Duplicate action definition detected: {data.TypeAction}");
-                            }
-                            m_SkillDataMap[data.TypeAction] = data;
-                        }
-                    }
-                    return m_SkillDataMap;
-                }
-        }
 
     }
 }

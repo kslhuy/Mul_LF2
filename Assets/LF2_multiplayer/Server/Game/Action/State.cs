@@ -3,32 +3,54 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace LF2.Server
 {
+
+
+    /// <summary>
+    /// The abstract parent class that all State derive from.
+    /// </summary>
+    /// <remarks>
+    /// The State System is a generalized mechanism for Characters to "do stuff" in a networked way. State
+    /// include everything from your basic character attack, to a fancy skill  Shot, 
+
+    /// For every StateType enum, there will be one specialization of this class.
+
+    ///
+    /// The flow for State is:
+    /// Initially: Enter()
+    /// Every frame:   LogicUpdate() + PhysicUpdate() (can be 1 of 2)
+    /// On shutdown: End() (end this State Naturelly) or Exit() (be interrupted by some logic (force to change State))
+    /// After End(): Almost time will Switch to Idle .  
+    ///
+
+    // / Note also that if Start() returns false, no other functions are called on the Action, not even End().
+    /// </remarks>
     public abstract class State : StateBase
     {
         protected PlayerState player;
 
-        protected Vector3 workSpace;
         protected MovementState currentMovementState;
         
-        protected  SetMovement setMovement;
 
-        protected ActionRequestData m_ActionRequestData;
+        protected StateRequestData m_ActionRequestData;
 
         public bool IsMove { get; private set; }
 
-        /// <summary>
-        /// constructor. The "data" parameter should not be retained after passing in to this method, because we take ownership of its internal memory.
-        /// </summary>
-        public State( PlayerState player , SetMovement setMovement) 
+        //Vector use for All Movement of player
+        protected Vector3 workSpace;
+
+
+
+        protected State(CharacterTypeEnum characterType, PlayerState player) : base(characterType)
         {
             this.player = player;
-            this.setMovement = setMovement;
-           
         }
 
+        
+
+        // Get the StateType of current State  
         public abstract StateType GetId();
         public virtual void Enter(){
-
+            TimeStarted = Time.time;
         }
         public virtual void LogicUpdate() {}
 
@@ -39,14 +61,20 @@ namespace LF2.Server
 
         }
 
-        public abstract void  CanChangeState(ActionRequestData actionRequestData);
+        // If we have a request so check if we can change to desired state 
+        public abstract void  CanChangeState(StateRequestData actionRequestData);
 
         public virtual void SetMovementTarget(Vector2 position)
         {
-            workSpace.Set(position.x , 0, position.y);
-             
+            workSpace.Set(position.x , 0, position.y);     
             // workSpace = position;
             IsMove  = position.x != 0 || position.y != 0;
         }
+
+        public virtual void End()
+        {
+        }
+
+
     }
 }
