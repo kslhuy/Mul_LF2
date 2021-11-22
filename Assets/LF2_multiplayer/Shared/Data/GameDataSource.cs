@@ -9,20 +9,14 @@ namespace LF2
         [SerializeField]
         private CharacterClass[] m_CharacterData;
 
-        [SerializeField] private CharacterSkillsDescription[] m_CharacterSkillsDescription; //The kind of the move
-
-
-        // [Tooltip("All ActionDescription data should be slotted in here")]
-        // [SerializeField]
-        // private ActionDescription[] m_ActionData;
-
+        [SerializeField] 
+        private CharacterSkillsDescription[] m_CharacterSkillsDescription; //All CharacterClass Skills 
 
 
         private Dictionary<CharacterTypeEnum, CharacterClass> m_CharacterDataMap;
         // Huy
         private Dictionary<CharacterTypeEnum, CharacterSkillsDescription> m_CharacterSkillDataMap;
 
-        // private Dictionary<ActionType, ActionDescription> m_ActionDataMap;
 
         /// <summary>
         /// static accessor for all GameData.
@@ -70,28 +64,7 @@ namespace LF2
             }
     }
 
-        // /// <summary>
-        // /// Contents of the ActionData list, indexed by ActionType for convenience.
-        // /// </summary>
-        // public Dictionary<ActionType, ActionDescription> ActionDataByType
-        // {
-        //     get
-        //     {
-        //         if( m_ActionDataMap == null )
-        //         {
-        //             m_ActionDataMap = new Dictionary<ActionType, ActionDescription>();
-        //             foreach (ActionDescription data in m_ActionData)
-        //             {
-        //                 if (m_ActionDataMap.ContainsKey(data.ActionTypeEnum))
-        //                 {
-        //                     throw new System.Exception($"Duplicate action definition detected: {data.ActionTypeEnum}");
-        //                 }
-        //                 m_ActionDataMap[data.ActionTypeEnum] = data;
-        //             }
-        //         }
-        //         return m_ActionDataMap;
-        //     }
-        // }
+
 
         private void Awake()
         {

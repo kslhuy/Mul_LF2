@@ -199,12 +199,12 @@ namespace LF2
         /// <summary>
         /// This event is raised on the server when an action request arrives
         /// </summary>
-        public event Action<ActionRequestData> DoActionEventServer;
+        public event Action<StateRequestData> DoActionEventServer;
 
         /// <summary>
         /// This event is raised on the client when an action is being played back.
         /// </summary>
-        public event Action<ActionRequestData> DoActionEventClient;
+        public event Action<StateRequestData> DoActionEventClient;
 
         /// <summary>
         /// This event is raised on the client when the active action FXs need to be cancelled (e.g. when the character has been stunned)
@@ -214,16 +214,17 @@ namespace LF2
         /// <summary>
         /// This event is raised on the client when active action FXs of a certain type need to be cancelled (e.g. when the Stealth action ends)
         /// </summary>
-        public event Action<ActionType> CancelActionsByTypeEventClient;
+        public event Action<StateType> CancelActionsByTypeEventClient;
 
         /// <summary>
         /// /// Server to Client RPC that broadcasts this action play to all clients.
         /// </summary>
         /// <param name="data"> Data about which action to play and its associated details. </param>
         [ClientRpc]
-        public void RecvDoActionClientRPC(ActionRequestData data)
+        public void RecvDoActionClientRPC(StateRequestData data)
         {
             DoActionEventClient?.Invoke(data);
+
         }
 
         [ClientRpc]
@@ -233,7 +234,7 @@ namespace LF2
         }
 
         [ClientRpc]
-        public void RecvCancelActionsByTypeClientRpc(ActionType action)
+        public void RecvCancelActionsByTypeClientRpc(StateType action)
         {
             CancelActionsByTypeEventClient?.Invoke(action);
         }
@@ -243,7 +244,7 @@ namespace LF2
         /// </summary>
         /// <param name="data">Data about which action to play and its associated details. </param>
         [ServerRpc]
-        public void RecvDoActionServerRPC(ActionRequestData data)
+        public void RecvDoActionServerRPC(StateRequestData data)
         {
             DoActionEventServer?.Invoke(data);
         }

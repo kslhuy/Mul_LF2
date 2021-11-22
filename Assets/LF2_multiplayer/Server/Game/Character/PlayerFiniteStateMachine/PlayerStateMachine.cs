@@ -30,9 +30,8 @@ namespace LF2.Server{
 
         public void Update() {
             GetState(CurrentState)?.LogicUpdate();
-            if(CurrentState != StateType.Idle || CurrentState != StateType.Move ){
+            if(CurrentState != StateType.Idle && CurrentState != StateType.Move && CurrentState !=StateType.Land ){
                 SkillsDescription skillsDescription = GetState(CurrentState).SkillDescription(CurrentState);
-                StateType now = CurrentState;
                 if (skillsDescription.expirable ){
                     var timeElapsed = Time.time - GetState(CurrentState).TimeStarted;
                     bool timeExpired =  timeElapsed >= skillsDescription.DurationSeconds ;
@@ -63,8 +62,8 @@ namespace LF2.Server{
             GetState(CurrentState)?.PhysicsUpdate();
         }
 
-        public void RequestChangeState(ActionRequestData data){
-            // Debug.Log(GetState(CurrentState));
+        public void RequestChangeState(StateRequestData data){
+            // Change for some state Eligible
             GetState(CurrentState).CanChangeState(data);
         }
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace LF2.Server{
-
+    
     public class PlayerState 
     {
         public ServerCharacter serverplayer;
@@ -25,7 +25,7 @@ namespace LF2.Server{
             stateMachine.ChangeState(StateType.Idle);
 
             CharacterTypeEnum chacterType =  serverplayer.NetState.CharacterType;
-            Debug.Log(chacterType);
+            
             stateMachine.RegisterState(new PlayerIdleState(chacterType, this ));
             stateMachine.RegisterState(new PlayerMoveState(chacterType,this ));
             stateMachine.RegisterState(new PlayerAttackState(chacterType,this ));
@@ -42,7 +42,7 @@ namespace LF2.Server{
             stateMachine.PhysicUpdate();
         }
 
-        public void RequestToState(ref ActionRequestData action)
+        public void RequestToState(ref StateRequestData action)
         {
             stateMachine.RequestChangeState(action);
         }

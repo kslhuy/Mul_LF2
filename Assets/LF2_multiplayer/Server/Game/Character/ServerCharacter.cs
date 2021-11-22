@@ -80,9 +80,9 @@ namespace LF2.Server
 
                 NetState.ApplyCharacterData();
 
-                // if (m_StartingAction != ActionType.None)
+                // if (m_StartingAction != StateType.None)
                 // {
-                //     var startingAction = new ActionRequestData() { ActionTypeEnum = m_StartingAction };
+                //     var startingAction = new StateRequestData() { StateTypeEnum = m_StartingAction };
                 //     PlayAction(ref startingAction);
                 // }
                 // m_statePlayer = State.NormalState;
@@ -103,7 +103,7 @@ namespace LF2.Server
         // /// <summary>
         // /// Play a sequence of actions!
         // /// </summary>
-        public void PlayAction(ref ActionRequestData action)
+        public void PlayAction(ref StateRequestData action)
         {
             //the character needs to be alive and not be state uncontrol =>  in order to be able to play actions
             if (NetState.LifeState == LifeState.Alive && !m_Movement.IsPerformingForcedMovement())
@@ -130,9 +130,9 @@ namespace LF2.Server
             }
         }
 
-        private void OnActionPlayRequest(ActionRequestData data)
+        private void OnActionPlayRequest(StateRequestData data)
         {
-            // Debug.Log("ActionRequestData");
+            // Debug.Log("StateRequestData");
             PlayAction(ref data);
 
         }

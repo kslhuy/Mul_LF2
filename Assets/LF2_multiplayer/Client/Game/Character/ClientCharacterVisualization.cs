@@ -22,36 +22,11 @@ namespace LF2.Visual
         [SerializeField]
         private VisualizationConfiguration m_VisualizationConfiguration;
         
-        // OLD MLAPI ****
-
-        // [SerializeField]
-        // TransformVariable m_RuntimeObjectsParent;
 
         /// <summary>
         /// Returns a reference to the active Animator for this visualization
         /// </summary>
         public Animator OurAnimator { get { return m_ClientVisualsAnimator; } }
-
-        /// <summary>
-        /// Returns the targeting-reticule prefab for this character visualization
-        /// </summary>
-        // public GameObject TargetReticulePrefab { get { return m_VisualizationConfiguration.TargetReticule; } }
-
-        /// <summary>
-        /// Returns the Material to plug into the reticule when the selected entity is hostile
-        /// </summary>
-        // public Material ReticuleHostileMat { get { return m_VisualizationConfiguration.ReticuleHostileMat; } }
-
-        /// <summary>
-        /// Returns the Material to plug into the reticule when the selected entity is friendly
-        /// </summary>
-        // public Material ReticuleFriendlyMat { get { return m_VisualizationConfiguration.ReticuleFriendlyMat; } }
-
-        // /// <summary>
-        // /// Returns our pseudo-Parent, the object that owns the visualization.
-        // /// (We don't have an actual transform parent because we're on a top-level GameObject.)
-        // /// </summary>
-        // public Transform Parent { get; private set; }
 
         public bool CanPerformActions { get { return m_NetState.CanPerformActions; } }
 
@@ -60,7 +35,6 @@ namespace LF2.Visual
 
         private PlayerStateFX m_statePlayerViz;
 
-        private const float k_MaxRotSpeed = 280;  //max angular speed at which we will rotate, in degrees/second.
 
         /// Player characters need to report health changes and chracter info to the PartyHUD
         // PartyHUD m_PartyHUD;
@@ -94,6 +68,7 @@ namespace LF2.Visual
             m_NetState.OnPerformHitReaction += OnPerformHitReaction;
             m_NetState.OnStopChargingUpClient += OnStoppedChargingUp;
             m_NetState.IsStealthy.OnValueChanged += OnStealthyChanged;
+            // Debug.Log(m_NetState.CharacterType);
 
             m_statePlayerViz = new PlayerStateFX( this,m_NetState.CharacterType);
 
@@ -131,7 +106,7 @@ namespace LF2.Visual
                 if (IsLocalPlayer)
                 {
                     //// ko co y nghia
-                    // ActionRequestData data = new ActionRequestData { ActionTypeEnum = ActionType.GeneralTarget };
+                    // StateRequestData data = new StateRequestData { StateTypeEnum = StateType.GeneralTarget };
                     // m_ActionViz.PlayAction(ref data);
 
 
@@ -171,33 +146,25 @@ namespace LF2.Visual
             }
         }
 
-        private void OnActionInput(ActionRequestData data)
+        // Do anticipate State : Only play Animation , not change state
+        private void OnActionInput(StateRequestData data)
         {
             // m_ActionViz.AnticipateAction(ref data);
             m_statePlayerViz.AnticipateState(ref data);
         }
 
         
-        private void PerformActionFX(ActionRequestData data)
+        private void PerformActionFX(StateRequestData data)
         {
             // That event do actual State from Server .
-            // m_ActionViz.PlayAction(ref data);
             m_statePlayerViz.PlayState(ref data);
         }
 
-
+        // Play Animation and change state between Idle and Move State Visual
         private void OnMoveInput(Vector2 position)
         {
-            // if (m_NetState.MovementStatus.Value == MovementStatus.Idle && position != Vector2.zero){
-            //             // OurAnimator.Play(m_VisualizationConfiguration.AnticipateMoveTriggerID);
-            //     OurAnimator.Play("Walk_anim");
-            // }
-            // else if (m_NetState.MovementStatus.Value == MovementStatus.Move && position == Vector2.zero){
-            //     OurAnimator.Play("Idle_anim");
-            // }
+
             m_statePlayerViz.OnMoveInput(position);
-
-
         }
 
 
@@ -227,17 +194,14 @@ namespace LF2.Visual
 
         private void CancelAllActionFXs()
         {
-            // m_ActionViz.CancelAllActions();
         }
 
-        private void CancelActionFXByType(ActionType actionType)
+        private void CancelActionFXByType(StateType actionType)
         {
-            // m_ActionViz.CancelAllActionsOfType(actionType);
         }
 
         private void OnStoppedChargingUp(float finalChargeUpPercentage)
         {
-            // m_ActionViz.OnStoppedChargingUp(finalChargeUpPercentage);
         }
 
         // private void OnLifeStateChanged(LifeState previousValue, LifeState newValue)
@@ -297,10 +261,9 @@ namespace LF2.Visual
         void Update()
         {
             m_statePlayerViz.Update();
-
-            
         }
 
+        // Huy : Not use Yet        
         public void OnAnimEvent(string id)
         {
             //if you are trying to figure out who calls this method, it's "magic". The Unity Animation Event system takes method names as strings,

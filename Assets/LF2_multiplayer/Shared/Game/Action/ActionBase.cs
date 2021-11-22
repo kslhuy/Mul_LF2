@@ -7,7 +7,7 @@
 //     /// </summary>
 //     public abstract class ActionBase
 //     {
-//         protected ActionRequestData m_Data;
+//         protected StateRequestData m_Data;
 
 //         /// <summary>
 //         /// Time when this Action was started (from Time.time) in seconds. Set by the ActionPlayer or ActionVisualization.
@@ -22,7 +22,7 @@
 //         /// <summary>
 //         /// RequestData we were instantiated with. Value should be treated as readonly.
 //         /// </summary>
-//         public ref ActionRequestData Data => ref m_Data;
+//         public ref StateRequestData Data => ref m_Data;
 
 //         /// <summary>
 //         /// Data Description for this action.
@@ -32,16 +32,16 @@
 //             get
 //             {
 //                 ActionDescription result;
-//                 var found = GameDataSource.Instance.ActionDataByType.TryGetValue(Data.ActionTypeEnum, out result);
-//                 Debug.AssertFormat(found, "Tried to find ActionType %s but it was missing from GameDataSource!", Data.ActionTypeEnum);
+//                 var found = GameDataSource.Instance.ActionDataByType.TryGetValue(Data.StateTypeEnum, out result);
+//                 Debug.AssertFormat(found, "Tried to find StateType %s but it was missing from GameDataSource!", Data.StateTypeEnum);
 
-//                 return GameDataSource.Instance.ActionDataByType[Data.ActionTypeEnum];
+//                 return GameDataSource.Instance.ActionDataByType[Data.StateTypeEnum];
 //             }
 //         }
 
 
 //         public bool AnimationActionTrigger;
-//         public ActionBase(ref ActionRequestData data)
+//         public ActionBase(ref StateRequestData data)
 //         {
 //             m_Data = data;
 //         }

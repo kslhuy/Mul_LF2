@@ -32,9 +32,9 @@ namespace LF2.Server{
 
   
 
-        public override void CanChangeState(ActionRequestData actionRequestData)
+        public override void CanChangeState(StateRequestData actionRequestData)
         {
-            if (actionRequestData.ActionTypeEnum == ActionType.JumpGeneral){
+            if (actionRequestData.StateTypeEnum == StateType.Jump){
                 player.stateMachine.ChangeState(StateType.Jump);
             }
 

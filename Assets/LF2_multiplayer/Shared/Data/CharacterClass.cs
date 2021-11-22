@@ -33,11 +33,11 @@ namespace LF2
         [Tooltip("For players, this is the displayed \"class name\". (Not used for monsters)")]
         public string DisplayedName;
 
-        [Tooltip("For players, this is the class banner (when active). (Not used for monsters)")]
-        public Sprite ClassBannerLit;
+        // [Tooltip("For players, this is the class banner (when active). (Not used for monsters)")]
+        // public Sprite ClassBannerLit;
 
-        [Tooltip("For players, this is the class banner (when inactive). (Not used for monsters)")]
-        public Sprite ClassBannerUnlit;
+        // [Tooltip("For players, this is the class banner (when inactive). (Not used for monsters)")]
+        // public Sprite ClassBannerUnlit;
 
 
 

@@ -7,35 +7,6 @@ namespace LF2
     /// <summary>
     /// List of all Actions supported in the game.
     /// </summary>
-    public enum ActionType
-    {
-        None,
-
-        AttackGeneral,
-
-        JumpGeneral,
-
-        // MoveGeneral,
-
-        DefenseGeneral,
-
-        // Land,
-
-        // // DDA
-        // DavidDDA,
-        // DeepDDA,
-        // // DDJ
-        // DavidDDJ,
-        // DeepDDJ,
-        // // DUA
-        // DavidDUA,
-        // DeepDUA,
-
-        // // DUJ
-        // DavidDUJ,
-        // DeepDUJ,
-        
-    }
 
 
     /// <summary>
@@ -72,9 +43,9 @@ namespace LF2
     /// the Action gets played, and also what gets sent server->client to broadcast the action event. Note that the OUTCOMES of the action effect
     /// don't ride along with this object when it is broadcast to clients; that information is sync'd separately, usually by NetworkVariables.
     /// </summary>
-    public struct ActionRequestData : INetworkSerializable
+    public struct StateRequestData : INetworkSerializable
     {
-        public ActionType ActionTypeEnum;      //the action to play.
+        public StateType StateTypeEnum;      //the State to play.
         public Vector3 Position;           //center position of skill, e.g. "ground zero" of a fireball skill.
         public Vector3 Direction;          //direction of skill, if not inferrable from the character's current facing.
         public ulong[] TargetIds;          //NetworkObjectIds of targets, or null if untargeted.
@@ -100,11 +71,11 @@ namespace LF2
         }
 
         /// <summary>
-        /// Returns true if the ActionRequestDatas are "functionally equivalent" (not including their Queueing or Closing properties).
+        /// Returns true if the StateRequestDatas are "functionally equivalent" (not including their Queueing or Closing properties).
         /// </summary>
-        public bool Compare(ref ActionRequestData rhs)
+        public bool Compare(ref StateRequestData rhs)
         {
-            bool scalarParamsEqual = (ActionTypeEnum, Position, Direction, Amount) == (rhs.ActionTypeEnum, rhs.Position, rhs.Direction, rhs.Amount);
+            bool scalarParamsEqual = (StateTypeEnum, Position, Direction, Amount) == (rhs.StateTypeEnum, rhs.Position, rhs.Direction, rhs.Amount);
             if (!scalarParamsEqual) { return false; }
 
             if (TargetIds == rhs.TargetIds) { return true; } //covers case of both being null.
@@ -141,7 +112,7 @@ namespace LF2
                 flags = GetPackFlags();
             }
 
-            serializer.Serialize(ref ActionTypeEnum);
+            serializer.Serialize(ref StateTypeEnum);
             serializer.Serialize(ref flags);
 
             if (serializer.IsReading)

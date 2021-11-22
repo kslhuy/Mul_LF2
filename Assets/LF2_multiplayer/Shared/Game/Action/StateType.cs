@@ -6,6 +6,8 @@ namespace LF2{
         Run,
         Jump,
         Land,
+        Defense,
         Attack,
+        AttackJump1,
     }
 }

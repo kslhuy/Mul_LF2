@@ -136,7 +136,6 @@
      <Compile Include="Assets\_\Stuff\CodeMonkey\Utils\FunctionTimer.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\UI\UICharSelectClassInfoBox.cs" />
      <Compile Include="Assets\Images\Deep\Deep Movement\PlayerStates\Deep\ComboState\DeepDDAstate.cs" />
-     <Compile Include="Assets\Scritp\Skill_data\SkillsData.cs" />
      <Compile Include="Assets\Images\David\NewSys\DavidAI.cs" />
      <Compile Include="Assets\Images\Deep\Deep Movement\Input\PlayerTouchControl.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\UI\CharSelect\UICharSelectPlayerSeat.cs" />
@@ -158,11 +157,13 @@
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SubState\DieState.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Character\ServerCharacterMovement.cs" />
      <Compile Include="Assets\Images\Deep\Deep Movement\UI\Button\JumpButton.cs" />
+     <Compile Include="Assets\Scritp\Skill_data\CharacterSkillsDescription.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\ScriptableObjects\VisualizationConfiguration.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Game\Character\PlayerFinitState\PlayerStateFX.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Character\SetMovement.cs" />
      <Compile Include="Assets\Images\Dennis\State Machine\State\ERunState.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\Data\CharacterClass.cs" />
+     <Compile Include="Assets\LF2_multiplayer\Client\Game\Action\SubStateFX\PlayerLandStateFX.cs" />
      <Compile Include="Assets\Images\Deep\Deep Movement\Interface\IDamageable.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\Game\Entity\INetMovement.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SubState\Attack\AttackType.cs" />
@@ -207,8 +208,6 @@
      <Compile Include="Assets\Images\Deep\Deep Movement\Core\Core.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Net\DisconnectReason.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\Game\State\CharSelectData.cs" />
-     <Compile Include="Assets\LF2_multiplayer\Client\Game\Action\SubStateFX\PlayerLandStateFX.cs" />
-     <Compile Include="Assets\Scritp\Skill_data\CharacterSkillsDescription.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />

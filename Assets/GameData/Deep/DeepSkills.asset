@@ -15,3 +15,5 @@ MonoBehaviour:
   CharacterType: 0
   SkillsDescription:
   - {fileID: 11400000, guid: 78e7c5658d565c1439ebcf347ab36582, type: 2}
+  - {fileID: 11400000, guid: de15a9ae1be32424d89b5b771b05c3a5, type: 2}
+  - {fileID: 11400000, guid: e8bcf76a53095fc43a69f8cb78f6047d, type: 2}

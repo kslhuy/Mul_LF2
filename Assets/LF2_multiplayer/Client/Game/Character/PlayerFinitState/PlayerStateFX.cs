@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace LF2.Visual{
 
+    /// <summary>
+    /// This is a companion class to ClientCharacterVisualization that is specifically responsible for visualizing State. 
+    /// </summary>
     public class PlayerStateFX
     {
 
@@ -23,36 +26,25 @@ namespace LF2.Visual{
             stateMachineViz.RegisterState(new PlayerAttackStateFX(characterType,this));
             stateMachineViz.RegisterState(new PlayerLandStateFX(characterType,this));
 
-            
+            // Intiliazie State
             stateMachineViz.ChangeState(StateType.Idle);
 
         }
 
-        protected bool isAnimationFinished;
 
-        protected float startTime;
-
-        
-        public PlayerStateFX(  ){
-
-        }
 
         public void Update() {
             stateMachineViz.Update();
         }
 
-        // public void RequestToState(ref ActionRequestData action)
-        // {
-        //     stateMachine.RequestChangeState(action);
-        // }
-
-
-        public void AnticipateState(ref ActionRequestData data)
+        // Aticipate State in CLient , Just run Animation , So not run Update () 
+        public void AnticipateState(ref StateRequestData data)
         {
             stateMachineViz.GetState(stateMachineViz.CurrentStateViz).AnticipateState(data);
         }
 
-        public void PlayState(ref ActionRequestData data)
+        // Play correct State that sent by Server
+        public void PlayState(ref StateRequestData data)
         {
             stateMachineViz.GetState(stateMachineViz.CurrentStateViz).Enter();
         }

@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace LF2.Server{
 
-
+    //In this State :  Player Stand Still  , do nothing , wait to request. 
+    //                  Can do some initilize (for Exemple reset number Jump)
     public class PlayerIdleState : State
     {
         public PlayerIdleState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
@@ -12,16 +13,16 @@ namespace LF2.Server{
         }
 
         // bool isAttack;
+        // float lastTimeAttack ;
 
 
 
-        public override void CanChangeState(ActionRequestData actionRequestData)
+        public override void CanChangeState(StateRequestData actionRequestData)
         {
-            if (actionRequestData.ActionTypeEnum == ActionType.JumpGeneral){
+            if (actionRequestData.StateTypeEnum == StateType.Jump){
                 player.stateMachine.ChangeState(StateType.Jump);
             }
-            if (actionRequestData.ActionTypeEnum == ActionType.AttackGeneral){
-                m_ActionRequestData = actionRequestData;
+            else if (actionRequestData.StateTypeEnum == StateType.Attack){
                 player.stateMachine.ChangeState(StateType.Attack);
             } 
         }
@@ -35,12 +36,14 @@ namespace LF2.Server{
 
         }
 
-        // float lastTimeAttack ;
+     
 
 
         public override void Enter()
         {
             base.Enter();
+
+           
             // player.JumpState.ResetAmountOfJumpsLeft();
             // isAttack = false;
         }

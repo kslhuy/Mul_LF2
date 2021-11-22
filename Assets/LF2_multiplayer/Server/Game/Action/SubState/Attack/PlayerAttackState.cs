@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace LF2.Server{
-    
+    //in this State :  Player Actack  , can change to desied State follow some request. 
+    //                 It is not explicitly targeted (so can attack to all time ), but rather detects the foe (enemy ) that was hit with a physics check.
     public class PlayerAttackState : State
     {
         // private List<IDamageable> dectectedDamageable = new List<IDamageable>();
@@ -14,13 +15,16 @@ namespace LF2.Server{
         {
         }
 
-        public override void CanChangeState(ActionRequestData actionRequestData)
+        public override void CanChangeState(StateRequestData actionRequestData)
         {
            
         }
 
         public override void Enter()
-        {
+        {          
+            TimeStarted = Time.time;
+
+            m_ActionRequestData.StateTypeEnum = StateType.Attack;
             player.serverplayer.NetState.RecvDoActionClientRPC(m_ActionRequestData);
           
         }
@@ -32,23 +36,7 @@ namespace LF2.Server{
 
         public override void PhysicsUpdate()
         {
-            // switch (stateMachine.CurrentState.attackType)
-            // {
-            //     case AttackType.Attack1:
-            //         AttackToIdle();
-            //         break;
-            //     case AttackType.Attack3:
-            //         AttackToIdle();
-            //         break;
-            //     case AttackType.Attack4:
-            //         FlyAttackLand();
-            //         break;
-            //     case AttackType.Attack5:
-            //         FlyAttackLand();
-            //         break;
-            // }
             Debug.Log("AttackState");
-        
         }
 
         public override void End()

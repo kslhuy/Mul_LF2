@@ -22,7 +22,7 @@ namespace LF2
         // /// <summary>
         // /// RequestData we were instantiated with. Value should be treated as readonly.
         // /// </summary>
-        // public ref ActionRequestData Data => ref m_Data;
+        // public ref StateRequestData Data => ref m_Data;
 
         // / <summary>
         // / Data Description for this action.
@@ -33,7 +33,8 @@ namespace LF2
             {
                 CharacterSkillsDescription result;
                 var found = GameDataSource.Instance.CharacterSkillDataByType.TryGetValue(CharacterType , out result);
-                Debug.AssertFormat(found, "Tried to find ActionType but it was missing from GameDataSource!");
+                // Debug.Log(result);
+                Debug.AssertFormat(found, "Tried to find StateType but it was missing from GameDataSource!");
                 return result;
             }
         }
@@ -41,10 +42,10 @@ namespace LF2
         public virtual SkillsDescription SkillDescription(StateType stateType){
             SkillsDescription value ;
             var found = m_CharacterSkillsDescription.SkillDataByType.TryGetValue(stateType , out value);
-            Debug.AssertFormat(found, "Tried to find ActionType %s but it was missing from GameDataSource!", stateType);
+            Debug.AssertFormat(found, "Tried to find StateType %s but it was missing from GameDataSource!", stateType);
             return value;
                 //           Debug.Log(result);
-                // Debug.AssertFormat(found, "Tried to find ActionType %s but it was missing from GameDataSource!", Data.ActionTypeEnum);
+                // Debug.AssertFormat(found, "Tried to find StateType %s but it was missing from GameDataSource!", Data.StateTypeEnum);
         }
 
 

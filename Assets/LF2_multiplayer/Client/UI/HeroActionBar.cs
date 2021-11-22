@@ -158,7 +158,7 @@ namespace LF2.Visual
                 AttackPressed = true;
                 AttackPressedStartTime = Time.time;
                 // send input to begin the action associated with this button
-                m_InputSender.RequestAction(ActionType.AttackGeneral);
+                m_InputSender.RequestAction(StateType.Attack);
             }
         }
 
@@ -174,7 +174,7 @@ namespace LF2.Visual
                 JumpPressed = true;
                 JumpPressedStartTime = Time.time;
                 // send input to begin the action associated with this button
-                m_InputSender.RequestAction(ActionType.JumpGeneral);
+                m_InputSender.RequestAction(StateType.Jump);
             }
         }
 
@@ -190,7 +190,7 @@ namespace LF2.Visual
                 DefensePressed = true;
                 DefensePressedStartTime = Time.time;
                 // send input to begin the action associated with this button
-                m_InputSender.RequestAction(ActionType.DefenseGeneral);
+                m_InputSender.RequestAction(StateType.Defense);
             }
         }
 
@@ -199,7 +199,7 @@ namespace LF2.Visual
         void JoystickDrag(Vector2 position)
         {
 
-            // send input to begin the action associated with this button
+            // send position to begin the move 
             m_InputSender.OnMoveInputUI(position);
         }
 

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace LF2{
+    /// <summary>
+    /// Data representation ALL skills of a Character 
+    /// </summary>
 
     [CreateAssetMenu(fileName = "GameData/CharacterClass", menuName = "CharacterSkillsDescription")]
     [System.Serializable]
@@ -11,23 +14,6 @@ namespace LF2{
         public CharacterTypeEnum CharacterType;
 
         public List<SkillsDescription> SkillsDescription; //The kind of the move
-
-
-        // public StateType StateType; //The kind of the move
-        
-        // public int damageAmount;
-
-        // public int ManaCost;
-
-        // public float Range;
-
-        // public Vector3 velocity;
-        // // public AnimationCurve animationCurve;
-
-        // public float DurationSeconds;
-
-        // // [SerializeField] int ComboPriorty = 0; //the more complicated the move the higher the Priorty
-        
 
                 
         private Dictionary<StateType, SkillsDescription> m_SkillDataMap;

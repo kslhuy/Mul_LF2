@@ -8,8 +8,15 @@ namespace LF2.Visual{
     {
         private int amountOfJumpLeft ;
 
-        public PlayerJumpStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX) : base(characterType, m_PlayerFX)
+        public PlayerJumpStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX ) : base(characterType, m_PlayerFX)
         {
+        }
+
+        public override void AnticipateState(StateRequestData data)
+        {
+            if (data.StateTypeEnum == StateType.Attack){
+                m_PlayerFX.stateMachineViz.GetState(StateType.AttackJump1).PlayAnim(data.StateTypeEnum);
+            }
         }
 
         public override void Enter()
@@ -17,13 +24,14 @@ namespace LF2.Visual{
             base.Enter();
             if( !Anticipated)
             {
-                PlayAnim();
+                PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz);
             }
             amountOfJumpLeft--;
          }
 
-        private void PlayAnim()
+        public override void PlayAnim(StateType currentState)
         {
+            base.PlayAnim(currentState);
             m_PlayerFX.m_ClientVisual.OurAnimator.Play("Jump_anim");
         }
 
@@ -43,13 +51,10 @@ namespace LF2.Visual{
             return StateType.Jump;
         }
 
-        public override void LogicUpdate() {
+        public override bool LogicUpdate() {
             Debug.Log("JumpStateVisual");
+            return true;
         }
 
-        // public override void CanChangeState(ActionRequestData actionRequestData)
-        // {
-            
-        // }
     }
 }

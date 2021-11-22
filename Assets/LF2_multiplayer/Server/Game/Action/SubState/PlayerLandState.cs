@@ -10,7 +10,7 @@ namespace LF2.Server{
         {
         }
 
-        public override void CanChangeState(ActionRequestData actionRequestData)
+        public override void CanChangeState(StateRequestData actionRequestData)
         {
 
         }
@@ -18,6 +18,8 @@ namespace LF2.Server{
         public override void Enter()
         {
             base.Enter();
+            m_ActionRequestData.StateTypeEnum = StateType.Land;
+            player.serverplayer.NetState.RecvDoActionClientRPC(m_ActionRequestData);
             timenow = Time.time;
         }
 
