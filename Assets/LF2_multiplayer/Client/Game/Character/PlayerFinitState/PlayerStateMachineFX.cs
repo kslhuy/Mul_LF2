@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace LF2.Visual{
-    
+
+
     public class PlayerStateMachineFX 
     {
         public StateFX[] statesViz; // All State we declare 
@@ -33,10 +34,13 @@ namespace LF2.Visual{
             return statesViz[index];
         }
 
+        
+        /// Every frame:  Check current Animation to end the animation , 
+        // If recevie request form Server can active  LogicUpdate() of this State
         public void Update() {
             // Check ALL State that have actual Action correspond ( See in Game Data Soucre Objet )
-            if(CurrentStateViz != StateType.Idle && CurrentStateViz != StateType.Move && CurrentStateViz != StateType.Land ){
-                
+            if(CurrentStateViz != StateType.Idle && CurrentStateViz != StateType.Move  ){
+                Debug.Log(CurrentStateViz + "Visual");
                 SkillsDescription skillsDescription =  GetState(CurrentStateViz).SkillDescription(CurrentStateViz); // Get All Skills Data of actual Player Charater we current play.
                 bool keepGoing = GetState(CurrentStateViz).Anticipated || GetState(CurrentStateViz).LogicUpdate(); // (Trick of || (or) )only call Update() on actions that are past anticipation , 
                 bool timeExpired =  GetState(CurrentStateViz).TimeRunning >= skillsDescription.DurationSeconds ;

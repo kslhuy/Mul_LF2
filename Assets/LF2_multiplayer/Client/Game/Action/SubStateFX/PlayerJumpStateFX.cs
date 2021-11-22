@@ -40,6 +40,10 @@ namespace LF2.Visual{
                 return true;
             }else return false;
         }
+
+        // public override void End(){
+        //     m_PlayerFX.stateMachineViz.ChangeState(StateType.Land);
+        // }
         
 
         // public void ResetAmountOfJumpsLeft()=> amountOfJumpLeft = playerData.amountOfJumpLeft;

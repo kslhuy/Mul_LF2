@@ -7,6 +7,14 @@ namespace LF2.Visual{
 
     /// <summary>
     /// This is a companion class to ClientCharacterVisualization that is specifically responsible for visualizing State. 
+
+    //     
+    /// The flow for Visual is:
+    /// Initially: Aniticipate() only play action 
+    /// if recevie signal from Server , call PlayState() to active  LogicUpdate() + PhysicUpdate() 
+  
+
+
     /// </summary>
     public class PlayerStateFX
     {
@@ -43,10 +51,10 @@ namespace LF2.Visual{
             stateMachineViz.GetState(stateMachineViz.CurrentStateViz).AnticipateState(data);
         }
 
-        // Play correct State that sent by Server
+        // Play correct State that sent by Server 
         public void PlayState(ref StateRequestData data)
         {
-            stateMachineViz.GetState(stateMachineViz.CurrentStateViz).Enter();
+            stateMachineViz.ChangeState(data.StateTypeEnum);
         }
 
 
