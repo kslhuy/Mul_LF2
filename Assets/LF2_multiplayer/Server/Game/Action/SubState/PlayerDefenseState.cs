@@ -1,42 +1,53 @@
-// using System.Collections;
-// using System.Collections.Generic;
-// using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-// public class PlayerDefenseState : PlayerState
-// {
-//     private int xInput;
+namespace LF2.Server{
 
-//     public PlayerDefenseState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, int hashID) : base(player, stateMachine, playerData, hashID)
-//     {
-//     }
+    public class PlayerDefenseState : State
+    {
+        private int xInput;
+
+        public PlayerDefenseState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
+        {
+        }
+
+        public override void CanChangeState(StateRequestData actionRequestData)
+        {
+            if (actionRequestData.StateTypeEnum == StateType.DDA){
+                player.stateMachine.ChangeState(actionRequestData.StateTypeEnum);
+            }
+        }
+
+        public override void Enter()
+        {
+            base.Enter();
+
+            m_Data.StateTypeEnum = StateType.Defense;
+            player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
+        }
+
+        public override void Exit()
+        {
+            base.Exit();
+        }
+
+        public override void End()
+        {
+            player.stateMachine.ChangeState(StateType.Idle);
+
+        }
+
+        public override StateType GetId()
+        {
+            return StateType.Defense;
+        }
+
+        public override void PhysicsUpdate()
+        {
+            base.PhysicsUpdate();
+        }
 
 
-
-//     public override void Enter()
-//     {
-//         base.Enter();
-//     }
-
-//     public override void Exit()
-//     {
-//         base.Exit();
-//     }
-
-//     public override void LogicUpdate()
-//     {
-//         base.LogicUpdate();
-//         xInput = Mathf.RoundToInt(player.InputHandler.RawMovementInput.x);
-//         core.SetMovement.CheckIfShouldFlip(xInput);
-//         if (isFinishedAnimation()){
-//             stateMachine.ChangeState(player.IdleState);
-//         }
-
-//     }
-
-//     public override void PhysicsUpdate()
-//     {
-//         base.PhysicsUpdate();
-//     }
-
-
-// }
+    }
+}

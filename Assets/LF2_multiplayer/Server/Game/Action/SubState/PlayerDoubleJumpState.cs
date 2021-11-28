@@ -1,61 +1,39 @@
-// using System.Collections;
-// using System.Collections.Generic;
-// using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-// public class PlayerDoubleJumpState : PlayerState
-// {
-//     private int xInput;
+namespace LF2.Server
+{
+    public class PlayerDoubleJumpState : PlayerAirState
+    {
+        public PlayerDoubleJumpState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
+        {
+        }
 
-//     public PlayerDoubleJumpState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, int hashID) : base(player, stateMachine, playerData, hashID)
-//     {
-//     }
+        public override void CanChangeState(StateRequestData actionRequestData)
+        {
+        }
 
-//     private bool AttackInput ;
+        public override StateType GetId()
+        {
+            return StateType.DoubleJump;
+        }
+
+        public override void Enter()
+        {
+            base.Enter();
+            
+            //
+            m_Data.StateTypeEnum = StateType.DoubleJump;
+            player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
+            //
+        }
+        public override void PhysicsUpdate()
+        {
+            base.PhysicsUpdate();
+
+        }
 
 
-
-//     public override void Enter()
-//     {
-//         base.Enter();
-//         core.SetMovement.SetVolocityDoubleJump(playerData.DoublejumpVelocity);
-//         player.JumpState.DecreaseAmountOfJumpsLeft();
-//     }
-
-
-//     public override void Exit()
-//     {
-//         base.Exit();
-//     }
-
-
-//     public override void LogicUpdate()
-//     {
-//         base.LogicUpdate();
-//         xInput = Mathf.RoundToInt(player.InputHandler.RawMovementInput.x);
-//         AttackInput = player.InputHandler.AttackInput;
-//         if (player.CheckrGounded() && Mathf.Abs(player.currentVelocity.y) < 0.01f){
-//             stateMachine.ChangeState(player.LandState);
-//         }
-//         else if (AttackInput)
-//         {
-//             stateMachine.ChangeState(player.AttackState12 , AttackType.Attack4);
-//         }
-//         else{
-//             core.SetMovement.SetFallingDown();
-//             if (xInput != 0 && xInput !=core.SetMovement.FacingDirection){
-//                 player.AnimationBase.Anim.Play("DoubleJump2_Deep_anim");
-//                 core.SetMovement.Flip();
-//             }
-//         }
-//     }
-
-//     public override void PhysicsUpdate()
-//     {
-//         base.PhysicsUpdate();
-//     }
-
-//     public override string ToString()
-//     {
-//         return base.ToString();
-//     }
-// }
+    }
+}

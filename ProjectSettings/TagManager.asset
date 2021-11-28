@@ -18,6 +18,7 @@ TagManager:
   - GameNetPortal
   - Joystick
   - HeroActionBar
+  - PartyHUD
   layers:
   - Default
   - TransparentFX
@@ -25,9 +26,9 @@ TagManager:
   - 
   - Water
   - UI
-  - Player
+  - PCs
   - Ground
-  - 
+  - NPCs
   - 
   - 
   - 

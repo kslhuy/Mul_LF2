@@ -4,7 +4,6 @@ using UnityEngine;
 namespace LF2.Server{
     public class PlayerLandState : State
     {
-        float timenow;
 
         public PlayerLandState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
         {
@@ -12,15 +11,20 @@ namespace LF2.Server{
 
         public override void CanChangeState(StateRequestData actionRequestData)
         {
+            // Attack , Jump , Defense 
+            // DDA , DUA  
+            if (actionRequestData.StateTypeEnum == StateType.Jump){
+                player.ServerCharacterMovement.SetDoubleJump(moveDir);
+                player.stateMachine.ChangeState(StateType.DoubleJump);
+            }
 
         }
 
         public override void Enter()
         {
             base.Enter();
-            m_ActionRequestData.StateTypeEnum = StateType.Land;
-            player.serverplayer.NetState.RecvDoActionClientRPC(m_ActionRequestData);
-            timenow = Time.time;
+            m_Data.StateTypeEnum = StateType.Land;
+            player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
         }
 
         public override StateType GetId()
@@ -28,25 +32,14 @@ namespace LF2.Server{
             return StateType.Land;
         }
 
-        public override void PhysicsUpdate()
+        public override void End()
         {
+            player.stateMachine.ChangeState(StateType.Idle );
+        }
 
-            // if (JumpInput && player.JumpState.CanJump()){
-                
-            //     stateMachine.ChangeState(player.DoubleJumpState);
-            // }
-            // else if (DefenseInput)
-            // {
-            //     stateMachine.ChangeState(player.RollingState);
-            // }
-            // else if(isAnimationFinished ) {
-            //     stateMachine.ChangeState(player.IdleState);
-            // }
-            Debug.Log("Land");
-            if (Time.time - timenow >0.2f){
-                player.stateMachine.ChangeState(StateType.Idle );
-
-            }
+        public override void SetMovementTarget(Vector2 position)
+        {
+            base.SetMovementTarget(position);
         }
 
 

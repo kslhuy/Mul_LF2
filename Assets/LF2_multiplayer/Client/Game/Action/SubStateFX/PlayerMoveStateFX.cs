@@ -12,12 +12,11 @@ namespace LF2.Visual{
 
         public override void AnticipateState(StateRequestData data)
         {
-            if (data.StateTypeEnum == StateType.Attack){
-                m_PlayerFX.stateMachineViz.GetState(StateType.Attack).PlayAnim(data.StateTypeEnum);
+            if (data.StateTypeEnum == StateType.Attack || data.StateTypeEnum == StateType.Jump ){
+                Anticipated = true;
+                m_PlayerFX.stateMachineViz.GetState(data.StateTypeEnum).PlayAnim(data.StateTypeEnum);
             }
-            if (data.StateTypeEnum == StateType.Jump){
-                m_PlayerFX.stateMachineViz.GetState(StateType.Jump).PlayAnim(data.StateTypeEnum);
-            }
+
 
         }
 
@@ -32,11 +31,11 @@ namespace LF2.Visual{
 
         public override void Enter()
         {
-            base.Enter();
             if( !Anticipated)
             {
                 PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz);
             }
+            base.Enter();
         }
         public override void PlayAnim(StateType currentState)
         {

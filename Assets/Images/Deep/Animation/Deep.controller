@@ -69,7 +69,7 @@ AnimatorStateMachine:
     m_Position: {x: 980, y: 830, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7959950528964429490}
-    m_Position: {x: 1010, y: 900, z: 0}
+    m_Position: {x: 790, y: 1060, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 6826268661860520681}
     m_Position: {x: 1050, y: 960, z: 0}
@@ -93,10 +93,10 @@ AnimatorStateMachine:
     m_Position: {x: 1260, y: 1350, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3824461866650725844}
-    m_Position: {x: 160, y: 380, z: 0}
+    m_Position: {x: 90, y: 360, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5546870234670637810}
-    m_Position: {x: 150, y: 420, z: 0}
+    m_Position: {x: 90, y: 420, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -6328673110256013558}
     m_Position: {x: 90, y: 470, z: 0}
@@ -188,7 +188,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Attack3_anim
+  m_Name: AttackRun_anim
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -214,7 +214,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: D_L_A_2anim
+  m_Name: DDA_2anim
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -266,7 +266,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: D_L_A_anim
+  m_Name: DDA_anim
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -318,7 +318,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Attack4_anim
+  m_Name: AttackJump2_anim
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -470,7 +470,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Attack5_anim
+  m_Name: AttackJump1_anim
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -834,7 +834,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: D_L_A_3anim
+  m_Name: DDA_3anim
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []

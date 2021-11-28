@@ -30,9 +30,21 @@ namespace LF2.Visual{
             stateMachineViz = new PlayerStateMachineFX();
             stateMachineViz.RegisterState(new PlayerIdleStateFX(characterType,this));
             stateMachineViz.RegisterState(new PlayerMoveStateFX(characterType,this));
+
             stateMachineViz.RegisterState(new PlayerJumpStateFX(characterType,this));
-            stateMachineViz.RegisterState(new PlayerAttackStateFX(characterType,this));
+            stateMachineViz.RegisterState(new PlayerDoubleJumpStateFX(characterType,this));
+
+
+
             stateMachineViz.RegisterState(new PlayerLandStateFX(characterType,this));
+
+            stateMachineViz.RegisterState(new PlayerAttackStateFX(characterType,this));
+            stateMachineViz.RegisterState(new PlayerAttackJump1FX(characterType,this));
+
+            stateMachineViz.RegisterState(new PlayerDefenseStateFX(characterType,this));
+
+            stateMachineViz.RegisterState(new PlayerDDAStateFX(characterType,this));
+
 
             // Intiliazie State
             stateMachineViz.ChangeState(StateType.Idle);
@@ -52,8 +64,9 @@ namespace LF2.Visual{
         }
 
         // Play correct State that sent by Server 
-        public void PlayState(ref StateRequestData data)
+        public void PerformActionFX(ref StateRequestData data)
         {
+            stateMachineViz.GetState(data.StateTypeEnum).Data = data;
             stateMachineViz.ChangeState(data.StateTypeEnum);
         }
 
@@ -61,6 +74,11 @@ namespace LF2.Visual{
         public void OnMoveInput(Vector2 position)
         {
             stateMachineViz.OnMoveInput( position);
+        }
+
+        public void OnAnimEvent(string id)
+        {
+            stateMachineViz.OnAnimEvent(id);
         }
     }
 }

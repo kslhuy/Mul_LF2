@@ -28,17 +28,20 @@ namespace LF2.Server
     {
         protected PlayerState player;
 
+        protected StateRequestData m_Data;
+
         protected MovementState currentMovementState;
         
 
-        protected StateRequestData m_ActionRequestData;
+        // protected StateRequestData m_ActionRequestData;
 
         public bool IsMove { get; private set; }
 
         //Vector use for All Movement of player
-        protected Vector3 workSpace;
+        protected Vector3 moveDir;
 
 
+        protected static ulong OurNetWorkID ;
 
         protected State(CharacterTypeEnum characterType, PlayerState player) : base(characterType)
         {
@@ -58,16 +61,15 @@ namespace LF2.Server
    
 
         public virtual void Exit(){
-
         }
 
         // If we have a request so check if we can change to desired state 
+        // NOTE :   (Only 3 basic State can check Attack , Jump , Defense)
         public abstract void  CanChangeState(StateRequestData actionRequestData);
 
         public virtual void SetMovementTarget(Vector2 position)
         {
-            workSpace.Set(position.x , 0, position.y);     
-            // workSpace = position;
+            moveDir.Set(position.x , 0, position.y);   
             IsMove  = position.x != 0 || position.y != 0;
         }
 
@@ -75,6 +77,16 @@ namespace LF2.Server
         {
         }
 
+        public enum GameplayActivity
+        {
+            AttackedByEnemy,
+            Healed,
+            StoppedChargingUp,
+            UsingAttackAction, // called immediately before we perform the attack Action
+        }
 
+        public virtual void OnGameplayActivity(GameplayActivity activityThatOccurred)
+        {
+        }
     }
 }

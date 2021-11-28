@@ -37,12 +37,13 @@ namespace LF2.Visual
 
 
         /// Player characters need to report health changes and chracter info to the PartyHUD
-        // PartyHUD m_PartyHUD;
+        PartyHUD m_PartyHUD;
 
         float m_SmoothedSpeed;
 
         int m_HitStateTriggerID;
         private ClientInputSender inputSender;
+        private float m_MaxDistance = 0.2f;
 
         event Action Destroyed;
 
@@ -97,31 +98,19 @@ namespace LF2.Visual
             if (!m_NetState.IsNpc)
             {
                 // track health for heroes
-                // m_NetState.HealthState.HitPoints.OnValueChanged += OnHealthChanged;
+                m_NetState.HealthState.HitPoints.OnValueChanged += OnHealthChanged;
 
                 // find the emote bar to track its buttons
-                // GameObject partyHUDobj = GameObject.FindGameObjectWithTag("PartyHUD");
-                // m_PartyHUD = partyHUDobj.GetComponent<Visual.PartyHUD>();
+                GameObject partyHUDobj = GameObject.FindGameObjectWithTag("PartyHUD");
+                m_PartyHUD = partyHUDobj.GetComponent<Visual.PartyHUD>();
 
                 if (IsLocalPlayer)
                 {
-                    //// ko co y nghia
-                    // StateRequestData data = new StateRequestData { StateTypeEnum = StateType.GeneralTarget };
-                    // m_ActionViz.PlayAction(ref data);
-
-
-
                     // gameObject.AddComponent<CameraController>();
                     
                     // // UI 
-                    // m_PartyHUD.SetHeroData(m_NetState);
+                    m_PartyHUD.SetHeroData(m_NetState);
 
-                    // if (Parent.TryGetComponent(out ClientInputSender inputSender))
-                    // {
-                    //     inputSender.ActionInputEvent += OnActionInput;
-                    //     inputSender.ClientMoveEvent += OnMoveInput;
-                    // }
-                    // TryGetComponent(out ClientInputSender );
                     inputSender = GetComponentInParent<ClientInputSender>(); 
                     inputSender.ActionInputEvent += OnActionInput;
                     inputSender.ClientMoveEvent += OnMoveInput;
@@ -157,7 +146,7 @@ namespace LF2.Visual
         private void PerformActionFX(StateRequestData data)
         {
             // That event do actual State from Server .
-            m_statePlayerViz.PlayState(ref data);
+            m_statePlayerViz.PerformActionFX(ref data);
         }
 
         // Play Animation and change state between Idle and Move State Visual
@@ -166,6 +155,8 @@ namespace LF2.Visual
 
             m_statePlayerViz.OnMoveInput(position);
         }
+
+
 
 
         private void OnDestroy()
@@ -222,20 +213,20 @@ namespace LF2.Visual
         //     }
         // }
 
-        // private void OnHealthChanged(int previousValue, int newValue)
-        // {
-        //     // don't do anything if party HUD goes away - can happen as Dungeon scene is destroyed
-        //     if (m_PartyHUD == null) { return; }
+        private void OnHealthChanged(int previousValue, int newValue)
+        {
+            // don't do anything if party HUD goes away - can happen as Dungeon scene is destroyed
+            if (m_PartyHUD == null) { return; }
 
-        //     if (IsLocalPlayer)
-        //     {
-        //         this.m_PartyHUD.SetHeroHealth(newValue);
-        //     }
-        //     else
-        //     {
-        //         this.m_PartyHUD.SetAllyHealth(m_NetState.NetworkObjectId, newValue);
-        //     }
-        // }
+            if (IsLocalPlayer)
+            {
+                this.m_PartyHUD.SetHeroHealth(newValue);
+            }
+            // else
+            // {
+            //     this.m_PartyHUD.SetAllyHealth(m_NetState.NetworkObjectId, newValue);
+            // }
+        }
 
         private void OnCharacterAppearanceChanged(int oldValue, int newValue)
         {
@@ -270,7 +261,7 @@ namespace LF2.Visual
             //and calls a method of the same name on a component on the same GameObject as the Animator. See the "attack1" Animation Clip as one
             //example of where this is configured.
 
-            // m_ActionViz.OnAnimEvent(id);
+            m_statePlayerViz.OnAnimEvent(id);
         }
 
     }

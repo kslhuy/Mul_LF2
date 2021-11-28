@@ -43,18 +43,28 @@ namespace LF2.Visual{
                 Debug.Log(CurrentStateViz + "Visual");
                 SkillsDescription skillsDescription =  GetState(CurrentStateViz).SkillDescription(CurrentStateViz); // Get All Skills Data of actual Player Charater we current play.
                 bool keepGoing = GetState(CurrentStateViz).Anticipated || GetState(CurrentStateViz).LogicUpdate(); // (Trick of || (or) )only call Update() on actions that are past anticipation , 
-                bool timeExpired =  GetState(CurrentStateViz).TimeRunning >= skillsDescription.DurationSeconds ;
-                // Check if this State Can End Naturally (Mean time Expired )
-                if (!keepGoing || timeExpired ){
-                    GetState(CurrentStateViz)?.End();
+                if (skillsDescription.expirable){
+                    bool timeExpired =  GetState(CurrentStateViz).TimeRunning >= skillsDescription.DurationSeconds ;
+                    // Check if this State Can End Naturally (== time Expired )
+                    if (!keepGoing || timeExpired ){
+                        GetState(CurrentStateViz)?.End();
+                    }
                 }
             }
         }
 
+        public void OnAnimEvent(string id)
+        {
+            GetState(CurrentStateViz).OnAnimEvent(id);
+        }
+
         // Switch to Another State , (we force to Change State , so that mean this State may be not End naturally , be interruped by some logic  ) 
-        public void ChangeState(StateType newState){
-            GetState(CurrentStateViz)?.Exit();
-            CurrentStateViz = newState;
+        public void ChangeState( StateType data){
+            if (CurrentStateViz != data){
+                GetState(CurrentStateViz)?.Exit();
+                CurrentStateViz = data;
+            }
+            // GetState(CurrentStateViz).Data = data;
             GetState(CurrentStateViz)?.Enter();
         }
 

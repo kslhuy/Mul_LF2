@@ -6,7 +6,7 @@ using UnityEngine;
 public class SetMovement : MonoBehaviour
 {
 
-    private Vector3 workSpace;
+    private Vector3 moveDir;
     public int FacingDirection{get ; private set;}
     public Rigidbody Rigidbody{get;private set;}
 
@@ -19,16 +19,16 @@ public class SetMovement : MonoBehaviour
     #region Set Functions
          
     public void SetVelocityXZ(Vector3 targetposition){
-        // workSpace = targetposition;
-        // // Debug.Log (workSpace);
-        // // Rigidbody.velocity = workSpace;
+        // moveDir = targetposition;
+        // // Debug.Log (moveDir);
+        // // Rigidbody.velocity = moveDir;
         transform.position += targetposition*Time.deltaTime;
     }
 
     internal void SetVelocityY(Vector3 velocityy)
     {
-        workSpace.Set(velocityy.x*FacingDirection ,velocityy.y, 0);
-        Rigidbody.velocity = workSpace ;
+        moveDir.Set(velocityy.x*FacingDirection ,velocityy.y, 0);
+        Rigidbody.velocity = moveDir ;
     }
 
     public void SetVelocityJump(float velocityy , Vector3 moveDir){
@@ -36,32 +36,32 @@ public class SetMovement : MonoBehaviour
     }
 
     public void SetVelocityRun(float velocityRun ){
-        workSpace.Set(velocityRun*FacingDirection ,0, 0);
-        Rigidbody.velocity = workSpace;
-        // transform.position += workSpace*Time.deltaTime;
+        moveDir.Set(velocityRun*FacingDirection ,0, 0);
+        Rigidbody.velocity = moveDir;
+        // transform.position += moveDir*Time.deltaTime;
     }
     public void SetFallingDown(){
         Rigidbody.velocity += 0.5f*Physics.gravity.y*Vector3.up*Time.deltaTime ;
     }
 
     public void SetVolocityDoubleJump( Vector3 velocitydoubleJump){
-        workSpace.Set(velocitydoubleJump.x*FacingDirection ,velocitydoubleJump.y, velocitydoubleJump.z);
-        Rigidbody.velocity = workSpace;
+        moveDir.Set(velocitydoubleJump.x*FacingDirection ,velocitydoubleJump.y, velocitydoubleJump.z);
+        Rigidbody.velocity = moveDir;
     }
 
 
     public void SetVelocitySliding(float GainDecreaseRunSpeed , float RunSpeed ){
-        workSpace.Set(RunSpeed*FacingDirection,0,0);
-        // Rigidbody.velocity = workSpace;
+        moveDir.Set(RunSpeed*FacingDirection,0,0);
+        // Rigidbody.velocity = moveDir;
 
-        Rigidbody.transform.position +=  workSpace * Time.deltaTime ;
+        Rigidbody.transform.position +=  moveDir * Time.deltaTime ;
     }
 
     public void SetVelocityRolling(float RollingSpeed  ){
-        workSpace.Set(RollingSpeed*FacingDirection,0,0);
-        Rigidbody.velocity = workSpace;
+        moveDir.Set(RollingSpeed*FacingDirection,0,0);
+        Rigidbody.velocity = moveDir;
 
-        // transform.position += FacingDirection  * workSpace * Time.deltaTime ;
+        // transform.position += FacingDirection  * moveDir * Time.deltaTime ;
     }
 
     public void CheckIfShouldFlip(int xInput){

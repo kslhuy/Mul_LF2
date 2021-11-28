@@ -10,6 +10,17 @@ namespace LF2.Server{
         public PlayerMoveState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
         {
         }
+        
+        public override void CanChangeState(StateRequestData actionRequestData)
+        {
+            if (actionRequestData.StateTypeEnum == StateType.Jump){
+                // SetJump here because Vector moveDir is available ;
+                // If we move , so wanna Jump , Jump to that direction 
+                player.ServerCharacterMovement.SetJump(moveDir);
+                player.stateMachine.ChangeState(StateType.Jump);
+            }
+
+        }
 
         public override StateType GetId()
         {
@@ -21,24 +32,12 @@ namespace LF2.Server{
         }
         public override void PhysicsUpdate() {
 
-            Debug.Log("MoveState");
-            // setMovement.SetVelocityXZ(workSpace);
-            // player.ServerCharacterMovement.CheckIfShouldFlip((int)workSpace.x);
-            
-            player.ServerCharacterMovement.SetVelocityXZ(workSpace);
-            // Debug.Log(IsMove);
+            player.ServerCharacterMovement.SetVelocityXZ(moveDir);
             
         }
 
   
 
-        public override void CanChangeState(StateRequestData actionRequestData)
-        {
-            if (actionRequestData.StateTypeEnum == StateType.Jump){
-                player.stateMachine.ChangeState(StateType.Jump);
-            }
-
-        }
 
         public override void SetMovementTarget(Vector2 position)
         {

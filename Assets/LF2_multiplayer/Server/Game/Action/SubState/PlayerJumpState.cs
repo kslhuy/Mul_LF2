@@ -4,7 +4,7 @@ using UnityEngine;
 namespace LF2.Server{
     //In this State :  Player Jump in to air  , can change to desied State follow some request. 
     //                 Do a jump physics , and check every frame  player touch Ground
-    public class PlayerJumpState : State
+    public class PlayerJumpState : PlayerAirState
     {
         private int amountOfJumpLeft ;
         float timeStartJump;
@@ -13,39 +13,31 @@ namespace LF2.Server{
         {
         }
 
-        public override void Enter()
+        public override void CanChangeState(StateRequestData actionRequestData)
         {
-            base.Enter();
-  
-            timeStartJump = Time.time ;
-            player.ServerCharacterMovement.SetJump(workSpace);
-            m_ActionRequestData.StateTypeEnum = StateType.Jump;
-            player.serverplayer.NetState.RecvDoActionClientRPC(m_ActionRequestData);
-            // amountOfJumpLeft--;
-         }
-
-        public bool CanJump(){
-            if (amountOfJumpLeft > 0){
-                return true;
-            }else return false;
-        }
-
-        public override void PhysicsUpdate() {
-
-            Debug.Log("JumpState");
-            // Add some gravity for player
-            player.ServerCharacterMovement.SetFallingDown();
-            // Check play touched ground ?? 
-            if (player.ServerCharacterMovement.IsGounded() && Time.time - timeStartJump > 0.5f ){
-                player.stateMachine.ChangeState(StateType.Land);
+            if (actionRequestData.StateTypeEnum == StateType.Attack ){
+                player.stateMachine.ChangeState(StateType.AttackJump1);
             }
         }
 
+        public override void Enter()
+        {
+            base.Enter();
+            m_Data.StateTypeEnum = StateType.Jump;
+            player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
+        }
+
+        public override void PhysicsUpdate() {
+            base.PhysicsUpdate();
+            Debug.Log("JumpState");
+ 
+        }
+        public override void SetMovementTarget(Vector2 position)
+        {
+            player.ServerCharacterMovement.CheckIfShouldFlip((int)position.x);
+        }
 
 
-        // public void ResetAmountOfJumpsLeft()=> amountOfJumpLeft = playerData.amountOfJumpLeft;
-
-        public void DecreaseAmountOfJumpsLeft()=>amountOfJumpLeft--;
 
         public override StateType GetId()
         {
@@ -53,12 +45,6 @@ namespace LF2.Server{
         }
 
         
-        public override void CanChangeState(StateRequestData actionRequestData)
-        {
-            if (actionRequestData.StateTypeEnum == StateType.Jump ){
-                player.stateMachine.ChangeState(StateType.Jump);
-            }
-        }
 
     }
 }

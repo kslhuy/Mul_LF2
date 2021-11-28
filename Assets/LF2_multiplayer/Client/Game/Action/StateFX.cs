@@ -11,6 +11,10 @@ namespace LF2.Visual{
 
         protected PlayerStateFX m_PlayerFX;
 
+        public StateRequestData Data;
+
+
+
         protected StateFX(CharacterTypeEnum characterType,PlayerStateFX m_PlayerFX) : base(characterType)
         {
             this.m_PlayerFX = m_PlayerFX;
@@ -22,9 +26,11 @@ namespace LF2.Visual{
 
 
         public abstract StateType GetId();
+
+        // Alaways check if player are already play animation first
         public virtual void Enter(){
             Anticipated = false; //once you start for real you are no longer an anticipated action.
-            TimeStarted = UnityEngine.Time.time;
+            // TimeStarted = UnityEngine.Time.time;
         }
         public abstract bool LogicUpdate();
 
@@ -32,7 +38,15 @@ namespace LF2.Visual{
 
 
         public virtual void Exit(){
+            Anticipated = false;
+
         }
+
+
+        /// <summary>
+        /// Called when the visualization receives an animation event.
+        /// </summary>
+        public virtual void OnAnimEvent(string id) { }
 
         // Play Animation (shoulde be add base.PlayAnim() in specific (class) that derived from State ) 
         // See in class AttackStateFX 

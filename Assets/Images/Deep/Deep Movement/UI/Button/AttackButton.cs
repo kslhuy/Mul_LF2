@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.Layouts;
-
+using LF2;
 namespace UnityEngine.InputSystem.OnScreen
 {
     public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,IDropHandler
@@ -12,7 +12,7 @@ namespace UnityEngine.InputSystem.OnScreen
 
         public event Action<TypeSkills> classAttackComboEvent;
 
-        public event Action AttackAction;        
+        public event Action<StateType> AttackAction;        
         private bool Up;
         private bool Def;
         private bool Down;
@@ -47,22 +47,23 @@ namespace UnityEngine.InputSystem.OnScreen
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            // SendValueToControl(1.0f);
-            AttackAction?.Invoke();
+            
+            AttackAction?.Invoke(StateType.Attack);
+            
         }
 
         public void OnDrop(PointerEventData eventData)
         {
             if (Up && Def) 
             {
-                classAttackComboEvent?.Invoke(TypeSkills.DefUpAttack);
+                AttackAction?.Invoke(StateType.DUA);
                 Def = false;
                 Up = false;
             }
 
             else if (Down && Def) 
             {
-                classAttackComboEvent?.Invoke(TypeSkills.DefDownAttack);
+                AttackAction?.Invoke(StateType.DDA);
                 Def = false;
                 Down = false;
             }

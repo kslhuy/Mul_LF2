@@ -146,7 +146,7 @@ namespace LF2.Visual
 
 
         
-        void OnAtack()
+        void OnAtack(StateType attackState)
         {
             if (AttackPressed){
                 if ( Time.time >= AttackPressedStartTime + m_InputHoldTime){
@@ -158,7 +158,7 @@ namespace LF2.Visual
                 AttackPressed = true;
                 AttackPressedStartTime = Time.time;
                 // send input to begin the action associated with this button
-                m_InputSender.RequestAction(StateType.Attack);
+                m_InputSender.RequestAction(attackState);
             }
         }
 

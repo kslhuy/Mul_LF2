@@ -15,17 +15,18 @@ namespace LF2.Visual{
         public override void AnticipateState(StateRequestData data)
         {
             if (data.StateTypeEnum == StateType.Attack){
-                m_PlayerFX.stateMachineViz.GetState(StateType.AttackJump1).PlayAnim(data.StateTypeEnum);
+                m_PlayerFX.stateMachineViz.GetState(StateType.AttackJump1).PlayAnim(StateType.AttackJump1);
             }
         }
 
         public override void Enter()
         {
-            base.Enter();
+            
             if( !Anticipated)
             {
                 PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz);
             }
+            base.Enter();
             amountOfJumpLeft--;
          }
 
@@ -56,7 +57,6 @@ namespace LF2.Visual{
         }
 
         public override bool LogicUpdate() {
-            Debug.Log("JumpStateVisual");
             return true;
         }
 
