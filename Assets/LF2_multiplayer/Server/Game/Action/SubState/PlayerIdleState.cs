@@ -15,9 +15,12 @@ namespace LF2.Server{
 
         public override void CanChangeState(StateRequestData actionRequestData)
         {
+            if (actionRequestData.StateTypeEnum == StateType.Jump){
+                player.ServerCharacterMovement.SetJump(Vector3.zero);
+            }
             // if we are Idle wanna jump so , Jump up 
-            player.ServerCharacterMovement.SetJump(Vector3.zero);
             player.stateMachine.ChangeState(actionRequestData.StateTypeEnum);
+            
         }
 
         public override void SetMovementTarget(Vector2 position)
