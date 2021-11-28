@@ -68,16 +68,16 @@ namespace LF2
         /// </summary>
         public NetworkVariableBool IsStealthy { get; } = new NetworkVariableBool();
 
-        // [SerializeField]
-        // NetworkHealthState m_NetworkHealthState;
+        [SerializeField]
+        NetworkHealthState m_NetworkHealthState;
 
-        // public NetworkHealthState HealthState
-        // {
-        //     get
-        //     {
-        //         return m_NetworkHealthState;
-        //     }
-        // }
+        public NetworkHealthState HealthState
+        {
+            get
+            {
+                return m_NetworkHealthState;
+            }
+        }
 
         /// <summary>
         /// The active target of this character.
@@ -87,11 +87,11 @@ namespace LF2
         // / <summary>
         // / Current HP. This value is populated at startup time from CharacterClass data.
         // / </summary>
-        // public int HitPoints
-        // {
-        //     get { return m_NetworkHealthState.HitPoints.Value; }
-        //     set { m_NetworkHealthState.HitPoints.Value = value; }
-        // }
+        public int HitPoints
+        {
+            get { return m_NetworkHealthState.HitPoints.Value; }
+            set { m_NetworkHealthState.HitPoints.Value = value; }
+        }
 
         /// <summary>
         /// Current Mana. This value is populated at startup time from CharacterClass data.
@@ -190,7 +190,7 @@ namespace LF2
 
         public void ApplyCharacterData()
         {
-            // HitPoints = CharacterData.BaseHP.Value;
+            HitPoints = CharacterData.BaseHP.Value;
             Mana.Value = CharacterData.BaseMana;
         }
 

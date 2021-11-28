@@ -17,5 +17,5 @@ MonoBehaviour:
   ManaCost: 0
   Range: 0
   velocity: {x: 0, y: 0, z: 0}
-  DurationSeconds: 0
+  DurationSeconds: -1
   expirable: 0

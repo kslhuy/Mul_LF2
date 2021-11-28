@@ -17,7 +17,7 @@ namespace LF2.Server{
 
         protected float startTime;
 
-        
+
         public PlayerState(ServerCharacter serverplayer ,ServerCharacterMovement serverCharacterMovement  ){
             this.serverplayer = serverplayer;
             ServerCharacterMovement = serverCharacterMovement;
@@ -28,9 +28,19 @@ namespace LF2.Server{
             
             stateMachine.RegisterState(new PlayerIdleState(chacterType, this ));
             stateMachine.RegisterState(new PlayerMoveState(chacterType,this ));
-            stateMachine.RegisterState(new PlayerAttackState(chacterType,this ));
             stateMachine.RegisterState(new PlayerJumpState(chacterType,this ));
+            stateMachine.RegisterState(new PlayerDoubleJumpState(chacterType,this ));
+            
+
             stateMachine.RegisterState(new PlayerLandState(chacterType,this ));
+
+            stateMachine.RegisterState(new PlayerAttackState(chacterType,this ));
+            stateMachine.RegisterState(new PlayerAttackJump1(chacterType,this ));
+            stateMachine.RegisterState(new PlayerDefenseState(chacterType,this));
+
+
+            stateMachine.RegisterState(new PlayerDDAState(chacterType,this));
+            
 
         }
 
@@ -50,7 +60,10 @@ namespace LF2.Server{
         public void SetMovementDirection(Vector2 targetPosition)
         {
             stateMachine.SetMovementDirection(targetPosition);
-            
+        }
+
+        public void OnGameplayActivity(State.GameplayActivity activityThatOccurred){
+            stateMachine.OnGameplayActivity(activityThatOccurred);
         }
     }
 }

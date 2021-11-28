@@ -14,18 +14,18 @@ namespace LF2.Visual{
 
         public override void AnticipateState(StateRequestData data)
         {
-            // if (data.StateTypeEnum == StateType.Jump){
-            //     m_PlayerFX.stateMachineViz.GetState(StateType.AttackJump1).PlayAnim(data.StateTypeEnum);
-            // }
+            if (data.StateTypeEnum == StateType.Jump){
+                m_PlayerFX.stateMachineViz.GetState(StateType.DoubleJump).PlayAnim(StateType.DoubleJump);
+            }
         }
 
         public override void Enter( )
         {
-            base.Enter();
             if( !Anticipated)
             {
                 PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz);
             }
+            base.Enter();
             amountOfJumpLeft--;
          }
 

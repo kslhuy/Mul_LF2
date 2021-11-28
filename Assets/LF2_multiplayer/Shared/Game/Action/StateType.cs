@@ -5,9 +5,18 @@ namespace LF2{
         Move,
         Run,
         Jump,
+
+        DoubleJump,
+
         Land,
         Defense,
         Attack,
         AttackJump1,
+        Air,
+        DUA,
+        DDA,
+
+        Ground,
+        
     }
 }

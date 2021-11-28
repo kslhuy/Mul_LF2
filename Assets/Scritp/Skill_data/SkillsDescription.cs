@@ -1,6 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
+using MLAPI.Serialization;
+using System;
 using UnityEngine;
+
 
 namespace LF2{
     /// <summary>
@@ -13,7 +14,8 @@ namespace LF2{
     {
         public StateType StateType; //The kind of the move
         
-        public int damageAmount;
+        public ActionLogic ActionLogic;
+        public int Amount;
 
         public int ManaCost;
 
@@ -26,8 +28,25 @@ namespace LF2{
 
         public bool expirable;
 
-        // [SerializeField] int ComboPriorty = 0; //the more complicated the move the higher the Priorty
+        [Serializable]
+        public class ProjectileInfo
+        {
+            [Tooltip("Prefab used for the projectile")]
+            public GameObject ProjectilePrefab;
+            [Tooltip("Projectile's speed in meters/second")]
+            public float Speed_m_s;
+            [Tooltip("Maximum range of the Projectile")]
+            public float Range;
+            [Tooltip("Damage of the Projectile on hit")]
+            public int Damage;
+            [Tooltip("Max number of enemies this projectile can hit before disappearing")]
+            public int MaxVictims;
+        }
         
+        [Tooltip("If this Action spawns a projectile, describes it. (\"Charged\" projectiles can list multiple possible shots, ordered from weakest to strongest)")]
+        public ProjectileInfo[] Projectiles;
+        // [SerializeField] int ComboPriorty = 0; //the more complicated the move the higher the Priorty
+
     }
 }
 

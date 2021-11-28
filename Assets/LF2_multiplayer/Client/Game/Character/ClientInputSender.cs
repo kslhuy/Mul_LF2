@@ -35,21 +35,24 @@ namespace LF2.Client
         public bool AttackInput{get;private set;}
         public bool DefenseInput{get;private set;}
 
+        public Collider m_Collider;
+
         
+
+
         #endregion
 
         //COMBO  
         // public KeyPress currentKeyPress{get;private set;}
         // public List<KeyPress> currentCombo = new List<KeyPress>();
         // public List<ComboAttack> avilableSkills;
-    
+
 
         // public event Action<TypeSkills> ComboTrigger;
 
         ////// ********* NEW ****** ///
         private NetworkCharacterState m_NetworkCharacter;
-
-
+        private Vector3 size;
 
         private struct ActionRequest
         {
@@ -77,6 +80,7 @@ namespace LF2.Client
 
         public float directionMarngitude = 4f;
         public float JumpHieght = 10f;
+        public float m_MaxDistance = 0.2f;
 
         // COMBO
 
@@ -115,6 +119,7 @@ namespace LF2.Client
             // runLeftButton.runLeftEvent += GoRun;
             // runRightButton.runRightEvent += GoRun;
 
+
         }
 
         private void SendInput(StateRequestData action)
@@ -136,7 +141,20 @@ namespace LF2.Client
 
 
 
+        private void OnDrawGizmos() {
+            Debug.DrawRay(transform.position , transform.forward,Color.blue);
+            Debug.DrawRay(transform.position , transform.up,Color.red);
+            Debug.DrawRay(transform.position , transform.right,Color.green);
+            // Gizmos.DrawCube(transform.position , transform.forward,Color.blue);
 
+            size =  new Vector3(m_Collider.bounds.extents.x,m_Collider.bounds.extents.y,m_Collider.bounds.size.z);
+            // Debug.Log(size);
+            //Draw a Ray forward from GameObject toward the maximum distance
+            Gizmos.DrawRay(m_Collider.bounds.center, transform.right * m_MaxDistance);
+            //Draw a cube at the maximum distance
+            Gizmos.DrawWireCube(m_Collider.bounds.center + transform.right * m_MaxDistance, size);
+        
+        }
         public void OnMoveInput(InputAction.CallbackContext context){
             
 
@@ -236,6 +254,7 @@ namespace LF2.Client
                 m_ActionRequests[m_ActionRequestCount].TargetId = targetId;
                 m_ActionRequestCount++;
             }
+
     
 
         }

@@ -18,12 +18,6 @@ namespace LF2.Server
             get { return NetState.IsNpc; }
         }
 
-        /// <summary>
-        /// The Character's ActionPlayer. This is mainly exposed for use by other Actions. In particular, users are discouraged from
-        /// calling 'PlayAction' directly on this, as the ServerCharacter has certain game-level checks it performs in its own wrapper.
-        /// </summary>
-        // public ActionPlayer RunningActions {  get { return m_ActionPlayer;  } }
-        
 
         [SerializeField]
         [Tooltip("If set to false, an NPC character will be denied its brain (won't attack or chase players)")]
@@ -44,18 +38,12 @@ namespace LF2.Server
 
         // Cached component reference
         private ServerCharacterMovement m_Movement;
-        public SetMovement SetMovement;
         
-        public bool StateOccuped;
 
-
- 
-        public Vector2 m_inputResquest; 
 
         private void Awake()
         {
             m_Movement = GetComponent<ServerCharacterMovement>();
-            SetMovement = GetComponent<SetMovement>();
             NetState = GetComponent<NetworkCharacterState>();
 
             m_statePlayer = new PlayerState(this,m_Movement);
@@ -116,7 +104,6 @@ namespace LF2.Server
         {
             if (NetState.LifeState == LifeState.Alive && !m_Movement.IsPerformingForcedMovement())
             {
-                // m_Movement.SetMovementTarget(targetPosition);
                 m_statePlayer.SetMovementDirection(targetPosition);
             }
         }
@@ -125,7 +112,6 @@ namespace LF2.Server
         {
             if (lifeState != LifeState.Alive)
             {
-                // m_ActionPlayer.ClearActions(true);
                 m_Movement.CancelMove();
             }
         }
@@ -154,34 +140,36 @@ namespace LF2.Server
         /// <param name="HP">The HP to receive. Positive value is healing. Negative is damage.  </param>
         public void ReceiveHP(ServerCharacter inflicter, int HP)
         {
-            Debug.Log("Receive HP");
-            // //to our own effects, and modify the damage or healing as appropriate. But in this game, we just take it straight.
-            // if (HP > 0)
-            // {
-            //     m_ActionPlayer.OnGameplayActivity(Action.GameplayActivity.Healed);
-            //     // float healingMod = m_ActionPlayer.GetBuffedValue(Action.BuffableValue.PercentHealingReceived);
-            //     // HP = (int)(HP * healingMod);
-            // }
-            // else
-            // {
-            //     m_ActionPlayer.OnGameplayActivity(Action.GameplayActivity.AttackedByEnemy);
-            //     // float damageMod = m_ActionPlayer.GetBuffedValue(Action.BuffableValue.PercentDamageReceived);
-            //     // HP = (int)(HP * damageMod);
-            // }
+            // Debug.Log("Receive HP");
+       
+             //to our own effects, and modify the damage or healing as appropriate. But in this game, we just take it straight.
+            if (HP > 0)
+            {
+                m_statePlayer.OnGameplayActivity(State.GameplayActivity.Healed);
+                // float healingMod = m_ActionPlayer.GetBuffedValue(Action.BuffableValue.PercentHealingReceived);
+                // HP = (int)(HP * healingMod);
+            }
+            else
+            {
+                m_statePlayer.OnGameplayActivity(State.GameplayActivity.AttackedByEnemy);
+                // float damageMod = m_statePlayer.GetBuffedValue(Action.BuffableValue.PercentDamageReceived);
 
-            // NetState.HitPoints = Mathf.Min(NetState.CharacterData.BaseHP.Value, NetState.HitPoints+HP);
+                // serverAnimationHandler.NetworkAnimator.SetTrigger("HitReact1");
+            }
+
+            NetState.HitPoints = Mathf.Min(NetState.CharacterData.BaseHP.Value, NetState.HitPoints+HP);
 
             // if( m_AIBrain != null )
             // {
             //     //let the brain know about the modified amount of damage we received.
-            //     // m_AIBrain.ReceiveHP(inflicter, HP);
+            //     m_AIBrain.ReceiveHP(inflicter, HP);
             // }
 
             // //we can't currently heal a dead character back to Alive state.
             // //that's handled by a separate function.
             // if (NetState.HitPoints <= 0)
             // {
-            //     // m_ActionPlayer.ClearActions(false);
+            //     m_ActionPlayer.ClearActions(false);
 
             //     if (IsNpc)
             //     {

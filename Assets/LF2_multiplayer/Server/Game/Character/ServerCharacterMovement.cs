@@ -14,6 +14,7 @@ namespace LF2.Server
         Charging = 2,
         Knockback = 3,
         Air = 4,
+        UnControl=5,
     }
 
     /// <summary>
@@ -23,8 +24,11 @@ namespace LF2.Server
     public class ServerCharacterMovement : NetworkBehaviour
     {
         [SerializeField] AnimationCurve m_gravity;
-        [SerializeField]
-        private float JumpHieght = 10f;
+        
+        public float JumpHieght = 9f;
+        public float JumpLength = 3f;
+
+
         private Rigidbody m_Rigidbody;
         private BoxCollider m_BoxCollider;
         private NetworkCharacterState m_NetworkCharacterState;
@@ -41,14 +45,14 @@ namespace LF2.Server
         // this one is specific to knockback mode
         private Vector3 m_KnockbackVector;
         private float m_startTime;
-        private Vector3 workSpace;
+        private Vector3 moveDir;
       
 
         public int FacingDirection { get; private set; }
         public bool DebugPlayer { get; private set; }
 
         public float  SpeedWalk = 1f ;
-        public float gaviti = 1f ;
+        private float gaviti = 1f ;
         private int k_GroundLayerMask;
 
         private void Awake()
@@ -80,26 +84,6 @@ namespace LF2.Server
         /// Sets a movement target. We will path to this position, .
         /// </summary>
         /// <param name="position">Position in world space to path to. </param>
-        public void SetMovementTarget(Vector2 position)
-        {
-            workSpace.Set(position.x , 0, position.y);
-            if (IsGounded()){
-                if (position != Vector2.zero){
-                    m_MovementState = MovementState.Move;    
-                }  
-                else {
-                    m_MovementState = MovementState.Idle;
-                }
-            }
-            
-            // if ( !(m_MovementState == MovementState.Air)){
-            //     if (position != Vector2.zero){
-            //         m_MovementState = MovementState.Move;    
-            //     }
-            //     else m_MovementState = MovementState.Idle;
-            // }
-
-        }
 
         public void SetVelocityXZ(Vector3 targetposition){
       
@@ -114,15 +98,12 @@ namespace LF2.Server
         /// <param name="position">Position in world space to path to. </param>
         public void SetJump(Vector3 moveDir)
         {
-            // if ( m_MovementState == MovementState.Air )   {return ; }   
+            m_Rigidbody.AddForce(JumpHieght*Vector3.up + JumpLength*moveDir,ForceMode.Impulse);     
+        }
 
-            // m_startTime = Time.time;
-            // m_MovementState = MovementState.Air;
-            // workSpace = position;
-            // m_Rigidbody.velocity = Vector3.up*JumpHieght + moveDir ;
-            m_Rigidbody.AddForce(JumpHieght*Vector3.up + moveDir,ForceMode.Impulse); 
-            // m_Rigidbody.AddForce(JumpHieght*Vector3.up +  moveDir,ForceMode.Impulse);
-
+        public void SetDoubleJump(Vector3 moveDir)
+        {
+            m_Rigidbody.AddForce(JumpHieght*Vector3.up + (JumpLength+1)*FacingDirection*Vector3.right,ForceMode.Impulse); 
         }
 
         public void StartForwardCharge(float speed, float duration)
@@ -155,7 +136,6 @@ namespace LF2.Server
 
 
 
-
         /// <summary>
         /// Returns true if the current movement-mode is unabortable (e.g. a knockback effect)
         /// </summary>
@@ -179,7 +159,7 @@ namespace LF2.Server
         /// </summary>
         public void CancelMove()
         {
-            m_MovementState = MovementState.Idle;
+            m_MovementState = MovementState.UnControl;
         }
 
         /// <summary>

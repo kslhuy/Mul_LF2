@@ -460,7 +460,7 @@ MonoBehaviour:
     NetworkPrefabs:
     - Prefab: {fileID: 2808402712987922594, guid: 687160c7cfd6cd748877c28fe515d9c6, type: 3}
       PlayerPrefab: 1
-    - Prefab: {fileID: 1665451651867467429, guid: 7df817c9e46209b46afd904b7bae604e, type: 3}
+    - Prefab: {fileID: 3165636493918647440, guid: e1e6fa40b644751498970cb113c8b0a1, type: 3}
       PlayerPrefab: 0
     PlayerPrefabHash:
       id: 0
@@ -556,6 +556,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5e72887e71cddf44384bb9236a7bf547, type: 2}
   m_CharacterSkillsDescription:
   - {fileID: 11400000, guid: 4380b0622dad9ea4387c4ca0c341b3ec, type: 2}
+  - {fileID: 11400000, guid: 511a566dfe0ee8045a1a2a06da9765de, type: 2}
 --- !u!4 &1102659860
 Transform:
   m_ObjectHideFlags: 0

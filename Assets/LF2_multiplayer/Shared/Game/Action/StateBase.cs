@@ -9,6 +9,8 @@ namespace LF2
     {
         protected CharacterTypeEnum CharacterType;
 
+
+
         /// <summary>
         /// Time when this Action was started (from Time.time) in seconds. Set by the ActionPlayer or ActionVisualization.
         /// </summary>
@@ -19,10 +21,7 @@ namespace LF2
         /// </summary>
         public float TimeRunning { get { return (Time.time - TimeStarted); } }
 
-        // /// <summary>
-        // /// RequestData we were instantiated with. Value should be treated as readonly.
-        // /// </summary>
-        // public ref StateRequestData Data => ref m_Data;
+
 
         // / <summary>
         // / Data Description for this action.

@@ -59,7 +59,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: D_L_A_anim
+  m_Name: DDA_anim
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -481,7 +481,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: D_D_A_anim
+  m_Name: DDJ_anim
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
