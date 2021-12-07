@@ -1,7 +1,5 @@
-using MLAPI;
-using MLAPI.Messaging;
-using MLAPI.NetworkVariable;
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace LF2
@@ -26,47 +24,22 @@ namespace LF2
         Uncontrolled, // character is being moved by e.g. a knockback -- they are not in control!
         Slowed,       // character's movement is magically hindered
         Hasted,       // character's movement is magically enhanced
-        Move,      // character should appear to be "walking" rather than normal running (e.g. for cut-scenes)
-        Air,
+        Walking,      // character should appear to be "walking" rather than normal running (e.g. for cut-scenes)
     }
 
     /// <summary>
     /// Contains all NetworkVariables and RPCs of a character. This component is present on both client and server objects.
     /// </summary>
-    [RequireComponent(typeof(NetworkHealthState), typeof(NetworkCharacterTypeState),
-        typeof(NetworkLifeState))]
-    public class NetworkCharacterState : NetworkBehaviour, ITargetable , INetMovement
+    [RequireComponent(typeof(NetworkHealthState), typeof(NetworkLifeState))]
+    public class NetworkCharacterState : NetworkBehaviour, ITargetable
     {
-        public void InitNetworkPositionAndRotationY(Vector3 initPosition, float initRotationY)
-        {
-            NetworkPosition.Value = initPosition;
-            NetworkRotationY.Value = initRotationY;
-        }
-
-        /// <summary>
-        /// The networked position of this Character. This reflects the authoritative position on the server.
-        /// </summary>
-        public NetworkVariableVector3 NetworkPosition { get; } = new NetworkVariableVector3(
-            new NetworkVariableSettings() { SendNetworkChannel = MLAPI.Transports.NetworkChannel.PositionUpdate });
-
-        /// <summary>
-        /// The networked rotation of this Character. This reflects the authoritative rotation on the server.
-        /// </summary>
-        public NetworkVariableFloat NetworkRotationY { get; } = new NetworkVariableFloat(
-            new NetworkVariableSettings() { SendNetworkChannel = MLAPI.Transports.NetworkChannel.PositionUpdate });
-
-        /// <summary>
-        /// The speed that the character is currently allowed to move, according to the server.
-        /// </summary>
-        public NetworkVariableFloat NetworkMovementSpeed { get; } = new NetworkVariableFloat();
-
         /// Indicates how the character's movement should be depicted.
         public NetworkVariable<MovementStatus> MovementStatus { get; } = new NetworkVariable<MovementStatus>();
 
         /// <summary>
         /// Indicates whether this character is in "stealth mode" (invisible to monsters and other players).
         /// </summary>
-        public NetworkVariableBool IsStealthy { get; } = new NetworkVariableBool();
+        public NetworkVariable<bool> IsStealthy { get; } = new NetworkVariable<bool>();
 
         [SerializeField]
         NetworkHealthState m_NetworkHealthState;
@@ -82,22 +55,16 @@ namespace LF2
         /// <summary>
         /// The active target of this character.
         /// </summary>
-        public NetworkVariableULong TargetId { get; } = new NetworkVariableULong();
+        public NetworkVariable<ulong> TargetId { get; } = new NetworkVariable<ulong>();
 
-        // / <summary>
-        // / Current HP. This value is populated at startup time from CharacterClass data.
-        // / </summary>
+        /// <summary>
+        /// Current HP. This value is populated at startup time from CharacterClass data.
+        /// </summary>
         public int HitPoints
         {
             get { return m_NetworkHealthState.HitPoints.Value; }
             set { m_NetworkHealthState.HitPoints.Value = value; }
         }
-
-        /// <summary>
-        /// Current Mana. This value is populated at startup time from CharacterClass data.
-        /// </summary>
-        [HideInInspector]
-        public NetworkVariableInt Mana;
 
         [SerializeField]
         NetworkLifeState m_NetworkLifeState;
@@ -116,7 +83,7 @@ namespace LF2
         /// <summary>
         /// Returns true if this Character is an NPC.
         /// </summary>
-        public bool IsNpc { get { return CharacterData.IsNpc; } }
+        public bool IsNpc { get { return CharacterClass.IsNpc; } }
 
         public bool IsValidTarget => LifeState != LifeState.Dead;
 
@@ -125,52 +92,29 @@ namespace LF2
         /// </summary>
         public bool CanPerformActions => LifeState == LifeState.Alive;
 
+        [SerializeField]
+        CharacterClassContainer m_CharacterClassContainer;
+
         /// <summary>
         /// The CharacterData object associated with this Character. This is the static game data that defines its attack skills, HP, etc.
         /// </summary>
-        public CharacterClass CharacterData
-        {
-            get
-            {
-                return GameDataSource.Instance.CharacterDataByType[CharacterType];
-            }
-        }
-
-        [SerializeField]
-        NetworkCharacterTypeState m_NetworkCharacterTypeState;
+        public CharacterClass CharacterClass => m_CharacterClassContainer.CharacterClass;
 
         /// <summary>
         /// Character Type. This value is populated during character selection.
         /// </summary>
-        public CharacterTypeEnum CharacterType
-        {
-            get { return m_NetworkCharacterTypeState.CharacterType.Value; }
-            set { m_NetworkCharacterTypeState.CharacterType.Value = value; }
-        }
-
-        // [SerializeField]
-        // NetworkNameState m_NetworkNameState;
-
-        /// <summary>
-        /// Current nametag. This value is populated at startup time from CharacterClass data.
-        /// </summary>
-        // public string Name
-        // {
-        //     get { return m_NetworkNameState.Name.Value; }
-        //     set { m_NetworkNameState.Name.Value = value; }
-        // }
-
-        /// <summary>
-        /// This is an int rather than an enum because it is a "place-marker" for a more complicated system. Ultimately we would like
-        /// PCs to represent their appearance via a struct of appearance options (so they can mix-and-match different ears, head, face, etc).
-        /// </summary>
-        [Tooltip("Value between 0-7. ClientCharacterVisualization will use this to set up the model (for PCs).")]
-        public NetworkVariableInt CharacterAppearance;
+        public CharacterTypeEnum CharacterType => m_CharacterClassContainer.CharacterClass.CharacterType;
 
         /// <summary>
         /// Gets invoked when inputs are received from the client which own this networked character.
         /// </summary>
         public event Action<Vector2> ReceivedClientInput;
+
+        public override void OnNetworkSpawn()
+        {
+            if (!IsServer) return;
+            HitPoints = CharacterClass.BaseHP.Value;
+        }
 
         /// <summary>
         /// RPC to send inputs for this character from a client to a server.
@@ -179,19 +123,7 @@ namespace LF2
         [ServerRpc]
         public void SendCharacterInputServerRpc(Vector2 movementTarget)
         {
-            ReceivedClientInput?.Invoke(movementTarget); 
-        }
-
-        public void SetCharacterType(CharacterTypeEnum playerType, int playerAppearance)
-        {
-            CharacterType = playerType;
-            CharacterAppearance.Value = playerAppearance;
-        }
-
-        public void ApplyCharacterData()
-        {
-            HitPoints = CharacterData.BaseHP.Value;
-            Mana.Value = CharacterData.BaseMana;
+            ReceivedClientInput?.Invoke(movementTarget);
         }
 
         // ACTION SYSTEM
@@ -224,7 +156,6 @@ namespace LF2
         public void RecvDoActionClientRPC(StateRequestData data)
         {
             DoActionEventClient?.Invoke(data);
-
         }
 
         [ClientRpc]
@@ -250,23 +181,6 @@ namespace LF2
         }
 
         // UTILITY AND SPECIAL-PURPOSE RPCs
-
-        /// <summary>
-        /// Called when the character needs to perform a one-off "I've been hit" animation.
-        /// </summary>
-        public event Action OnPerformHitReaction;
-
-        /// <summary>
-        /// Called by Actions when this character needs to perform a one-off "ouch" reaction-animation.
-        /// Note: this is not the normal way to trigger hit-react animations! Normally the client-side
-        /// ActionFX directly controls animation. But some Actions can have unpredictable targets. In cases
-        /// where the ActionFX can't predict who gets hit, the Action calls this to manually trigger animation.
-        /// </summary>
-        [ClientRpc]
-        public void RecvPerformHitReactionClientRPC()
-        {
-            OnPerformHitReaction?.Invoke();
-        }
 
         /// <summary>
         /// Called on server when the character's client decides they have stopped "charging up" an attack.

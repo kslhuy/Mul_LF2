@@ -355,7 +355,7 @@ GameObject:
   - component: {fileID: 1030833436}
   - component: {fileID: 1030833437}
   m_Layer: 0
-  m_Name: GameHub
+  m_Name: GameNetPortal
   m_TagString: GameNetPortal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -373,7 +373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a714233814be8447b0ab0de97bb131f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NetworkManagerGO: {fileID: 1032217008}
+  m_NetworkManager: {fileID: 1032217010}
   PlayerName: 
 --- !u!4 &1030833435
 Transform:
@@ -414,6 +414,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04df56706da6f1b4380f8b2c6c1aa9e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_GameState: {fileID: 2787597832671325909, guid: e62e45e324d80bc488d62f02a2bb6725, type: 3}
 --- !u!1 &1032217008
 GameObject:
   m_ObjectHideFlags: 0
@@ -450,48 +451,33 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 1136594922}
-    RegisteredScenes:
-    - LF2_Net
-    - CharSelect
-    - MainMenu
-    - Startup
-    - 
-    AllowRuntimeSceneChanges: 1
+    PlayerPrefab: {fileID: 5743152434248928554, guid: 507f7ba09265f0041b6545a53059a902, type: 3}
     NetworkPrefabs:
-    - Prefab: {fileID: 2808402712987922594, guid: 687160c7cfd6cd748877c28fe515d9c6, type: 3}
-      PlayerPrefab: 1
-    - Prefab: {fileID: 3165636493918647440, guid: e1e6fa40b644751498970cb113c8b0a1, type: 3}
-      PlayerPrefab: 0
-    PlayerPrefabHash:
-      id: 0
-    CreatePlayerPrefab: 0
-    ReceiveTickrate: 0
-    NetworkTickIntervalSec: 0.05
-    MaxReceiveEventsPerTickRate: 1000
-    EventTickrate: 64
+    - Override: 0
+      Prefab: {fileID: 2808402712987922594, guid: 687160c7cfd6cd748877c28fe515d9c6, type: 3}
+      SourcePrefabToOverride: {fileID: 0}
+      SourceHashToOverride: 0
+      OverridingTargetPrefab: {fileID: 0}
+    - Override: 0
+      Prefab: {fileID: 3165636493918647440, guid: e1e6fa40b644751498970cb113c8b0a1, type: 3}
+      SourcePrefabToOverride: {fileID: 0}
+      SourceHashToOverride: 0
+      OverridingTargetPrefab: {fileID: 0}
+    TickRate: 30
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 1
     ConnectionData: 
     EnableTimeResync: 0
     TimeResyncInterval: 30
-    EnableNetworkVariable: 1
     EnsureNetworkVariableLengthSafety: 0
     EnableSceneManagement: 1
     ForceSamePrefabs: 0
-    UsePrefabSync: 0
     RecycleNetworkIds: 0
     NetworkIdRecycleDelay: 120
     RpcHashSize: 0
     LoadSceneTimeOut: 120
-    EnableMessageBuffering: 1
     MessageBufferTimeout: 20
     EnableNetworkLogs: 1
-  references:
-    version: 1
-    00000000:
-      type: {class: NullableBoolSerializable, ns: MLAPI.Configuration, asm: Unity.Multiplayer.MLAPI.Runtime}
-      data:
-        Value: 18366973948096261467
 --- !u!4 &1032217011
 Transform:
   m_ObjectHideFlags: 0
@@ -522,6 +508,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_IpHostTransport: {fileID: 1136594922}
   m_RelayTransport: {fileID: 1523281651}
+  m_UnityRelayTransport: {fileID: 0}
 --- !u!1 &1102659858
 GameObject:
   m_ObjectHideFlags: 0
@@ -620,12 +607,6 @@ MonoBehaviour:
   ConnectAddress: 127.0.0.1
   ConnectPort: 7777
   ServerListenPort: 7777
-  ServerWebsocketListenPort: 8887
-  SupportWebsocket: 0
-  Channels: []
-  UseMLAPIRelay: 0
-  MLAPIRelayAddress: 184.72.104.138
-  MLAPIRelayPort: 8888
   MessageSendMode: 0
 --- !u!1 &1523281649
 GameObject:
@@ -673,7 +654,7 @@ MonoBehaviour:
   m_NickName: huy
   m_RoomName: 
   m_MaxPlayers: 16
-  m_ChannelIdCodesStartRange: 0
+  m_NetworkDeliveryEventCodesStartRange: 0
   m_AttachSupportLogger: 0
   m_BatchMode: 1
   m_SendQueueBatchSize: 4096

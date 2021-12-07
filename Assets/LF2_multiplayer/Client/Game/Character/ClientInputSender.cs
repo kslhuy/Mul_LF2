@@ -1,8 +1,8 @@
-using MLAPI;
+using Unity.Netcode;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using MLAPI.Spawning;
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.OnScreen;
@@ -84,7 +84,7 @@ namespace LF2.Client
 
         // COMBO
 
-        public override void NetworkStart(){
+        public override void OnNetworkSpawn(){
             if (!IsClient || !IsOwner)
                 {
                     enabled = false;

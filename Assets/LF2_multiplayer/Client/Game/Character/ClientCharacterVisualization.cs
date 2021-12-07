@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using LF2.Client;
 // using Cinemachine;
-using MLAPI;
+using Unity.Netcode;
 using System;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -11,7 +11,7 @@ namespace LF2.Visual
     /// <summary>
     /// <see cref="ClientCharacterVisualization"/> is responsible for displaying a character on the client's screen based on state information sent by the server.
     /// </summary>
-    public class ClientCharacterVisualization : NetworkBehaviour
+    public class ClientCharacterVisualization : MonoBehaviour
     {
         [SerializeField]
         private Animator m_ClientVisualsAnimator;
@@ -33,6 +33,8 @@ namespace LF2.Visual
 
         private NetworkCharacterState m_NetState;
 
+        public Transform Parent { get; private set; }
+
         private PlayerStateFX m_statePlayerViz;
 
 
@@ -48,9 +50,9 @@ namespace LF2.Visual
         event Action Destroyed;
 
         /// <inheritdoc />
-        public override void NetworkStart()
+        public void Start()
         {
-            if (!IsClient || transform.parent == null)
+            if (!NetworkManager.Singleton.IsClient || transform.parent == null)
             {
                 enabled = false;
                 return;
@@ -59,17 +61,17 @@ namespace LF2.Visual
             // m_HitStateTriggerID = Animator.StringToHash(ActionFX.k_DefaultHitReact);
 
 
-            // Parent = transform.parent;
 
             m_NetState = GetComponentInParent<NetworkCharacterState>();
+            Parent = m_NetState.transform;
+
+
             m_NetState.DoActionEventClient += PerformActionFX;
             m_NetState.CancelAllActionsEventClient += CancelAllActionFXs;
             m_NetState.CancelActionsByTypeEventClient += CancelActionFXByType;
-            // m_NetState.NetworkLifeState.LifeState.OnValueChanged += OnLifeStateChanged;
-            m_NetState.OnPerformHitReaction += OnPerformHitReaction;
             m_NetState.OnStopChargingUpClient += OnStoppedChargingUp;
             m_NetState.IsStealthy.OnValueChanged += OnStealthyChanged;
-            // Debug.Log(m_NetState.CharacterType);
+
 
             m_statePlayerViz = new PlayerStateFX( this,m_NetState.CharacterType);
 
@@ -82,55 +84,32 @@ namespace LF2.Visual
             transform.SetPositionAndRotation(m_NetState.transform.position, m_NetState.transform.rotation);
 
 
-            // listen for char-select info to change (in practice, this info doesn't
-            // change, but we may not have the values set yet) ...
-            m_NetState.CharacterAppearance.OnValueChanged += OnCharacterAppearanceChanged;
-
-            // ...and visualize the current char-select value that we know about
-            OnCharacterAppearanceChanged(0, m_NetState.CharacterAppearance.Value);
-
+   
             // ...and visualize the current char-select value that we know about
             SetAppearanceSwap();
 
             // sync our animator to the most up to date version received from server
             // SyncEntryAnimation(m_NetState.LifeState);
 
-            if (!m_NetState.IsNpc)
+               if (!m_NetState.IsNpc)
             {
-                // track health for heroes
-                m_NetState.HealthState.HitPoints.OnValueChanged += OnHealthChanged;
+                name = "AvatarGraphics" + m_NetState.OwnerClientId;
 
-                // find the emote bar to track its buttons
-                GameObject partyHUDobj = GameObject.FindGameObjectWithTag("PartyHUD");
-                m_PartyHUD = partyHUDobj.GetComponent<Visual.PartyHUD>();
-
-                if (IsLocalPlayer)
+                if (m_NetState.IsOwner)
                 {
+                    // ActionRequestData data = new ActionRequestData { ActionTypeEnum = ActionType.GeneralTarget };
+                    // m_ActionViz.PlayAction(ref data);
                     // gameObject.AddComponent<CameraController>();
-                    
-                    // // UI 
-                    m_PartyHUD.SetHeroData(m_NetState);
 
-                    inputSender = GetComponentInParent<ClientInputSender>(); 
-                    inputSender.ActionInputEvent += OnActionInput;
-                    inputSender.ClientMoveEvent += OnMoveInput;
-                }
-                else
-                {
-                    // m_PartyHUD.SetAllyData(m_NetState);
-
-                    // getting our parent's NetworkObjectID for PartyHUD removal on Destroy
-                    var parentNetworkObjectID = m_NetState.NetworkObjectId;
-
-                    // once this object is destroyed, remove this ally from the PartyHUD UI
-                    // NOTE: architecturally this will be refactored
-                    // Destroyed += () =>
-                    // {
-                    //     if (m_PartyHUD != null)
-                    //     {
-                    //         m_PartyHUD.RemoveAlly(parentNetworkObjectID);
-                    //     }
-                    // };
+                    if (TryGetComponent(out ClientInputSender inputSender))
+                    {
+                        // TODO: revisit; anticipated actions would play twice on the host
+                        if (!NetworkManager.Singleton.IsServer)
+                        {
+                            inputSender.ActionInputEvent += OnActionInput;
+                        }
+                        inputSender.ClientMoveEvent += OnMoveInput;
+                    }
                 }
             }
         }
@@ -166,22 +145,20 @@ namespace LF2.Visual
                 m_NetState.DoActionEventClient -= PerformActionFX;
                 m_NetState.CancelAllActionsEventClient -= CancelAllActionFXs;
                 m_NetState.CancelActionsByTypeEventClient -= CancelActionFXByType;
-                // m_NetState.NetworkLifeState.LifeState.OnValueChanged -= OnLifeStateChanged;
-                m_NetState.OnPerformHitReaction -= OnPerformHitReaction;
                 m_NetState.OnStopChargingUpClient -= OnStoppedChargingUp;
                 m_NetState.IsStealthy.OnValueChanged -= OnStealthyChanged;
 
-                inputSender.ActionInputEvent -= OnActionInput;
-                inputSender.ClientMoveEvent -= OnMoveInput;
+
+                if (Parent != null && Parent.TryGetComponent(out ClientInputSender sender))
+                {
+                    sender.ActionInputEvent -= OnActionInput;
+                    sender.ClientMoveEvent -= OnMoveInput;
+                }
             }
 
-            Destroyed?.Invoke();
         }
 
-        private void OnPerformHitReaction()
-        {
-            m_ClientVisualsAnimator.SetTrigger(m_HitStateTriggerID);
-        }
+
 
         private void CancelAllActionFXs()
         {
@@ -213,25 +190,25 @@ namespace LF2.Visual
         //     }
         // }
 
-        private void OnHealthChanged(int previousValue, int newValue)
-        {
-            // don't do anything if party HUD goes away - can happen as Dungeon scene is destroyed
-            if (m_PartyHUD == null) { return; }
+        // private void OnHealthChanged(int previousValue, int newValue)
+        // {
+        //     // don't do anything if party HUD goes away - can happen as Dungeon scene is destroyed
+        //     if (m_PartyHUD == null) { return; }
 
-            if (IsLocalPlayer)
-            {
-                this.m_PartyHUD.SetHeroHealth(newValue);
-            }
-            // else
-            // {
-            //     this.m_PartyHUD.SetAllyHealth(m_NetState.NetworkObjectId, newValue);
-            // }
-        }
+        //     if (IsLocalPlayer)
+        //     {
+        //         this.m_PartyHUD.SetHeroHealth(newValue);
+        //     }
+        //     // else
+        //     // {
+        //     //     this.m_PartyHUD.SetAllyHealth(m_NetState.NetworkObjectId, newValue);
+        //     // }
+        // }
 
-        private void OnCharacterAppearanceChanged(int oldValue, int newValue)
-        {
-            SetAppearanceSwap();
-        }
+        // private void OnCharacterAppearanceChanged(int oldValue, int newValue)
+        // {
+        //     SetAppearanceSwap();
+        // }
 
         private void OnStealthyChanged(bool oldValue, bool newValue)
         {
@@ -240,11 +217,11 @@ namespace LF2.Visual
 
         private void SetAppearanceSwap()
         {
-            if (m_CharacterSwapper)
-            {
+            // if (m_CharacterSwapper)
+            // {
 
-                m_CharacterSwapper.SwapToModel(m_NetState.CharacterAppearance.Value);
-            }
+            //     m_CharacterSwapper.SwapToModel(m_NetState.CharacterAppearance.Value);
+            // }
         }
 
 

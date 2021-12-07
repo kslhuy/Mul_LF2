@@ -1,5 +1,5 @@
 using System.Collections;
-using MLAPI;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -65,7 +65,7 @@ namespace LF2.Server
             m_MovementState = MovementState.Idle;
         }
 
-        public override void NetworkStart()
+        public override void OnNetworkSpawn()
         {
             if (!IsServer)
             {
@@ -74,7 +74,6 @@ namespace LF2.Server
                 return;
             }
 
-            m_NetworkCharacterState.InitNetworkPositionAndRotationY(transform.position, transform.rotation.eulerAngles.y);
             k_GroundLayerMask = LayerMask.GetMask(new[] { "Ground" });
 
 
@@ -181,19 +180,8 @@ namespace LF2.Server
 
         private void FixedUpdate()
         {
-            
-            // Send new position values to the client
-            m_NetworkCharacterState.NetworkPosition.Value = transform.position;
-            m_NetworkCharacterState.NetworkRotationY.Value = transform.rotation.eulerAngles.y;
-            // m_NetworkCharacterState.NetworkMovementSpeed.Value = GetMaxMovementSpeed();
-            // m_NetworkCharacterState.MovementStatus.Value = GetMovementStatus();
         }
 
-
-        private void OnDestroy()
-        {
-
-        }
 
  
 
@@ -245,24 +233,24 @@ namespace LF2.Server
             return characterClass.Speed;
         }
 
-        /// <summary>
-        /// Determines the appropriate MovementStatus for the character. The
-        /// MovementStatus is used by the client code when animating the character.
-        /// </summary>
-        private MovementStatus GetMovementStatus()
-        {
-            switch (m_MovementState)
-            {
-                case MovementState.Move:
-                    return MovementStatus.Move;
-                case MovementState.Knockback:
-                    return MovementStatus.Uncontrolled;
-                case MovementState.Air:
-                    return MovementStatus.Air;
-                default:
-                    return MovementStatus.Idle;
-            }
-        }
+        // /// <summary>
+        // /// Determines the appropriate MovementStatus for the character. The
+        // /// MovementStatus is used by the client code when animating the character.
+        // /// </summary>
+        // private MovementStatus GetMovementStatus()
+        // {
+        //     switch (m_MovementState)
+        //     {
+        //         case MovementState.Move:
+        //             return MovementStatus.Move;
+        //         case MovementState.Knockback:
+        //             return MovementStatus.Uncontrolled;
+        //         case MovementState.Air:
+        //             return MovementStatus.Air;
+        //         default:
+        //             return MovementStatus.Idle;
+        //     }
+        // }
         public void CheckIfShouldFlip(int xInput){
             if (xInput != 0 && xInput != FacingDirection){
                 Flip();

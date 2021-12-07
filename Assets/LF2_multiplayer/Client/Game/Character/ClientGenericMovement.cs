@@ -1,13 +1,14 @@
+using Unity.Netcode;
 using UnityEngine;
 
 namespace LF2.Client
 {
     /// <summary>
     /// Generic movement object that updates transforms based on the state of an INetMovement source.
-    /// This is part of a temporary movement system that will be replaced once MLAPI can drive movement
-    /// internally.
+    /// This is part of a temporary movement system that will be replaced once Netcode for GameObjects can drive
+    /// movement internally.
     /// </summary>
-    public class ClientGenericMovement : MLAPI.NetworkBehaviour
+    public class ClientGenericMovement : NetworkBehaviour
     {
         private INetMovement m_MovementSource;
         private Rigidbody m_Rigidbody;
@@ -21,7 +22,7 @@ namespace LF2.Client
             m_Rigidbody = GetComponent<Rigidbody>(); //this may be null.
         }
 
-        public override void NetworkStart()
+        public override void OnNetworkSpawn()
         {
             if (IsServer)
             {

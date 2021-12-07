@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using MLAPI;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace LF2.Server
@@ -55,7 +55,7 @@ namespace LF2.Server
             // }
         }
 
-        public override void NetworkStart()
+        public override void OnNetworkSpawn()
         {
             if (!IsServer) { enabled = false; }
             else
@@ -66,14 +66,13 @@ namespace LF2.Server
                 // NetState.OnStopChargingUpServer += OnStoppedChargingUp;
                 NetState.NetworkLifeState.LifeState.OnValueChanged += OnLifeStateChanged;
 
-                NetState.ApplyCharacterData();
-
-                // if (m_StartingAction != StateType.None)
+                // if (NetState.IsNpc)
                 // {
-                //     var startingAction = new StateRequestData() { StateTypeEnum = m_StartingAction };
-                //     PlayAction(ref startingAction);
+                //     m_AIBrain = new AIBrain(this, m_ActionPlayer);
                 // }
-                // m_statePlayer = State.NormalState;
+
+                NetState.HitPoints = NetState.CharacterClass.BaseHP.Value;
+
             }
         }
 
@@ -157,7 +156,7 @@ namespace LF2.Server
                 // serverAnimationHandler.NetworkAnimator.SetTrigger("HitReact1");
             }
 
-            NetState.HitPoints = Mathf.Min(NetState.CharacterData.BaseHP.Value, NetState.HitPoints+HP);
+            NetState.HitPoints = Mathf.Min(NetState.CharacterClass.BaseHP.Value, NetState.HitPoints+HP);
 
             // if( m_AIBrain != null )
             // {

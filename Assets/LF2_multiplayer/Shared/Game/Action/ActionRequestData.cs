@@ -1,5 +1,5 @@
-using MLAPI.Serialization;
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace LF2
@@ -104,18 +104,18 @@ namespace LF2
             return flags;
         }
 
-        public void NetworkSerialize(NetworkSerializer serializer)
+       public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             PackFlags flags = PackFlags.None;
-            if (!serializer.IsReading)
+            if (!serializer.IsReader)
             {
                 flags = GetPackFlags();
             }
 
-            serializer.Serialize(ref StateTypeEnum);
-            serializer.Serialize(ref flags);
+            serializer.SerializeValue(ref StateTypeEnum);
+            serializer.SerializeValue(ref flags);
 
-            if (serializer.IsReading)
+            if (serializer.IsReader)
             {
                 ShouldQueue = (flags & PackFlags.ShouldQueue) != 0;
                 CancelMovement = (flags & PackFlags.CancelMovement) != 0;
@@ -124,19 +124,19 @@ namespace LF2
 
             if ((flags & PackFlags.HasPosition) != 0)
             {
-                serializer.Serialize(ref Position);
+                serializer.SerializeValue(ref Position);
             }
             if ((flags & PackFlags.HasDirection) != 0)
             {
-                serializer.Serialize(ref Direction);
+                serializer.SerializeValue(ref Direction);
             }
             if ((flags & PackFlags.HasTargetIds) != 0)
             {
-                serializer.Serialize(ref TargetIds);
+                serializer.SerializeValue(ref TargetIds);
             }
             if ((flags & PackFlags.HasAmount) != 0)
             {
-                serializer.Serialize(ref Amount);
+                serializer.SerializeValue(ref Amount);
             }
         }
     }

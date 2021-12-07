@@ -1,7 +1,7 @@
-using MLAPI;
+using Unity.Netcode;
 using System.Collections.Generic;
 using System.IO;
-using MLAPI.Spawning;
+
 using UnityEngine;
 
 namespace LF2.Server
@@ -66,7 +66,7 @@ namespace LF2.Server
             m_ProjectileInfo = projectileInfo;
         }
 
-        public override void NetworkStart(Stream stream)
+        public override void OnNetworkSpawn()
         {
             if (!IsServer)
             {
@@ -140,7 +140,7 @@ namespace LF2.Server
 
                         //retrieve the person that created us, if he's still around.
                         NetworkObject spawnerNet;
-                        NetworkSpawnManager.SpawnedObjects.TryGetValue(m_SpawnerId, out spawnerNet);
+                        NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(m_SpawnerId, out spawnerNet);
                         ServerCharacter spawnerObj = spawnerNet != null ? spawnerNet.GetComponent<ServerCharacter>() : null;
 
                         m_CollisionCache[i].GetComponent<IDamageable>().ReceiveHP(spawnerObj, -m_ProjectileInfo.Damage);

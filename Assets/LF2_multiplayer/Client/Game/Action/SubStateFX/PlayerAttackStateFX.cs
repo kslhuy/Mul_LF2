@@ -1,5 +1,4 @@
-using MLAPI;
-using MLAPI.Spawning;
+using Unity.Netcode;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,7 +24,7 @@ namespace LF2.Visual{
                 PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz);
             }
             base.Enter();
-            PlayHitReact();
+            // PlayHitReact();
         }
 
 
@@ -59,34 +58,34 @@ namespace LF2.Visual{
 
 
 
-        private void PlayHitReact()
-        {
-            // if (m_ImpactPlayed) { return; }
-            // m_ImpactPlayed = true;
-            // Debug.Log("PlayHitReact");
-            Debug.Log(Data);
-            //Is my original target still in range? Then definitely get him!
-            if (Data.TargetIds != null && Data.TargetIds.Length > 0 && NetworkSpawnManager.SpawnedObjects.ContainsKey(Data.TargetIds[0]))
-            {
-                NetworkObject originalTarget = NetworkSpawnManager.SpawnedObjects[Data.TargetIds[0]];
+        // private void PlayHitReact()
+        // {
+        //     // if (m_ImpactPlayed) { return; }
+        //     // m_ImpactPlayed = true;
+        //     // Debug.Log("PlayHitReact");
+        //     Debug.Log(Data);
+        //     //Is my original target still in range? Then definitely get him!
+        //     if (Data.TargetIds != null && Data.TargetIds.Length > 0 && NetworkSpawnManager.SpawnedObjects.ContainsKey(Data.TargetIds[0]))
+        //     {
+        //         NetworkObject originalTarget = NetworkSpawnManager.SpawnedObjects[Data.TargetIds[0]];
   
-                if( originalTarget.NetworkObjectId != m_PlayerFX.m_ClientVisual.NetworkObjectId )
-                {
-                    // string hitAnim = Description.ReactAnim;
-                    // if(string.IsNullOrEmpty(hitAnim)) { hitAnim = k_DefaultHitReact; }
-                    var clientChar = originalTarget.GetComponent<Client.ClientCharacter>();
-                    // Debug.Log(originalTarget);
+        //         if( originalTarget.NetworkObjectId != m_PlayerFX.m_ClientVisual.NetworkObjectId )
+        //         {
+        //             // string hitAnim = Description.ReactAnim;
+        //             // if(string.IsNullOrEmpty(hitAnim)) { hitAnim = k_DefaultHitReact; }
+        //             var clientChar = originalTarget.GetComponent<Client.ClientCharacter>();
+        //             // Debug.Log(originalTarget);
 
-                    if (clientChar && clientChar.ChildVizObject && clientChar.ChildVizObject.OurAnimator)
-                    {
-                        clientChar.ChildVizObject.OurAnimator.Play("Hurt1_anim");
-                    }
-                }
+        //             if (clientChar && clientChar.ChildVizObject && clientChar.ChildVizObject.OurAnimator)
+        //             {
+        //                 clientChar.ChildVizObject.OurAnimator.Play("Hurt1_anim");
+        //             }
+        //         }
 
-            }
+        //     }
 
             //in the future we may do another physics check to handle the case where a target "ran under our weapon".
             //But for now, if the original target is no longer present, then we just don't play our hit react on anything.
         }
-    }
+    
 }

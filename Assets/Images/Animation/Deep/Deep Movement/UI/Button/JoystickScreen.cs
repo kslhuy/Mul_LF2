@@ -2,7 +2,7 @@ using System;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.InputSystem.Layouts;
-// using MLAPI;
+// using Unity.Netcode;
 
 
 ////TODO: custom icon for OnScreenStick component
