@@ -156,7 +156,7 @@ namespace LF2.Visual
         {
             m_PartyHealthSliders[slot].maxValue = netState.CharacterClass.BaseHP.Value;
             m_PartyHealthSliders[slot].value = netState.HitPoints;
-            m_PartyNames[slot].text = GetPlayerName(netState);
+            // m_PartyNames[slot].text = GetPlayerName(netState);
 
             // m_PartyClassSymbols[slot].sprite = netState.CharacterClass.ClassBannerLit;
         }

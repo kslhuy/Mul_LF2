@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+
 namespace LF2.Server
 {
-
-
     /// <summary>
     /// The abstract parent class that all State derive from.
     /// </summary>

@@ -31,8 +31,15 @@ namespace LF2
     /// Contains all NetworkVariables and RPCs of a character. This component is present on both client and server objects.
     /// </summary>
     [RequireComponent(typeof(NetworkHealthState), typeof(NetworkLifeState))]
-    public class NetworkCharacterState : NetworkBehaviour, ITargetable
+    public class NetworkCharacterState : NetworkBehaviour, ITargetable , INetMovement
     {
+
+        public void InitNetworkRotationY(float initRotationY)
+        {
+            NetworkRotationY.Value = initRotationY;        
+        }
+        public NetworkVariable<float> NetworkRotationY { get; } = new NetworkVariable<float>();
+
         /// Indicates how the character's movement should be depicted.
         public NetworkVariable<MovementStatus> MovementStatus { get; } = new NetworkVariable<MovementStatus>();
 
@@ -204,5 +211,7 @@ namespace LF2
         {
             OnStopChargingUpClient?.Invoke(percentCharged);
         }
+
+
     }
 }

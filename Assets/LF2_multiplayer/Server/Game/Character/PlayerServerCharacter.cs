@@ -28,11 +28,8 @@ namespace LF2.Server
             {
                 enabled = false;
             }
-        }
-
-        void OnEnable()
-        {
             s_ActivePlayers.Add(m_CachedServerCharacter);
+
         }
 
         void OnDisable()

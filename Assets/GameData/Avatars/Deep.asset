@@ -15,5 +15,5 @@ MonoBehaviour:
   m_Guid: f84e57ddc6e0a0418a25dab8ebdd6078
   CharacterClass: {fileID: 11400000, guid: c4bca58da2bd1e7429512482e4d8477b, type: 2}
   Graphics: {fileID: 5307423579264072845, guid: 044bb5afde6bc784b8fa4a16b0a1e4d7, type: 3}
-  GraphicsCharacterSelect: {fileID: 5307423579264072845, guid: 044bb5afde6bc784b8fa4a16b0a1e4d7, type: 3}
+  GraphicsCharacterSelect: {fileID: 5307423579264072845, guid: 4689bd9a9e25265419471fed94ce6b58, type: 3}
   Portrait: {fileID: 21300000, guid: a46a7e576dd62b345be5401f70e86768, type: 3}

@@ -159,12 +159,12 @@ namespace LF2.Server
 
             var newPlayer = Instantiate(m_PlayerPrefab, Vector3.zero, Quaternion.identity);
 
-            // var physicsTransform = newPlayer.GetComponent<ServerCharacter>().physicsWrapper.Transform;
+            var physicsTransform = newPlayer.GetComponent<ServerCharacter>().physicsWrapper.Transform;
 
-            // if (spawnPoint != null)
-            // {
-            //     physicsTransform.SetPositionAndRotation(spawnPoint.position, spawnPoint.rotation);
-            // }
+            if (spawnPoint != null)
+            {
+                physicsTransform.SetPositionAndRotation(spawnPoint.position, spawnPoint.rotation);
+            }
 
             var persistentPlayerExists = playerNetworkObject.TryGetComponent(out PersistentPlayer persistentPlayer);
             Assert.IsTrue(persistentPlayerExists,

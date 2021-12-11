@@ -33,26 +33,16 @@ namespace LF2.Client
 
         Vector2 direction;
         public bool AttackInput{get;private set;}
-        public bool DefenseInput{get;private set;}
-
-        public Collider m_Collider;
-
-        
+        public bool DefenseInput{get;private set;}     
 
 
         #endregion
 
         //COMBO  
-        // public KeyPress currentKeyPress{get;private set;}
-        // public List<KeyPress> currentCombo = new List<KeyPress>();
-        // public List<ComboAttack> avilableSkills;
 
-
-        // public event Action<TypeSkills> ComboTrigger;
 
         ////// ********* NEW ****** ///
         private NetworkCharacterState m_NetworkCharacter;
-        private Vector3 size;
 
         private struct ActionRequest
         {
@@ -60,27 +50,42 @@ namespace LF2.Client
             public StateType RequestedAction;
             public ulong TargetId;
         }
- 
+        
+        #region event
         private readonly ActionRequest[] m_ActionRequests = new ActionRequest[1];
         public event Action<Vector2> ClientMoveEvent;
+        public Action<StateRequestData> ActionInputEvent; 
+            
+        #endregion
 
+
+        [SerializeField]
+        CharacterClassContainer m_CharacterClassContainer;
 
         /// <summary>
         /// Convenience getter that returns our CharacterData
         /// </summary>
-        CharacterClass CharacterData => GameDataSource.Instance.CharacterDataByType[m_NetworkCharacter.CharacterType];
+        CharacterClass CharacterData => m_CharacterClassContainer.CharacterClass;
+
+        [SerializeField]
+        PhysicsWrapper m_PhysicsWrapper;
+
+        [SerializeField]
+        Rigidbody m_rigid;
 
         
         /// <summary>
         /// This event fires at the time when an action request is sent to the server.
         /// </summary>
-        public Action<StateRequestData> ActionInputEvent;
         private int m_ActionRequestCount;
 
 
+        #region linh tinh
+            
         public float directionMarngitude = 4f;
         public float JumpHieght = 10f;
         public float m_MaxDistance = 0.2f;
+        #endregion
 
         // COMBO
 
@@ -91,77 +96,41 @@ namespace LF2.Client
                     // dont need to do anything else if not the owner
                     return;
                 }
-
-            // var classJumpCombo = GameObject.FindGameObjectWithTag("JumpUI").GetComponent<JumpButton>();            
-
-            // var classAttackCombo = GameObject.FindGameObjectWithTag("AttackUI").GetComponent<AttackButton>();            
-            
-            // var joystickScreen  = GameObject.FindGameObjectWithTag("Joystick").GetComponent<JoystickScreen>();            
-            
-            // find the hero action UI bar
-            GameObject actionUIobj = GameObject.FindGameObjectWithTag("HeroActionBar");
-            actionUIobj.GetComponent<Visual.HeroActionBar>().RegisterInputSender(this);
         }
 
         private void Awake(){
 
             m_NetworkCharacter = GetComponent<NetworkCharacterState>();
-            
-
-            // joystickScreen.SendControlValue += OnMoveInputUI;
-            // classJumpCombo.classJumpComboEvent += PerformCombo;
-            // classAttackCombo.classAttackComboEvent += PerformCombo;
-
-            // NGU , only need is run or not , dont need direction
-            // var runLeftButton = GameObject.FindObjectOfType<RunLeftButton>().GetComponent<RunLeftButton>();            
-            // var runRightButton = GameObject.FindObjectOfType<RunRightButton>().GetComponent<RunRightButton>();           
-
-            // runLeftButton.runLeftEvent += GoRun;
-            // runRightButton.runRightEvent += GoRun;
-
-
         }
 
         private void SendInput(StateRequestData action)
         {
+            // if (action.StateTypeEnum == StateType.Jump)
+            //     m_rigid.AddForce(Vector3.up*8f,ForceMode.Impulse);
             ActionInputEvent?.Invoke(action);
             m_NetworkCharacter.RecvDoActionServerRPC(action);
         }
 
-        // private void GoRun()
-        // {
-        //     canRun = true;
+
+        // private void OnDrawGizmos() {
+        //     Debug.DrawRay(transform.position , transform.forward,Color.blue);
+        //     Debug.DrawRay(transform.position , transform.up,Color.red);
+        //     Debug.DrawRay(transform.position , transform.right,Color.green);
+        //     // Gizmos.DrawCube(transform.position , transform.forward,Color.blue);
+
+        //     size =  new Vector3(m_Collider.bounds.extents.x,m_Collider.bounds.extents.y,m_Collider.bounds.size.z);
+        //     // Debug.Log(size);
+        //     //Draw a Ray forward from GameObject toward the maximum distance
+        //     Gizmos.DrawRay(m_Collider.bounds.center, transform.right * m_MaxDistance);
+        //     //Draw a cube at the maximum distance
+        //     Gizmos.DrawWireCube(m_Collider.bounds.center + transform.right * m_MaxDistance, size);
         // }
-
-        // private void PerformCombo(TypeSkills typeCombo)
-        // {
-        //     ComboTrigger?.Invoke(typeCombo);
-        // }
-
-
-
-
-        private void OnDrawGizmos() {
-            Debug.DrawRay(transform.position , transform.forward,Color.blue);
-            Debug.DrawRay(transform.position , transform.up,Color.red);
-            Debug.DrawRay(transform.position , transform.right,Color.green);
-            // Gizmos.DrawCube(transform.position , transform.forward,Color.blue);
-
-            size =  new Vector3(m_Collider.bounds.extents.x,m_Collider.bounds.extents.y,m_Collider.bounds.size.z);
-            // Debug.Log(size);
-            //Draw a Ray forward from GameObject toward the maximum distance
-            Gizmos.DrawRay(m_Collider.bounds.center, transform.right * m_MaxDistance);
-            //Draw a cube at the maximum distance
-            Gizmos.DrawWireCube(m_Collider.bounds.center + transform.right * m_MaxDistance, size);
-        
-        }
         public void OnMoveInput(InputAction.CallbackContext context){
             
 
             RawMovementInput = context.ReadValue<Vector2>();
             // Debug.Log(RawMovementInput);
             if (context.started){
-            
                 m_NetworkCharacter.SendCharacterInputServerRpc(RawMovementInput);
                 //Send to client 
                 ClientMoveEvent?.Invoke(RawMovementInput);
@@ -190,7 +159,7 @@ namespace LF2.Client
             //Send to client 
             ClientMoveEvent?.Invoke(inputUI);
             // a changer 
-            direction.Set(inputUI.x * directionMarngitude,JumpHieght) ;
+            // direction.Set(inputUI.x * directionMarngitude,JumpHieght) ;
                        
         }
 
@@ -245,8 +214,6 @@ namespace LF2.Client
         /// <param name="triggerStyle">What input style triggered this action.</param>
         public void RequestAction(StateType action, ulong targetId = 0)
         {
-
-
             if (m_ActionRequestCount < m_ActionRequests.Length)
             {
                 m_ActionRequests[m_ActionRequestCount].RequestedAction = action;
@@ -254,9 +221,6 @@ namespace LF2.Client
                 m_ActionRequests[m_ActionRequestCount].TargetId = targetId;
                 m_ActionRequestCount++;
             }
-
-    
-
         }
 
         /// <summary>

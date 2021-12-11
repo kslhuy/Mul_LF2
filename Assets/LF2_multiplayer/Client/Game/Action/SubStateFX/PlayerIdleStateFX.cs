@@ -13,12 +13,7 @@ namespace LF2.Visual{
 
         public override void AnticipateState(StateRequestData data)
         {
-            // if (data.StateTypeEnum == StateType.Attack || data.StateTypeEnum == StateType.Jump || data.StateTypeEnum == StateType.Defense ){
-            //     m_PlayerFX.stateMachineViz.GetState(data.StateTypeEnum).PlayAnim(data.StateTypeEnum);
-            // }
             m_PlayerFX.stateMachineViz.GetState(data.StateTypeEnum).PlayAnim(data.StateTypeEnum);
-
-
         }
 
 
@@ -37,7 +32,6 @@ namespace LF2.Visual{
                 PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz);
             }
             base.Enter();
-            // player.JumpState.ResetAmountOfJumpsLeft();
         }
 
         public override void PlayAnim(StateType currentState)

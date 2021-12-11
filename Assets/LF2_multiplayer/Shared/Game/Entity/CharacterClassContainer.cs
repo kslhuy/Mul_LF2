@@ -17,9 +17,11 @@ namespace LF2
             {
                 if (m_CharacterClass == null)
                 {
+                    // Debug.Log(m_State.RegisteredAvatar.CharacterClass);
                     m_CharacterClass = m_State.RegisteredAvatar.CharacterClass;
+                    // Debug.Log(m_CharacterClass);
                 }
-
+                // Debug.Log(m_CharacterClass);
                 return m_CharacterClass;
             }
         }
@@ -29,11 +31,13 @@ namespace LF2
         private void Awake()
         {
             m_State = GetComponent<NetworkAvatarGuidState>();
+            // Debug.Log(m_State);
         }
 
         public void SetCharacterClass(CharacterClass characterClass)
         {
             m_CharacterClass = characterClass;
+            // Debug.Log(m_CharacterClass);
         }
     }
 }

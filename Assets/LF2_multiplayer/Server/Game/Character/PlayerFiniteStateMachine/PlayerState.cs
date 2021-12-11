@@ -22,10 +22,9 @@ namespace LF2.Server{
             this.serverplayer = serverplayer;
             ServerCharacterMovement = serverCharacterMovement;
             stateMachine = new PlayerStateMachine();
-            stateMachine.ChangeState(StateType.Idle);
 
             CharacterTypeEnum chacterType =  serverplayer.NetState.CharacterType;
-            
+            // Debug.Log(chacterType);
             stateMachine.RegisterState(new PlayerIdleState(chacterType, this ));
             stateMachine.RegisterState(new PlayerMoveState(chacterType,this ));
             stateMachine.RegisterState(new PlayerJumpState(chacterType,this ));
@@ -40,6 +39,9 @@ namespace LF2.Server{
 
 
             stateMachine.RegisterState(new PlayerDDAState(chacterType,this));
+
+            stateMachine.ChangeState(StateType.Idle);
+
             
 
         }

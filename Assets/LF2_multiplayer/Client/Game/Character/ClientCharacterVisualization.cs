@@ -16,11 +16,11 @@ namespace LF2.Visual
         [SerializeField]
         private Animator m_ClientVisualsAnimator;
 
-        [SerializeField]
-        private CharacterSwap m_CharacterSwapper;
+        // [SerializeField]
+        // private CharacterSwap m_CharacterSwapper;
 
-        [SerializeField]
-        private VisualizationConfiguration m_VisualizationConfiguration;
+        // [SerializeField]
+        // private VisualizationConfiguration m_VisualizationConfiguration;
         
 
         /// <summary>
@@ -31,9 +31,17 @@ namespace LF2.Visual
         public bool CanPerformActions { get { return m_NetState.CanPerformActions; } }
 
 
+        PhysicsWrapper m_PhysicsWrapper;
+
+        
+        // public CoreMovement m_coreMovement {get ; private set;}
+        [SerializeField]
+        public CoreMovement coreMovement  ;
+
+
         private NetworkCharacterState m_NetState;
 
-        public Transform Parent { get; private set; }
+        // public Transform Parent { get; private set; }
 
         private PlayerStateFX m_statePlayerViz;
 
@@ -47,7 +55,9 @@ namespace LF2.Visual
         private ClientInputSender inputSender;
         private float m_MaxDistance = 0.2f;
 
-        event Action Destroyed;
+
+        public event Action<Animator> animatorSet;
+
 
         /// <inheritdoc />
         public void Start()
@@ -58,12 +68,22 @@ namespace LF2.Visual
                 return;
             }
 
-            // m_HitStateTriggerID = Animator.StringToHash(ActionFX.k_DefaultHitReact);
-
-
-
             m_NetState = GetComponentInParent<NetworkCharacterState>();
-            Parent = m_NetState.transform;
+
+
+            // Parent = m_NetState.transform;
+
+            // if (Parent.TryGetComponent(out ClientAvatarGuidHandler clientAvatarGuidHandler))
+            // {
+            //     m_ClientVisualsAnimator = clientAvatarGuidHandler.graphicsAnimator;
+
+            //     // Netcode for GameObjects (Netcode) does not currently support NetworkAnimator binding at runtime. The
+            //     // following is a temporary workaround. Future refactorings will enable this functionality.
+            //     animatorSet?.Invoke(clientAvatarGuidHandler.graphicsAnimator);
+            // }
+
+            m_PhysicsWrapper = m_NetState.GetComponent<PhysicsWrapper>();
+            m_statePlayerViz = new PlayerStateFX( this,m_NetState.CharacterType);
 
 
             m_NetState.DoActionEventClient += PerformActionFX;
@@ -72,44 +92,32 @@ namespace LF2.Visual
             m_NetState.OnStopChargingUpClient += OnStoppedChargingUp;
             m_NetState.IsStealthy.OnValueChanged += OnStealthyChanged;
 
-
-            m_statePlayerViz = new PlayerStateFX( this,m_NetState.CharacterType);
-
-
             // sync our visualization position & rotation to the most up to date version received from server
-            // var parentMovement = m_NetState.GetComponent<INetMovement>();
-            // transform.position = parentMovement.NetworkPosition.Value;
-            // transform.rotation = Quaternion.Euler(0, parentMovement.NetworkRotationY.Value, 0);
 
-            transform.SetPositionAndRotation(m_NetState.transform.position, m_NetState.transform.rotation);
+            transform.SetPositionAndRotation(m_PhysicsWrapper.Transform.position, m_PhysicsWrapper.Transform.rotation);
 
 
-   
             // ...and visualize the current char-select value that we know about
             SetAppearanceSwap();
 
-            // sync our animator to the most up to date version received from server
-            // SyncEntryAnimation(m_NetState.LifeState);
 
-               if (!m_NetState.IsNpc)
+            if (!m_NetState.IsNpc)
             {
                 name = "AvatarGraphics" + m_NetState.OwnerClientId;
 
                 if (m_NetState.IsOwner)
                 {
-                    // ActionRequestData data = new ActionRequestData { ActionTypeEnum = ActionType.GeneralTarget };
-                    // m_ActionViz.PlayAction(ref data);
                     // gameObject.AddComponent<CameraController>();
-
-                    if (TryGetComponent(out ClientInputSender inputSender))
+                    ClientInputSender inputSender = GetComponentInParent<ClientInputSender>();
+                    // Debug.Log(inputSender);
+                    // TODO: revisit; anticipated actions would play twice on the host
+                    if (!NetworkManager.Singleton.IsServer)
                     {
-                        // TODO: revisit; anticipated actions would play twice on the host
-                        if (!NetworkManager.Singleton.IsServer)
-                        {
-                            inputSender.ActionInputEvent += OnActionInput;
-                        }
-                        inputSender.ClientMoveEvent += OnMoveInput;
+                        inputSender.ActionInputEvent += OnActionInput;
+                        
                     }
+                    inputSender.ClientMoveEvent += OnMoveInput;
+                
                 }
             }
         }
@@ -148,12 +156,10 @@ namespace LF2.Visual
                 m_NetState.OnStopChargingUpClient -= OnStoppedChargingUp;
                 m_NetState.IsStealthy.OnValueChanged -= OnStealthyChanged;
 
+                ClientInputSender inputSender = GetComponentInParent<ClientInputSender>();
+                inputSender.ActionInputEvent -= OnActionInput;
+                inputSender.ClientMoveEvent -= OnMoveInput;
 
-                if (Parent != null && Parent.TryGetComponent(out ClientInputSender sender))
-                {
-                    sender.ActionInputEvent -= OnActionInput;
-                    sender.ClientMoveEvent -= OnMoveInput;
-                }
             }
 
         }
@@ -172,23 +178,7 @@ namespace LF2.Visual
         {
         }
 
-        // private void OnLifeStateChanged(LifeState previousValue, LifeState newValue)
-        // {
-        //     switch (newValue)
-        //     {
-        //         case LifeState.Alive:
-        //             m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.AliveStateTriggerID);
-        //             break;
-        //         case LifeState.Fainted:
-        //             m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.FaintedStateTriggerID);
-        //             break;
-        //         case LifeState.Dead:
-        //             m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.DeadStateTriggerID);
-        //             break;
-        //         default:
-        //             throw new ArgumentOutOfRangeException(nameof(newValue), newValue, null);
-        //     }
-        // }
+
 
         // private void OnHealthChanged(int previousValue, int newValue)
         // {
@@ -228,7 +218,19 @@ namespace LF2.Visual
 
         void Update()
         {
+            // if (Parent == null)
+            // {
+            //     // since we aren't in the transform hierarchy, we have to explicitly die when our parent dies.
+            //     Destroy(gameObject);
+            //     return;
+            // }
+
+            // NetworkTransform is interpolated - we can just apply it's position value to our visual object
+            // transform.position = m_PhysicsWrapper.Transform.position;
+            // transform.rotation = m_PhysicsWrapper.Transform.rotation;
+
             m_statePlayerViz.Update();
+            
         }
 
         // Huy : Not use Yet        

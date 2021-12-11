@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace LF2.Visual{
 
-    public class PlayerDoubleJumpStateFX : StateFX
+    public class PlayerDoubleJumpStateFX : PlayerAirStateFX
     {
 
         public PlayerDoubleJumpStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX ) : base(characterType, m_PlayerFX)
@@ -31,6 +31,12 @@ namespace LF2.Visual{
             m_PlayerFX.m_ClientVisual.OurAnimator.Play("DoubleJump_anim");
         }
 
+        
+        public override void End(){
+            base.End();
+        }
+
+
 
 
         public override StateType GetId()
@@ -39,7 +45,7 @@ namespace LF2.Visual{
         }
 
         public override bool LogicUpdate() {
-            return true;
+            return base.LogicUpdate();
         }
 
     }

@@ -1,14 +1,16 @@
 using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 namespace LF2.Server
 {
-    [RequireComponent(typeof(ServerCharacterMovement), typeof(NetworkCharacterState))]
+    // [RequireComponent(typeof(ServerCharacterMovement), typeof(NetworkCharacterState))]
     public class ServerCharacter : NetworkBehaviour, IDamageable
     {
-        public NetworkCharacterState NetState { get; private set; }
+        [SerializeField]
+        NetworkCharacterState m_NetworkCharacterState;
+
+        public NetworkCharacterState NetState => m_NetworkCharacterState;
 
         /// <summary>
         /// Returns true if this Character is an NPC.
@@ -37,22 +39,26 @@ namespace LF2.Server
         // private AIBrainNew m_AIBrain;
 
         // Cached component reference
-        private ServerCharacterMovement m_Movement;
+        [SerializeField]
+        ServerCharacterMovement m_Movement;
+
+        public ServerCharacterMovement Movement => m_Movement;
+
+        [SerializeField]
+        PhysicsWrapper m_PhysicsWrapper;
+
+        public PhysicsWrapper physicsWrapper => m_PhysicsWrapper;
+
+        [SerializeField]
+        ServerAnimationHandler m_ServerAnimationHandler;
+
+        public ServerAnimationHandler serverAnimationHandler => m_ServerAnimationHandler;
         
 
 
-        private void Awake()
+        private void Start()
         {
-            m_Movement = GetComponent<ServerCharacterMovement>();
-            NetState = GetComponent<NetworkCharacterState>();
-
             m_statePlayer = new PlayerState(this,m_Movement);
-
-            
-            // if (IsNpc)
-            // {
-            //     m_AIBrain = new AIBrainNew(this);
-            // }
         }
 
         public override void OnNetworkSpawn()
@@ -60,7 +66,6 @@ namespace LF2.Server
             if (!IsServer) { enabled = false; }
             else
             {
-                NetState = GetComponent<NetworkCharacterState>();
                 NetState.DoActionEventServer += OnActionPlayRequest;
                 NetState.ReceivedClientInput += OnClientMoveRequest;
                 // NetState.OnStopChargingUpServer += OnStoppedChargingUp;
@@ -76,7 +81,7 @@ namespace LF2.Server
             }
         }
 
-        public void OnDestroy()
+        public override void OnNetworkDespawn()
         {
             if (NetState)
             {

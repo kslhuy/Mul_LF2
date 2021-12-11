@@ -1,8 +1,9 @@
 using Unity.Netcode;
-
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using LF2.Client;
+
 // using SkillTriggerStyle = LF2.Client.ClientInputSender.SkillTriggerStyle;
 using UnityEngine.InputSystem.OnScreen;
 
@@ -76,14 +77,22 @@ namespace LF2.Visual
 
 
 
-
+        private void Awake() {
+            ClientPlayerAvatar.LocalClientSpawned += RegisterInputSender;
+            ClientPlayerAvatar.LocalClientDespawned += DeregisterInputSender;
+        }
         /// <summary>
         /// Called during startup by the ClientInputSender. In response, we cache the provided
         /// inputSender and self-initialize.
         /// </summary>
         /// <param name="inputSender"></param>
-        public void RegisterInputSender(Client.ClientInputSender inputSender)
+        public void RegisterInputSender(ClientPlayerAvatar clientPlayerAvatar)
         {
+            if (!clientPlayerAvatar.TryGetComponent(out ClientInputSender inputSender))
+            {
+                Debug.LogError("ClientInputSender not found on ClientPlayerAvatar!", clientPlayerAvatar);
+            }
+
             if (m_InputSender != null)
             {
                 Debug.LogWarning($"Multiple ClientInputSenders in scene? Discarding sender belonging to {m_InputSender.gameObject.name} and adding it for {inputSender.gameObject.name} ");
@@ -94,27 +103,25 @@ namespace LF2.Visual
             // m_NetState.TargetId.OnValueChanged += OnSelectionChanged;
             // UpdateAllActionButtons();
         }
+        void DeregisterInputSender()
+        {
+            m_InputSender = null;
+            // if (m_NetState)
+            // {
+            //     m_NetState.TargetId.OnValueChanged -= OnSelectionChanged;
+            // }
+            m_NetState = null;
+        }
 
 
         void OnEnable()
         {
-
-
             m_JoystickScreen.SendControlValue += JoystickDrag;
             m_AttackButton.AttackAction += OnAtack;
             m_DefenseButton.DefenseAction += OnDefense;
             m_JumpButton.JumpAction += OnJump;
-
-
         }
 
-        void OnDisable()
-        {
-            // foreach (ActionButtonInfo buttonInfo in m_ButtonInfo.Values)
-            // {
-            //     buttonInfo.UnregisterEventHandlers();
-            // }
-        }
 
         void OnDestroy()
         {
@@ -180,18 +187,20 @@ namespace LF2.Visual
 
         void OnDefense()
         {
-            if (DefensePressed){
-                if ( Time.time >= DefensePressedStartTime + m_InputHoldTime){
-                    DefensePressed = false;
-                }
-            } 
+            // if (DefensePressed){
+            //     if ( Time.time >= DefensePressedStartTime + m_InputHoldTime){
+            //         DefensePressed = false;
+            //     }
+            // } 
 
-            if (!DefensePressed){
-                DefensePressed = true;
-                DefensePressedStartTime = Time.time;
-                // send input to begin the action associated with this button
-                m_InputSender.RequestAction(StateType.Defense);
-            }
+            // if (!DefensePressed){
+            //     DefensePressed = true;
+            //     DefensePressedStartTime = Time.time;
+            //     // send input to begin the action associated with this button
+            //     m_InputSender.RequestAction(StateType.Defense);
+            // }
+            m_InputSender.RequestAction(StateType.Defense);
+
         }
 
 

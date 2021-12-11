@@ -11,13 +11,11 @@ namespace LF2.Visual{
         public StateFX[] statesViz; // All State we declare 
         public StateType CurrentStateViz; // CurrentState visual we are 
 
-        // private List<StateType> m_StateExpirable; // 
 
 
         public PlayerStateMachineFX(){
             int numberStates = System.Enum.GetNames(typeof(StateType)).Length;
             statesViz =  new StateFX[numberStates];
-            // m_StateExpirable = new List<StateType>();
 
         }
 
@@ -46,10 +44,14 @@ namespace LF2.Visual{
                 if (skillsDescription.expirable){
                     bool timeExpired =  GetState(CurrentStateViz).TimeRunning >= skillsDescription.DurationSeconds ;
                     // Check if this State Can End Naturally (== time Expired )
-                    if (!keepGoing || timeExpired ){
+                    if ( timeExpired ){
                         GetState(CurrentStateViz)?.End();
                     }
                 }
+                if (!keepGoing){
+                    GetState(CurrentStateViz)?.End();
+                }
+                
             }
         }
 
@@ -64,7 +66,6 @@ namespace LF2.Visual{
                 GetState(CurrentStateViz)?.Exit();
                 CurrentStateViz = data;
             }
-            // GetState(CurrentStateViz).Data = data;
             GetState(CurrentStateViz)?.Enter();
         }
 

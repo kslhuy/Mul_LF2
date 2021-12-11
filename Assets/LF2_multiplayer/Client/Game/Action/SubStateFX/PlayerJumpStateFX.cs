@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace LF2.Visual{
 
-    public class PlayerJumpStateFX : StateFX
+    public class PlayerJumpStateFX : PlayerAirStateFX
     {
         private int amountOfJumpLeft ;
 
@@ -28,28 +28,19 @@ namespace LF2.Visual{
             }
             base.Enter();
             amountOfJumpLeft--;
-         }
+        }
 
         public override void PlayAnim(StateType currentState)
         {
             base.PlayAnim(currentState);
             m_PlayerFX.m_ClientVisual.OurAnimator.Play("Jump_anim");
         }
-
-        public bool CanJump(){
-            if (amountOfJumpLeft > 0){
-                return true;
-            }else return false;
+        
+        public override void End(){
+            base.End();
         }
 
-        // public override void End(){
-        //     m_PlayerFX.stateMachineViz.ChangeState(StateType.Land);
-        // }
-        
-
-        // public void ResetAmountOfJumpsLeft()=> amountOfJumpLeft = playerData.amountOfJumpLeft;
-
-        public void DecreaseAmountOfJumpsLeft()=>amountOfJumpLeft--;
+ 
 
         public override StateType GetId()
         {
@@ -57,7 +48,7 @@ namespace LF2.Visual{
         }
 
         public override bool LogicUpdate() {
-            return true;
+            return base.LogicUpdate();
         }
 
     }

@@ -27,6 +27,7 @@ namespace LF2
             {
                 if (m_Avatar == null)
                 {
+
                     RegisterAvatar(AvatarGuid.Value.ToGuid());
                 }
 
@@ -37,10 +38,13 @@ namespace LF2
         private void Awake()
         {
             m_CharacterClassContainer = GetComponent<CharacterClassContainer>();
+            // Debug.Log(m_CharacterClassContainer);
         }
 
         public void RegisterAvatar(Guid guid)
         {
+            // Debug.Log("RegisteredAvatar");
+
             if (guid.Equals(Guid.Empty))
             {
                 // not a valid Guid

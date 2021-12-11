@@ -70,6 +70,7 @@
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SubState\PlayerDoubleJumpState.cs" />
      <Compile Include="Assets\Images\Animation\Deep\DeepDLA.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SubState\Combo\DUAstate.cs" />
+     <Compile Include="Assets\LF2_multiplayer\Client\Game\Entity\ClientAvatarGuidHandler.cs" />
      <Compile Include="Assets\Images\Animation\Deep\Deep Movement\Core\CoreComponents\CollisonSenses.cs" />
      <Compile Include="Assets\Images\Animation\Deep\Deep Movement\UI\Button\ButtonClass.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Game\Character\PlayerFinitState\PlayerStateMachineFX.cs" />
@@ -92,7 +93,6 @@
      <Compile Include="Assets\LF2_multiplayer\Client\UI\CharSelect\UICharSelectPlayerSeat.cs" />
      <Compile Include="Assets\Images\Animation\David\Skills\DavidAI_DUJstate.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SuperStates\PlayerAirState.cs" />
-     <Compile Include="Assets\LF2_multiplayer\Shared\Game\Action\ActionRequestData.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\ScriptableObjects\RuntimeCollection.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Game\Action\SubStateFX\PlayerIdleStateFX.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\Game\Action\StateType.cs" />
@@ -101,10 +101,10 @@
      <Compile Include="Assets\Images\Animation\Deep\Deep Movement\UI\Button\JumpButton.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\Game\Action\StateUtils.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Game\Character\PlayerFinitState\PlayerStateFX.cs" />
-     <Compile Include="Assets\LF2_multiplayer\Server\Game\Character\SetMovement.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\ScriptableObjects\CharacterClass.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Game\Action\SubStateFX\PlayerLandStateFX.cs" />
      <Compile Include="Assets\Images\Animation\Deep\Deep Movement\UI\Button\DownSlotButton.cs" />
+     <Compile Include="Assets\LF2_multiplayer\Shared\NetworkWinState.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\ClientPrefs.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Game\Character\ClientPlayerAvatar.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SubState\Attack\PlayerAttackJump1.cs" />
@@ -121,7 +121,6 @@
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SkillsState\PlayerDUAState.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\ScriptableObjects\TypeSkills.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Net\ServerGameNetPortal.cs" />
-     <Compile Include="Assets\Images\Animation\Deep\Deep Movement\Core\Core.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\Game\State\CharSelectData.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\Game\Entity\ITargetable.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Game\Action\StateFX.cs" />
@@ -154,6 +153,7 @@
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SkillsState\PlayerDDAState.cs" />
      <Compile Include="Assets\_\Stuff\CodeMonkey\Utils\UtilsClass.cs" />
      <Compile Include="Assets\_\Stuff\CodeMonkey\MonoBehaviours\PositionRendererSorter.cs" />
+     <Compile Include="Assets\LF2_multiplayer\Server\Game\Character\ServerAnimationHandler.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SubState\Combo\DDJstate.cs" />
      <Compile Include="Assets\Images\Animation\Deep\Deep Movement\UI\Button\OnScreenDrag.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\UI\CharSelect\RoomNameBox.cs" />
@@ -166,6 +166,7 @@
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SubState\Combo\DDAstate.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Game\Action\SkillsStateFX\PlayerDDAStateFX.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Game\LobbyResults.cs" />
+     <Compile Include="Assets\LF2_multiplayer\Shared\Game\Action\StateRequestData.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SubState\Attack\PlayerAttackState.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SubState\Combo\DLAstate.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SubState\PlayerLandState.cs" />
@@ -177,6 +178,7 @@
      <Compile Include="Assets\Images\Animation\Deep\Deep Movement\PlayerStates\Deep\ComboState\DeepDJAstate.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\Game\Entity\CharacterClassContainer.cs" />
      <Compile Include="Assets\Images\Animation\David\Skills\DavidAI_DDAstate.cs" />
+     <Compile Include="Assets\LF2_multiplayer\Shared\Game\Entity\PhysicsWrapper.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SubState\PlayerDefenseState.cs" />
      <Compile Include="Assets\_\Stuff\CodeMonkey\Utils\UI_Bar.cs" />
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\State.cs" />
@@ -205,7 +207,6 @@
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SubState\Combo\DUJstate.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\Game\Entity\NetworkCharacterState.cs" />
      <Compile Include="Assets\_\Stuff\CodeMonkey\Utils\UI_BarMultiple.cs" />
-     <Compile Include="Assets\Images\Animation\Deep\Deep Movement\Core\CoreComponents\CoreComponent.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\NetworkCharacterTypeState.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Game\Action\SubStateFX\PlayerJumpStateFX.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Game\Character\ClientCharacterVisualization.cs" />
@@ -213,7 +214,7 @@
      <Compile Include="Assets\_\Stuff\CodeMonkey\CMDebug.cs" />
      <Compile Include="Assets\_\Stuff\CodeMonkey\Utils\FunctionPeriodic.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Net\DisconnectReason.cs" />
-     <Compile Include="Assets\LF2_multiplayer\Shared\NetworkWinState.cs" />
+     <Compile Include="Assets\LF2_multiplayer\Shared\Game\Entity\CoreMovement.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
@@ -884,9 +885,6 @@
     <Reference Include="Unity.Rider.Editor">
         <HintPath>D:\LOISIR\dev game\LF2_mul\Mul_LF2\Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.PlasticSCM.Editor">
-        <HintPath>D:\LOISIR\dev game\LF2_mul\Mul_LF2\Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Netcode.Runtime">
         <HintPath>D:\LOISIR\dev game\LF2_mul\Mul_LF2\Library\ScriptAssemblies\Unity.Netcode.Runtime.dll</HintPath>
     </Reference>
@@ -895,6 +893,9 @@
     </Reference>
     <Reference Include="UnityEngine.UI">
         <HintPath>D:\LOISIR\dev game\LF2_mul\Mul_LF2\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.PlasticSCM.Editor">
+        <HintPath>D:\LOISIR\dev game\LF2_mul\Mul_LF2\Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Netcode.Components">
         <HintPath>D:\LOISIR\dev game\LF2_mul\Mul_LF2\Library\ScriptAssemblies\Unity.Netcode.Components.dll</HintPath>
@@ -919,6 +920,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="ClientNetworkTransform.csproj">
+      <Project>{3e302a3f-ab57-a635-4617-0bc9cb1558fc}</Project>
+      <Name>ClientNetworkTransform</Name>
+    </ProjectReference>
     <ProjectReference Include="ParrelSync.csproj">
       <Project>{43db83ed-6a3c-199e-907c-e3b33beacf2c}</Project>
       <Name>ParrelSync</Name>

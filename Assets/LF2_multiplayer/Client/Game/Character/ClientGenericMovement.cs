@@ -10,16 +10,16 @@ namespace LF2.Client
     /// </summary>
     public class ClientGenericMovement : NetworkBehaviour
     {
-        private INetMovement m_MovementSource;
-        private Rigidbody m_Rigidbody;
+        [SerializeField]
+        NetworkCharacterState m_MovementSource;
+        // private Rigidbody m_Rigidbody;
         private bool m_Initialized;
 
 
         // Start is called before the first frame update
         void Start()
         {
-            m_MovementSource = GetComponent<INetMovement>();
-            m_Rigidbody = GetComponent<Rigidbody>(); //this may be null.
+            // m_Rigidbody = GetComponent<Rigidbody>(); //this may be null.
         }
 
         public override void OnNetworkSpawn()
@@ -38,14 +38,14 @@ namespace LF2.Client
         {
             if (!m_Initialized) { return; }
 
-            transform.position = m_MovementSource.NetworkPosition.Value;
+            // transform.position = m_MovementSource.NetworkPosition.Value;
             transform.rotation = Quaternion.Euler(0, m_MovementSource.NetworkRotationY.Value, 0);
 
-            if (m_Rigidbody != null)
-            {
-                m_Rigidbody.position = transform.position;
-                m_Rigidbody.rotation = transform.rotation;
-            }
+            // if (m_Rigidbody != null)
+            // {
+            //     m_Rigidbody.position = transform.position;
+            //     m_Rigidbody.rotation = transform.rotation;
+            // }
         }
     }
 }

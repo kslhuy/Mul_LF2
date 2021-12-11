@@ -20,7 +20,7 @@ namespace LF2.Server
     /// <summary>
     /// Component responsible for moving a character on the server side based on inputs.
     /// </summary>
-    [RequireComponent(typeof(NetworkCharacterState), typeof(ServerCharacter)), RequireComponent(typeof(Rigidbody))]
+    // [RequireComponent(typeof(NetworkCharacterState), typeof(ServerCharacter)), RequireComponent(typeof(Rigidbody))]
     public class ServerCharacterMovement : NetworkBehaviour
     {
         [SerializeField] AnimationCurve m_gravity;
@@ -29,14 +29,17 @@ namespace LF2.Server
         public float JumpLength = 3f;
 
 
-        private Rigidbody m_Rigidbody;
         private BoxCollider m_BoxCollider;
-        private NetworkCharacterState m_NetworkCharacterState;
 
+        [SerializeField]
+        Rigidbody m_Rigidbody;
+
+        [SerializeField]
+        NetworkCharacterState m_NetworkCharacterState;
 
         private MovementState m_MovementState;
 
-        private ServerCharacter m_CharLogic;
+        // private ServerCharacter m_CharLogic;
 
         // when we are in charging and knockback mode, we use these additional variables
         private float m_ForcedSpeed;
@@ -57,9 +60,7 @@ namespace LF2.Server
 
         private void Awake()
         {
-            m_NetworkCharacterState = GetComponent<NetworkCharacterState>();
-            m_CharLogic = GetComponent<ServerCharacter>();
-            m_Rigidbody = GetComponent<Rigidbody>();
+            // m_CharLogic = GetComponent<ServerCharacter>();
             m_BoxCollider = GetComponent<BoxCollider>();
             FacingDirection = 1;
             m_MovementState = MovementState.Idle;
@@ -73,9 +74,8 @@ namespace LF2.Server
                 enabled = false;
                 return;
             }
-
+            m_NetworkCharacterState.InitNetworkRotationY(transform.rotation.eulerAngles.y);
             k_GroundLayerMask = LayerMask.GetMask(new[] { "Ground" });
-
 
         }
 
@@ -122,13 +122,13 @@ namespace LF2.Server
 
         public bool IsGounded(){
             bool hit_ground = Physics.Raycast(m_BoxCollider.bounds.center,Vector3.down ,m_BoxCollider.bounds.extents.y,k_GroundLayerMask);
-            Color rayColor;
-            if (!hit_ground){
-                rayColor = Color.green;
-            }else {
-                rayColor = Color.red;
-            }
-            Debug.DrawRay(m_BoxCollider.bounds.center , Vector3.down * (m_BoxCollider.bounds.extents.y),rayColor);
+            // Color rayColor;
+            // if (!hit_ground){
+            //     rayColor = Color.green;
+            // }else {
+            //     rayColor = Color.red;
+            // }
+            // Debug.DrawRay(m_BoxCollider.bounds.center , Vector3.down * (m_BoxCollider.bounds.extents.y),rayColor);
 
             return  hit_ground;
         }    
@@ -180,9 +180,8 @@ namespace LF2.Server
 
         private void FixedUpdate()
         {
+            m_NetworkCharacterState.NetworkRotationY.Value = transform.rotation.eulerAngles.y;
         }
-
-
  
 
         public void SetFallingDown()
@@ -209,29 +208,29 @@ namespace LF2.Server
         }
 
 
-        private float GetMaxMovementSpeed()
-        {
-            switch (m_MovementState)
-            {
-                case MovementState.Charging:
-                case MovementState.Knockback:
-                    return m_ForcedSpeed;
-                case MovementState.Idle:
-                case MovementState.Move:
-                default:
-                    return GetBaseMovementSpeed();
-            }
-        }
+        // private float GetMaxMovementSpeed()
+        // {
+        //     switch (m_MovementState)
+        //     {
+        //         case MovementState.Charging:
+        //         case MovementState.Knockback:
+        //             return m_ForcedSpeed;
+        //         case MovementState.Idle:
+        //         case MovementState.Move:
+        //         default:
+        //             return GetBaseMovementSpeed();
+        //     }
+        // }
 
-        /// <summary>
-        /// Retrieves the speed for this character's class.
-        /// </summary>
-        private float GetBaseMovementSpeed()
-        {
-            CharacterClass characterClass = GameDataSource.Instance.CharacterDataByType[m_CharLogic.NetState.CharacterType];
-            Assert.IsNotNull(characterClass, $"No CharacterClass data for character type {m_CharLogic.NetState.CharacterType}");
-            return characterClass.Speed;
-        }
+        // /// <summary>
+        // /// Retrieves the speed for this character's class.
+        // /// </summary>
+        // private float GetBaseMovementSpeed()
+        // {
+        //     CharacterClass characterClass = GameDataSource.Instance.CharacterDataByType[m_CharLogic.NetState.CharacterType];
+        //     Assert.IsNotNull(characterClass, $"No CharacterClass data for character type {m_CharLogic.NetState.CharacterType}");
+        //     return characterClass.Speed;
+        // }
 
         // /// <summary>
         // /// Determines the appropriate MovementStatus for the character. The
@@ -254,7 +253,6 @@ namespace LF2.Server
         public void CheckIfShouldFlip(int xInput){
             if (xInput != 0 && xInput != FacingDirection){
                 Flip();
-
             }
         }
         public void Flip(){

@@ -253,11 +253,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 941767246}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 1.456223, y: -1.4466981, z: -11.078214}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 1030833435}
-  m_RootOrder: 0
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &963194225
 GameObject:
@@ -385,8 +385,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.456223, y: -1.4466981, z: -11.078214}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 941767248}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -424,8 +423,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1032217011}
-  - component: {fileID: 1032217012}
   - component: {fileID: 1032217010}
+  - component: {fileID: 1032217009}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -433,6 +432,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1032217009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1032217008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b045b0eac18ee54b9491bfeb35c242c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IpHostTransport: {fileID: 1136594922}
+  m_RelayTransport: {fileID: 1523281651}
+  m_UnityRelayTransport: {fileID: 0}
 --- !u!114 &1032217010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -459,20 +473,20 @@ MonoBehaviour:
       SourceHashToOverride: 0
       OverridingTargetPrefab: {fileID: 0}
     - Override: 0
-      Prefab: {fileID: 3165636493918647440, guid: e1e6fa40b644751498970cb113c8b0a1, type: 3}
+      Prefab: {fileID: 2211256271649509472, guid: e62e45e324d80bc488d62f02a2bb6725, type: 3}
       SourcePrefabToOverride: {fileID: 0}
       SourceHashToOverride: 0
       OverridingTargetPrefab: {fileID: 0}
     TickRate: 30
     ClientConnectionBufferTimeout: 10
-    ConnectionApproval: 1
+    ConnectionApproval: 0
     ConnectionData: 
     EnableTimeResync: 0
     TimeResyncInterval: 30
     EnsureNetworkVariableLengthSafety: 0
     EnableSceneManagement: 1
-    ForceSamePrefabs: 0
-    RecycleNetworkIds: 0
+    ForceSamePrefabs: 1
+    RecycleNetworkIds: 1
     NetworkIdRecycleDelay: 120
     RpcHashSize: 0
     LoadSceneTimeOut: 120
@@ -494,21 +508,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1032217012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1032217008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b045b0eac18ee54b9491bfeb35c242c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IpHostTransport: {fileID: 1136594922}
-  m_RelayTransport: {fileID: 1523281651}
-  m_UnityRelayTransport: {fileID: 0}
 --- !u!1 &1102659858
 GameObject:
   m_ObjectHideFlags: 0
@@ -556,7 +555,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1136594920
 GameObject:

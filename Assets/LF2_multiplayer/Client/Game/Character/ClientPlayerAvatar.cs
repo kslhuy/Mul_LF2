@@ -15,6 +15,7 @@ namespace LF2.Client
 
         public override void OnNetworkSpawn()
         {
+            //  name 
             name = "PlayerAvatar" + OwnerClientId;
 
             if (IsClient && IsOwner)

@@ -41,7 +41,7 @@ namespace LF2.Server{
                 m_ProvisionalTarget = foe.NetworkObjectId;
                 m_Data.TargetIds = new ulong[] { foe.NetworkObjectId };
             }
-
+            // player.serverplayer.serverAnimationHandler.NetworkAnimator.SetTrigger(Description.Anim);
             player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
           
         }
@@ -85,7 +85,7 @@ namespace LF2.Server{
         /// <returns></returns>
         private IDamageable DetectFoe(ulong foeHint = 0)
         {
-            return GetIdealMeleeFoe(player.serverplayer.IsNpc,player.serverplayer.GetComponent<Collider>(), m_MaxDistance, foeHint);
+            return GetIdealMeleeFoe(player.serverplayer.IsNpc,player.serverplayer.physicsWrapper.DamageCollider, m_MaxDistance, foeHint);
         }
             
             
