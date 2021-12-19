@@ -10,22 +10,35 @@ namespace LF2.Visual{
         {
         }
 
-
-        public override void AnticipateState(StateRequestData data)
+        public override void AnticipateState(ref StateRequestData data)
         {
-            // if (data.StateTypeEnum == StateType.Attack || data.StateTypeEnum == StateType.Jump || data.StateTypeEnum == StateType.Defense ){
+            if (data.StateTypeEnum == StateType.Jump){
+                m_PlayerFX.m_ClientVisual.coreMovement.SetJump(Vector3.zero);
+                m_PlayerFX.stateMachineViz.GetState(data.StateTypeEnum).PlayAnim(data.StateTypeEnum);
+
+            }
+
+            if (data.NbAnimation > 0 ){
+                m_PlayerFX.stateMachineViz.GetState(data.StateTypeEnum).PlayAnim(data.StateTypeEnum, data.NbAnimation);
+            }else{
+                m_PlayerFX.stateMachineViz.GetState(data.StateTypeEnum).PlayAnim(data.StateTypeEnum);
+            }
+            // else if (data.StateTypeEnum == StateType.Attack){
+            //     m_PlayerFX.stateMachineViz.GetState(data.StateTypeEnum).PlayAnim(data.StateTypeEnum, data.NbAnimation);
+            // }
+            // else{
             //     m_PlayerFX.stateMachineViz.GetState(data.StateTypeEnum).PlayAnim(data.StateTypeEnum);
             // }
-            m_PlayerFX.stateMachineViz.GetState(data.StateTypeEnum).PlayAnim(data.StateTypeEnum);
-
-
         }
 
 
         public override void SetMovementTarget(Vector2 position)
         {
-            m_PlayerFX.m_ClientVisual.OurAnimator.Play("Walk_anim");
-            m_PlayerFX.stateMachineViz.ChangeState(StateType.Move);
+            base.SetMovementTarget(position);
+            if (IsMove){
+                // m_PlayerFX.m_ClientVisual.OurAnimator.Play("Walk_anim");
+                m_PlayerFX.stateMachineViz.ChangeState(StateType.Move);
+            }
         }
 
 
@@ -37,13 +50,12 @@ namespace LF2.Visual{
                 PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz);
             }
             base.Enter();
-            // player.JumpState.ResetAmountOfJumpsLeft();
         }
 
-        public override void PlayAnim(StateType currentState)
+        public override void PlayAnim(StateType currentState , int nbanim = 0)
         {
             base.PlayAnim(currentState);
-            m_PlayerFX.m_ClientVisual.OurAnimator.Play("Idle_anim");
+            // m_PlayerFX.m_ClientVisual.OurAnimator.Play("Idle_anim");
         }
 
 
@@ -91,10 +103,6 @@ namespace LF2.Visual{
 
 
 
-        public override void PhysicsUpdate()
-        {
-            base.PhysicsUpdate();
-        }
 
 
     }

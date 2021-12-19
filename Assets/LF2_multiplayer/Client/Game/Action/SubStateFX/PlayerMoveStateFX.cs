@@ -10,19 +10,19 @@ namespace LF2.Visual{
         {
         }
 
-        public override void AnticipateState(StateRequestData data)
+        public override void AnticipateState(ref StateRequestData data)
         {
             if (data.StateTypeEnum == StateType.Attack || data.StateTypeEnum == StateType.Jump ){
                 Anticipated = true;
                 m_PlayerFX.stateMachineViz.GetState(data.StateTypeEnum).PlayAnim(data.StateTypeEnum);
             }
-
-
         }
 
+ 
         public override void SetMovementTarget(Vector2 position)
         {
-            if (position == Vector2.zero ){
+            base.SetMovementTarget(position);
+            if (!IsMove){
                 m_PlayerFX.stateMachineViz.ChangeState(StateType.Idle);
             }
         }
@@ -37,9 +37,9 @@ namespace LF2.Visual{
             }
             base.Enter();
         }
-        public override void PlayAnim(StateType currentState)
+        public override void PlayAnim(StateType currentState , int nbanim = 0)
         {
-            m_PlayerFX.m_ClientVisual.OurAnimator.Play("Walk_anim");
+            // m_PlayerFX.m_ClientVisual.OurAnimator.Play("Walk_anim");
         }
 
         public override StateType GetId()
@@ -51,18 +51,9 @@ namespace LF2.Visual{
 
         public override bool LogicUpdate()
         {
-            Debug.Log("MoveState Visual");
+            m_PlayerFX.m_ClientVisual.coreMovement.SetVelocityXZ(moveDir);
             return true;
         }
-
-
-
-        // public override void PhysicsUpdate()
-        // {
-        //     base.PhysicsUpdate();
-        // }
-
-
     }
 }
 

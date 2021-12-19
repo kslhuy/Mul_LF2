@@ -1,10 +1,11 @@
+using Unity.Netcode;
 using UnityEngine;
 using LF2.Visual;
 
 namespace LF2.Client
 {
-    [RequireComponent(typeof(LF2.NetworkCharacterState))]
-    public class ClientCharacter : MLAPI.NetworkBehaviour
+    [RequireComponent(typeof(NetworkCharacterState))]
+    public class ClientCharacter : NetworkBehaviour
     {
         [SerializeField]
         ClientCharacterVisualization m_ClientCharacterVisualization;
@@ -15,11 +16,17 @@ namespace LF2.Client
         /// </summary>
         public ClientCharacterVisualization ChildVizObject => m_ClientCharacterVisualization;
 
-        public override void NetworkStart()
+        public override void OnNetworkSpawn()
         {
-            if (!IsClient) { this.enabled = false; }
+            if (!IsClient)
+            {
+                enabled = false;
+            }
         }
 
+        public void SetCharacterVisualization(ClientCharacterVisualization clientCharacterVisualization)
+        {
+            m_ClientCharacterVisualization = clientCharacterVisualization;
+        }
     }
-
 }

@@ -9,6 +9,11 @@ namespace LF2
     public class VisualizationConfiguration : ScriptableObject
     {
         
+    // [SerializeField] string m_SpeedVariable = "Speed";
+    [SerializeField] [HideInInspector] 
+    public int SpeedVariableID = Animator.StringToHash("Speed");
+
+
     int idle = Animator.StringToHash("Idle_anim");
     public int Idle {get => idle;}
 
@@ -30,7 +35,7 @@ namespace LF2
     int land = Animator.StringToHash("Land_anim");
     public int Land {get => land;}
 
-
+    [HideInInspector]
     public int Air = Animator.StringToHash("Air_anim");
     [HideInInspector]
     public int Run = Animator.StringToHash("Run_anim");

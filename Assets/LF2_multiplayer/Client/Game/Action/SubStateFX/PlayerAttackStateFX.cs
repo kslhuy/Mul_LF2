@@ -1,5 +1,4 @@
-using MLAPI;
-using MLAPI.Spawning;
+using Unity.Netcode;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,8 +12,14 @@ namespace LF2.Visual{
         float attack12distance;
         private bool m_ImpactPlayed;
 
+        private Client.ClientCharacter clientChar;
+
+        private SO_AttackDetails attackDetails;
+
+
         public PlayerAttackStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX) : base(characterType, m_PlayerFX)
         {
+
         }
 
 
@@ -22,7 +27,7 @@ namespace LF2.Visual{
         {
             if(!Anticipated)
             {
-                PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz);
+                PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz , Data.NbAnimation);
             }
             base.Enter();
             PlayHitReact();
@@ -36,7 +41,7 @@ namespace LF2.Visual{
 
         public override bool LogicUpdate()
         {
-            // Debug.Log("Attack Visual");
+            Debug.Log("Attack Visual");
             return true;
         }
 
@@ -51,10 +56,34 @@ namespace LF2.Visual{
         }
 
 
-        public override void PlayAnim(StateType currentState)
+        public override void PlayAnim(StateType currentState , int nbanim )
         {
-            base.PlayAnim(currentState);
-            m_PlayerFX.m_ClientVisual.OurAnimator.Play("Attack1_anim");
+            base.PlayAnim(currentState,nbanim);
+
+            // DownCasting data 
+
+            if (SkillDescription(StateType.Attack).GetType() == typeof(SO_AttackDetails)){
+                attackDetails =(SO_AttackDetails)SkillDescription(StateType.Attack);
+            }
+
+            if (attackDetails.AttackDetails.Length < 3 && nbanim == 3 ){
+                nbanim = 1;
+            // Debug.Log(nbanim);
+            }
+            switch (nbanim){
+                default : 
+                    m_PlayerFX.m_ClientVisual.OurAnimator.Play("Attack1_anim");
+                    break;
+                case 2 : 
+                    m_PlayerFX.m_ClientVisual.OurAnimator.Play("Attack2_anim");
+                    break;
+                case 3 : 
+                    m_PlayerFX.m_ClientVisual.OurAnimator.Play("AttackRun_anim");
+                    break;
+            } 
+            // Debug.Log(" AnimationAttack");
+
+           
         }
 
 
@@ -64,22 +93,36 @@ namespace LF2.Visual{
             // if (m_ImpactPlayed) { return; }
             // m_ImpactPlayed = true;
             // Debug.Log("PlayHitReact");
-            Debug.Log(Data);
+            // Debug.Log(Data);
             //Is my original target still in range? Then definitely get him!
-            if (Data.TargetIds != null && Data.TargetIds.Length > 0 && NetworkSpawnManager.SpawnedObjects.ContainsKey(Data.TargetIds[0]))
+            if (Data.TargetIds != null && 
+                Data.TargetIds.Length > 0 && 
+                NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(Data.TargetIds[0], out var targetNetworkObj)
+                && targetNetworkObj != null)
             {
-                NetworkObject originalTarget = NetworkSpawnManager.SpawnedObjects[Data.TargetIds[0]];
-  
-                if( originalTarget.NetworkObjectId != m_PlayerFX.m_ClientVisual.NetworkObjectId )
+                if (targetNetworkObj.NetworkObjectId != m_PlayerFX.m_ClientVisual.NetworkObjectId)
                 {
                     // string hitAnim = Description.ReactAnim;
                     // if(string.IsNullOrEmpty(hitAnim)) { hitAnim = k_DefaultHitReact; }
-                    var clientChar = originalTarget.GetComponent<Client.ClientCharacter>();
+                    clientChar = targetNetworkObj.GetComponent<Client.ClientCharacter>();
                     // Debug.Log(originalTarget);
 
                     if (clientChar && clientChar.ChildVizObject && clientChar.ChildVizObject.OurAnimator)
                     {
-                        clientChar.ChildVizObject.OurAnimator.Play("Hurt1_anim");
+                        // Dont have Owner Ship to call serverRPC (can ignore but dont know further) 
+                        StateRequestData m_data = new StateRequestData();
+                        m_data.StateTypeEnum = StateType.Hurt;
+                        m_data.NbAnimation = Data.NbAnimation;
+                        // Debug.Log(Data.Direction);
+                        // if (Data.Direction != null){
+                        //     m_data.Direction = Data.Direction;
+                        // } 
+                        // clientChar.ChildVizObject.m_NetState.DoPassiveActionServerRPC(m_data);
+                        // clientChar.ChildVizObject.m_statePlayerViz.stateMachineViz.ChangeState(StateType.Hurt);
+                        clientChar.ChildVizObject.m_statePlayerViz.AnticipateState(ref m_data);
+
+                        // clientChar.ChildVizObject.OurAnimator.Play("Hurt1_anim");
+
                     }
                 }
 

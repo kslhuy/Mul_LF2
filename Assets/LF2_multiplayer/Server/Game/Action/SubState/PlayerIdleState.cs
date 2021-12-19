@@ -15,9 +15,9 @@ namespace LF2.Server{
 
         public override void CanChangeState(StateRequestData actionRequestData)
         {
-            if (actionRequestData.StateTypeEnum == StateType.Jump){
-                player.ServerCharacterMovement.SetJump(Vector3.zero);
-            }
+            // if (actionRequestData.StateTypeEnum == StateType.Jump){
+            //     player.ServerCharacterMovement.SetJump(Vector3.zero);
+            // }
             // if we are Idle wanna jump so , Jump up 
             player.stateMachine.ChangeState(actionRequestData.StateTypeEnum);
             
@@ -29,13 +29,14 @@ namespace LF2.Server{
             if (IsMove){
                 player.stateMachine.ChangeState(StateType.Move);
             }
-
         }
 
 
         public override void Enter()
         {
             base.Enter();
+            player.ServerCharacterMovement.CancelMove();
+
         }
 
 
@@ -48,6 +49,7 @@ namespace LF2.Server{
         {
             return StateType.Idle;
         }
+
 
 
 

@@ -28,8 +28,8 @@ namespace LF2.Server{
 
             Debug.Log("AirState");
             // Add some gravity for player
-            player.ServerCharacterMovement.SetFallingDown();
-            // Check play touched ground ?? 
+            // player.ServerCharacterMovement.SetFallingDown();
+            // // Check play touched ground ?? 
             if (player.ServerCharacterMovement.IsGounded() && Time.time - TimeStarted > 0.3f ){
                 player.stateMachine.ChangeState(StateType.Land);
             }

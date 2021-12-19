@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+
 namespace LF2.Server
 {
-
-
     /// <summary>
     /// The abstract parent class that all State derive from.
     /// </summary>
@@ -28,7 +27,7 @@ namespace LF2.Server
     {
         protected PlayerState player;
 
-        protected StateRequestData m_Data;
+        public StateRequestData m_Data;
 
         protected MovementState currentMovementState;
         

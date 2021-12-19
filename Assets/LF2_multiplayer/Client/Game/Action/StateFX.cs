@@ -13,6 +13,11 @@ namespace LF2.Visual{
 
         public StateRequestData Data;
 
+        public bool IsMove { get; private set; }
+
+        //Vector use for All Movement of player
+        protected Vector3 moveDir;
+
 
 
         protected StateFX(CharacterTypeEnum characterType,PlayerStateFX m_PlayerFX) : base(characterType)
@@ -34,12 +39,10 @@ namespace LF2.Visual{
         }
         public abstract bool LogicUpdate();
 
-        public virtual void PhysicsUpdate(){}
 
 
         public virtual void Exit(){
             Anticipated = false;
-
         }
 
 
@@ -50,7 +53,12 @@ namespace LF2.Visual{
 
         // Play Animation (shoulde be add base.PlayAnim() in specific (class) that derived from State ) 
         // See in class AttackStateFX 
-        public virtual void  PlayAnim(StateType currentState){
+        // public virtual void  PlayAnim(StateType currentState ){
+        //     m_PlayerFX.stateMachineViz.CurrentStateViz = currentState;
+        //     Anticipated = true;
+        //     TimeStarted = UnityEngine.Time.time;  
+        // }
+        public virtual void  PlayAnim(StateType currentState , int nbAniamtion = 0 ){
             m_PlayerFX.stateMachineViz.CurrentStateViz = currentState;
             Anticipated = true;
             TimeStarted = UnityEngine.Time.time;  
@@ -58,9 +66,11 @@ namespace LF2.Visual{
 
         public virtual void SetMovementTarget(Vector2 position)
         {
+            moveDir.Set(position.x , 0, position.y);   
+            IsMove  = position.x != 0 || position.y != 0;
         }
 
-        public virtual void AnticipateState(StateRequestData position)
+        public virtual void AnticipateState(ref StateRequestData requestData)
         {
         }
  

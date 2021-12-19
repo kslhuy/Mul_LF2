@@ -40,12 +40,10 @@ namespace LF2.Server{
                     }
                 }
             }
-
-
         }
 
 
-        public void ChangeState(StateType newState){
+        public void ChangeState(StateType newState ){
             GetState(CurrentState)?.Exit();
             CurrentState = newState;
             GetState(CurrentState)?.Enter();
@@ -54,7 +52,6 @@ namespace LF2.Server{
         public void SetMovementDirection(Vector2 targetPosition)
         {
             GetState(CurrentState).SetMovementTarget( targetPosition);
-
         }
 
         public void PhysicUpdate()
@@ -64,7 +61,7 @@ namespace LF2.Server{
 
         // Note Only 3 basics State (Attack , Jump , Defense )  and Skills (DDA , DDJ ...) can be checked 
         public void RequestChangeState(StateRequestData data){
-            // Change for some state Eligible
+
             GetState(CurrentState).CanChangeState(data);
         }
 
@@ -76,8 +73,11 @@ namespace LF2.Server{
         /// <param name="activityThatOccurred">The type of event that has occurred</param>
         public void OnGameplayActivity(State.GameplayActivity activityThatOccurred)
         {
+            if (activityThatOccurred == State.GameplayActivity.AttackedByEnemy){
+                // GetState(CurrentState).OnGameplayActivity(activityThatOccurred);
+                ChangeState(StateType.Hurt);
+                }
 
-            GetState(CurrentState).OnGameplayActivity(activityThatOccurred);
 
         }
 

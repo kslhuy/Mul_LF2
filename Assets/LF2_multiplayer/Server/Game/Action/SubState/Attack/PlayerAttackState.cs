@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace LF2.Server{
@@ -16,34 +17,37 @@ namespace LF2.Server{
 
         private ulong m_ProvisionalTarget;
 
-
         public PlayerAttackState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
         {
         }
 
         public override void CanChangeState(StateRequestData actionRequestData)
         {
-           
+
         }
 
         public override void Enter()
         {      
             base.Enter();
 
-            ulong target = player.serverplayer.NetState.TargetId.Value;
 
-            m_Data.StateTypeEnum = StateType.Attack;
-            m_Data.TargetIds = new ulong[] {target};
+            // m_Data.StateTypeEnum = StateType.Attack;
 
-            IDamageable foe = DetectFoe(target);
+            IDamageable foe = DetectFoe();
+
             if (foe != null)
             {
+                // fill data to send 
                 m_ProvisionalTarget = foe.NetworkObjectId;
                 m_Data.TargetIds = new ulong[] { foe.NetworkObjectId };
+                if (m_Data.NbAnimation == 3 ){
+                    m_Data.Direction = player.ServerCharacterMovement.FacingDirection*new Vector3(0,0.5f,0);
+                }
             }
-
+            
+            // Debug.Log(m_Data.NbAnimation);
+            // player.serverplayer.serverAnimationHandler.NetworkAnimator.SetTrigger(Description.Anim);
             player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
-          
         }
 
 
@@ -61,8 +65,10 @@ namespace LF2.Server{
                 var foe = DetectFoe(m_ProvisionalTarget);
                 if (foe != null)
                 {
-                    // Debug.Log(foe);
-
+                    
+                    // this.player.stateMachine.ChangeState(StateType.Hurt);
+                    // player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
+                    // m_attackcombo += 1 ; 
                     foe.ReceiveHP(this.player.serverplayer, -SkillDescription(StateType.Attack).Amount);
                 }
             }
@@ -85,7 +91,7 @@ namespace LF2.Server{
         /// <returns></returns>
         private IDamageable DetectFoe(ulong foeHint = 0)
         {
-            return GetIdealMeleeFoe(player.serverplayer.IsNpc,player.serverplayer.GetComponent<Collider>(), m_MaxDistance, foeHint);
+            return GetIdealMeleeFoe(player.serverplayer.IsNpc,player.serverplayer.physicsWrapper.DamageCollider, m_MaxDistance, foeHint);
         }
             
             
@@ -116,6 +122,7 @@ namespace LF2.Server{
                 {
                     foundFoe = damageable;
                 }
+                
             }
 
             return foundFoe;

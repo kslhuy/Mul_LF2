@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace LF2.Visual{
 
-    public class PlayerDoubleJumpStateFX : StateFX
+    public class PlayerDoubleJumpStateFX : PlayerAirStateFX
     {
 
         public PlayerDoubleJumpStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX ) : base(characterType, m_PlayerFX)
         {
         }
 
-        public override void AnticipateState(StateRequestData data)
+        public override void AnticipateState(ref StateRequestData data)
         {
         }
 
@@ -25,11 +25,17 @@ namespace LF2.Visual{
             base.Enter();
          }
 
-        public override void PlayAnim(StateType currentState)
+        public override void PlayAnim(StateType currentState , int nbanim = 0)
         {
             base.PlayAnim(currentState);
             m_PlayerFX.m_ClientVisual.OurAnimator.Play("DoubleJump_anim");
         }
+
+        
+        public override void End(){
+            base.End();
+        }
+
 
 
 
@@ -39,7 +45,7 @@ namespace LF2.Visual{
         }
 
         public override bool LogicUpdate() {
-            return true;
+            return base.LogicUpdate();
         }
 
     }

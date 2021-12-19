@@ -41,7 +41,7 @@ namespace LF2.Visual{
             m_PlayerFX.stateMachineViz.ChangeState(StateType.Idle);
         }
 
-        public override void PlayAnim(StateType currentState)
+        public override void PlayAnim(StateType currentState , int nbanim = 0)
         {
             base.PlayAnim(currentState);
             m_PlayerFX.m_ClientVisual.OurAnimator.Play("AttackJump1_anim");

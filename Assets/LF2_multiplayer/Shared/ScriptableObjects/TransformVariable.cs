@@ -6,7 +6,8 @@ namespace LF2
     /// A ScriptableObject which contains a reference to a Transform component. This can be used to remove dependencies
     /// between scene objects.
     /// </summary>
-    [CreateAssetMenu]
+
+    [CreateAssetMenu(menuName = "Variable/Transform", order = 2)]    
     public class TransformVariable : ScriptableObject
     {
         public Transform Value;

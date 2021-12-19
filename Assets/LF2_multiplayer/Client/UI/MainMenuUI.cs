@@ -68,12 +68,17 @@ namespace LF2.Visual
                     switch (onlineMode)
                     {
                         case OnlineMode.Relay:
-                            m_GameNetPortal.StartRelayHost(connectInput);
+                            m_GameNetPortal.StartPhotonRelayHost(connectInput);
                             break;
 
                         case OnlineMode.IpHost:
                             m_GameNetPortal.StartHost(PostProcessIpInput(connectInput), connectPort);
                             break;
+
+                        // case OnlineMode.UnityRelay:
+                        //     Debug.Log("Unity Relay Host clicked");
+                        //     m_GameNetPortal.StartUnityRelayHost();
+                        //     break;
                     }
                 }, k_DefaultIP, k_ConnectPort);
             }

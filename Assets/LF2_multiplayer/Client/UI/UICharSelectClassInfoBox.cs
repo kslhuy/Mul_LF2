@@ -63,7 +63,7 @@ namespace LF2.Client
             m_Checkmark.SetActive(lockedIn);
         }
 
-        public void ConfigureForClass(CharacterTypeEnum characterType)
+        public void ConfigureForClass(CharacterClass characterClass)
         {
             m_HideWhenNoClassSelected.SetActive(true);
 

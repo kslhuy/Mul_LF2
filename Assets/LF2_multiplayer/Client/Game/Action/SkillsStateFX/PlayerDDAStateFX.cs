@@ -1,7 +1,3 @@
-using MLAPI;
-using MLAPI.Spawning;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace LF2.Visual{
     
@@ -50,7 +46,7 @@ namespace LF2.Visual{
         }
 
 
-        public override void PlayAnim(StateType currentState)
+        public override void PlayAnim(StateType currentState , int nbanim = 0)
         {
             base.PlayAnim(currentState);
             m_PlayerFX.m_ClientVisual.OurAnimator.Play("DDA_anim");

@@ -1,14 +1,16 @@
 using System.Collections;
-using System.Collections.Generic;
-using MLAPI;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace LF2.Server
 {
-    [RequireComponent(typeof(ServerCharacterMovement), typeof(NetworkCharacterState))]
-    public class ServerCharacter : NetworkBehaviour, IDamageable
+    // [RequireComponent(typeof(ServerCharacterMovement), typeof(NetworkCharacterState))]
+    public class ServerCharacter : NetworkBehaviour
     {
-        public NetworkCharacterState NetState { get; private set; }
+        [SerializeField]
+        NetworkCharacterState m_NetworkCharacterState;
+
+        public NetworkCharacterState NetState => m_NetworkCharacterState;
 
         /// <summary>
         /// Returns true if this Character is an NPC.
@@ -28,7 +30,7 @@ namespace LF2.Server
         private float m_KilledDestroyDelaySeconds = 3.0f;
 
 
-        private PlayerState m_statePlayer;
+        public PlayerState m_statePlayer { get; private set; } 
 
 
         // ***** ***
@@ -37,47 +39,56 @@ namespace LF2.Server
         // private AIBrainNew m_AIBrain;
 
         // Cached component reference
-        private ServerCharacterMovement m_Movement;
+
+        
+        [SerializeField]
+        DamageReceiver m_DamageReceiver;
+
+        [SerializeField]
+        ServerCharacterMovement m_Movement;
+
+        public ServerCharacterMovement Movement => m_Movement;
+
+        [SerializeField]
+        PhysicsWrapper m_PhysicsWrapper;
+
+        public PhysicsWrapper physicsWrapper => m_PhysicsWrapper;
+
+        // [SerializeField]
+        // ServerAnimationHandler m_ServerAnimationHandler;
+
+        // public ServerAnimationHandler serverAnimationHandler => m_ServerAnimationHandler;
         
 
 
-        private void Awake()
+        private void Start()
         {
-            m_Movement = GetComponent<ServerCharacterMovement>();
-            NetState = GetComponent<NetworkCharacterState>();
-
             m_statePlayer = new PlayerState(this,m_Movement);
-
-            
-            // if (IsNpc)
-            // {
-            //     m_AIBrain = new AIBrainNew(this);
-            // }
         }
 
-        public override void NetworkStart()
+        public override void OnNetworkSpawn()
         {
             if (!IsServer) { enabled = false; }
             else
             {
-                NetState = GetComponent<NetworkCharacterState>();
                 NetState.DoActionEventServer += OnActionPlayRequest;
                 NetState.ReceivedClientInput += OnClientMoveRequest;
                 // NetState.OnStopChargingUpServer += OnStoppedChargingUp;
                 NetState.NetworkLifeState.LifeState.OnValueChanged += OnLifeStateChanged;
 
-                NetState.ApplyCharacterData();
-
-                // if (m_StartingAction != StateType.None)
+                m_DamageReceiver.damageReceived += ReceiveHP;
+                // m_DamageReceiver.collisionEntered += CollisionEntered;
+                // if (NetState.IsNpc)
                 // {
-                //     var startingAction = new StateRequestData() { StateTypeEnum = m_StartingAction };
-                //     PlayAction(ref startingAction);
+                //     m_AIBrain = new AIBrain(this, m_ActionPlayer);
                 // }
-                // m_statePlayer = State.NormalState;
+
+                NetState.HitPoints = NetState.CharacterClass.BaseHP.Value;
+
             }
         }
 
-        public void OnDestroy()
+        public override void OnNetworkDespawn()
         {
             if (NetState)
             {
@@ -85,6 +96,12 @@ namespace LF2.Server
                 NetState.ReceivedClientInput -= OnClientMoveRequest;
                 // NetState.OnStopChargingUpServer -= OnStoppedChargingUp;
                 NetState.NetworkLifeState.LifeState.OnValueChanged -= OnLifeStateChanged;
+            }
+
+            if (m_DamageReceiver)
+            {
+                m_DamageReceiver.damageReceived -= ReceiveHP;
+                // m_DamageReceiver.collisionEntered -= CollisionEntered;
             }
         }
 
@@ -157,7 +174,7 @@ namespace LF2.Server
                 // serverAnimationHandler.NetworkAnimator.SetTrigger("HitReact1");
             }
 
-            NetState.HitPoints = Mathf.Min(NetState.CharacterData.BaseHP.Value, NetState.HitPoints+HP);
+            NetState.HitPoints = Mathf.Min(NetState.CharacterClass.BaseHP.Value, NetState.HitPoints+HP);
 
             // if( m_AIBrain != null )
             // {
@@ -248,10 +265,7 @@ namespace LF2.Server
         //     return IDamageable.SpecialDamageFlags.None;
         // }
 
-        public bool IsDamageable()
-        {
-            return NetState.NetworkLifeState.LifeState.Value == LifeState.Alive;
-        }
+
 
         /// <summary>
         /// This character's AIBrain. Will be null if this is not an NPC.

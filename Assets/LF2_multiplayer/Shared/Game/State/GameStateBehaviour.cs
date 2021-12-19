@@ -1,4 +1,4 @@
-using MLAPI;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace LF2
@@ -38,7 +38,10 @@ namespace LF2
         /// <summary>
         /// Does this GameState persist across multiple scenes?
         /// </summary>
-        public virtual bool Persists { get { return false; } }
+        public virtual bool Persists
+        {
+            get { return false; }
+        }
 
         /// <summary>
         /// What GameState this represents. Server and client specializations of a state should always return the same enum.
@@ -84,33 +87,14 @@ namespace LF2
             }
         }
 
-        protected virtual void OnDestroy()
+        public override void OnDestroy()
         {
+            base.OnDestroy();
             if (!Persists)
             {
                 s_ActiveStateGO = null;
             }
         }
-
-        protected virtual void OnApplicationQuit()
-        {
-            if (!isActiveAndEnabled)
-                return;
-
-            if (IsHost)
-            {
-                NetworkManager.Singleton.StopHost();
-            }
-            else if (IsClient)
-            {
-                NetworkManager.Singleton.StopClient();
-            }
-            else if (IsServer)
-            {
-                NetworkManager.Singleton.StopServer();
-            }
-        }
-
     }
 
 }

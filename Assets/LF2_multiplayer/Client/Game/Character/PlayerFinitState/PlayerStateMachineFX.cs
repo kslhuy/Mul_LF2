@@ -11,13 +11,14 @@ namespace LF2.Visual{
         public StateFX[] statesViz; // All State we declare 
         public StateType CurrentStateViz; // CurrentState visual we are 
 
-        // private List<StateType> m_StateExpirable; // 
+        private StateType m_lastStateViz; 
+
+        private SkillsDescription skillsDescription;
 
 
         public PlayerStateMachineFX(){
             int numberStates = System.Enum.GetNames(typeof(StateType)).Length;
             statesViz =  new StateFX[numberStates];
-            // m_StateExpirable = new List<StateType>();
 
         }
 
@@ -39,18 +40,33 @@ namespace LF2.Visual{
         // If recevie request form Server can active  LogicUpdate() of this State
         public void Update() {
             // Check ALL State that have actual Action correspond ( See in Game Data Soucre Objet )
-            if(CurrentStateViz != StateType.Idle && CurrentStateViz != StateType.Move  ){
-                Debug.Log(CurrentStateViz + "Visual");
-                SkillsDescription skillsDescription =  GetState(CurrentStateViz).SkillDescription(CurrentStateViz); // Get All Skills Data of actual Player Charater we current play.
-                bool keepGoing = GetState(CurrentStateViz).Anticipated || GetState(CurrentStateViz).LogicUpdate(); // (Trick of || (or) )only call Update() on actions that are past anticipation , 
-                if (skillsDescription.expirable){
-                    bool timeExpired =  GetState(CurrentStateViz).TimeRunning >= skillsDescription.DurationSeconds ;
-                    // Check if this State Can End Naturally (== time Expired )
-                    if (!keepGoing || timeExpired ){
-                        GetState(CurrentStateViz)?.End();
-                    }
-                }
+            if (CurrentStateViz == StateType.Idle) return;
+
+            if (CurrentStateViz == StateType.Move){
+                m_lastStateViz = CurrentStateViz;
+                GetState(CurrentStateViz).LogicUpdate();
+                return;
             }
+
+            if ( m_lastStateViz != CurrentStateViz){
+                m_lastStateViz = CurrentStateViz;
+                if (CurrentStateViz == StateType.Idle || CurrentStateViz == StateType.Move ) return;
+                skillsDescription =  GetState(CurrentStateViz).SkillDescription(CurrentStateViz); // Get All Skills Data of actual Player Charater we current play.
+            } 
+
+            if (skillsDescription!= null && skillsDescription.expirable){
+            bool timeExpired =  GetState(CurrentStateViz).TimeRunning >= skillsDescription.DurationSeconds ;
+            // Check if this State Can End Naturally (== time Expired )
+                if ( timeExpired ){
+                    GetState(CurrentStateViz)?.End();
+                }
+            }else{
+                if (!GetState(CurrentStateViz).LogicUpdate()){
+                    GetState(CurrentStateViz)?.End();
+                }
+
+            }
+
         }
 
         public void OnAnimEvent(string id)
@@ -59,12 +75,11 @@ namespace LF2.Visual{
         }
 
         // Switch to Another State , (we force to Change State , so that mean this State may be not End naturally , be interruped by some logic  ) 
-        public void ChangeState( StateType data){
-            if (CurrentStateViz != data){
+        public void ChangeState( StateType state){
+            if (CurrentStateViz != state){
                 GetState(CurrentStateViz)?.Exit();
-                CurrentStateViz = data;
+                CurrentStateViz = state;
             }
-            // GetState(CurrentStateViz).Data = data;
             GetState(CurrentStateViz)?.Enter();
         }
 

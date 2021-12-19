@@ -1,27 +1,29 @@
+using System;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace LF2.Client
 {
     /// <summary>
     /// Generic movement object that updates transforms based on the state of an INetMovement source.
-    /// This is part of a temporary movement system that will be replaced once MLAPI can drive movement
-    /// internally.
+    /// This is part of a temporary movement system that will be replaced once Netcode for GameObjects can drive
+    /// movement internally.
     /// </summary>
-    public class ClientGenericMovement : MLAPI.NetworkBehaviour
+    public class ClientGenericMovement : NetworkBehaviour
     {
-        private INetMovement m_MovementSource;
-        private Rigidbody m_Rigidbody;
+        [SerializeField]
+        NetworkCharacterState m_MovementSource;
+        // private Rigidbody m_Rigidbody;
         private bool m_Initialized;
 
 
         // Start is called before the first frame update
         void Start()
         {
-            m_MovementSource = GetComponent<INetMovement>();
-            m_Rigidbody = GetComponent<Rigidbody>(); //this may be null.
+            // m_Rigidbody = GetComponent<Rigidbody>(); //this may be null.
         }
 
-        public override void NetworkStart()
+        public override void OnNetworkSpawn()
         {
             if (IsServer)
             {
@@ -30,22 +32,21 @@ namespace LF2.Client
                 this.enabled = false;
             }
             m_Initialized = true;
+
+            m_MovementSource.NetworkRotationY.OnValueChanged += SetRotation;
+
         }
 
-        // Update is called once per frame
-        void Update()
+        private void SetRotation(int previousValue, int newValue)
         {
-            if (!m_Initialized) { return; }
-
-            transform.position = m_MovementSource.NetworkPosition.Value;
-            transform.rotation = Quaternion.Euler(0, m_MovementSource.NetworkRotationY.Value, 0);
-
-            if (m_Rigidbody != null)
-            {
-                m_Rigidbody.position = transform.position;
-                m_Rigidbody.rotation = transform.rotation;
+            // In client predict the rotation so dont need to change 
+            if (transform.rotation.y != newValue){
+                transform.rotation = Quaternion.Euler(0, newValue, 0);
             }
         }
+
+
+      
     }
 }
 

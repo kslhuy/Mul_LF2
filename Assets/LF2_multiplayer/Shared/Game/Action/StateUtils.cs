@@ -1,5 +1,5 @@
+using Unity.Netcode;
 using UnityEngine;
-using MLAPI.Spawning;
 
 namespace LF2
 {
@@ -94,7 +94,7 @@ namespace LF2
             //note that we DON'T check if you're an ally. It's perfectly valid to target friends,
             //because there are friendly skills, such as Heal.
 
-            if (!NetworkSpawnManager.SpawnedObjects.TryGetValue(targetId, out var targetChar))
+            if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(targetId, out var targetChar))
             {
                 return false;
             }

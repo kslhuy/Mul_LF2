@@ -1,7 +1,8 @@
-using MLAPI;
-using MLAPI.Messaging;
+using System;
 using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace LF2.Server
 {
@@ -27,7 +28,7 @@ namespace LF2.Server
             int idx = FindLobbyPlayerIdx(clientId);
             if (idx == -1)
             {
-                //TODO-FIXME:MLAPI See note about MLAPI issue 745 in WaitToSeatNowPlayer.
+                //TODO-FIXME:Netcode See note about Netcode for GameObjects issue 745 in WaitToSeatNowPlayer.
                 //while this workaround is in place, we must simply ignore these update requests from the client.
                 //throw new System.Exception($"OnClientChangedSeat: client ID {clientId} is not a lobby player and cannot change seats!");
                 return;
@@ -92,8 +93,7 @@ namespace LF2.Server
 
             CloseLobbyIfReady();
         }
-        //*** index cua player = so nguoi connecter 
-        
+
         /// <summary>
         /// Returns the index of a client in the master LobbyPlayer list, or -1 if not found
         /// </summary>
@@ -131,29 +131,32 @@ namespace LF2.Server
 
         private void SaveLobbyResults()
         {
-            LobbyResults lobbyResults = new LobbyResults();
             foreach (CharSelectData.LobbyPlayerState playerInfo in CharSelectData.LobbyPlayers)
             {
-                lobbyResults.Choices[playerInfo.ClientId] = new LobbyResults.CharSelectChoice(playerInfo.PlayerNum,
-                    CharSelectData.LobbySeatConfigurations[playerInfo.SeatIdx].Class,
-                    CharSelectData.LobbySeatConfigurations[playerInfo.SeatIdx].CharacterArtIdx);
+                var playerNetworkObject = NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(playerInfo.ClientId);
+
+                if (playerNetworkObject && playerNetworkObject.TryGetComponent(out PersistentPlayer persistentPlayer))
+                {
+                    // pass avatar GUID to PersistentPlayer
+                    // it'd be great to simplify this with something like a NetworkScriptableObjects :(
+                    persistentPlayer.NetworkAvatarGuidState.AvatarGuid.Value =
+                        CharSelectData.AvatarConfiguration[playerInfo.SeatIdx].Guid.ToNetworkGuid();
+                }
             }
-            GameStateRelay.SetRelayObject(lobbyResults);
         }
 
         private IEnumerator WaitToEndLobby()
         {
             yield return new WaitForSeconds(3);
-            MLAPI.SceneManagement.NetworkSceneManager.SwitchScene("LF2_Net");
+            NetworkManager.SceneManager.LoadScene("LF2_Net", LoadSceneMode.Single);
         }
 
-        protected override void OnDestroy()
+        public override void OnNetworkDespawn()
         {
-            base.OnDestroy();
             if (NetworkManager.Singleton)
             {
-                NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
                 NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnectCallback;
+                NetworkManager.Singleton.SceneManager.OnSceneEvent -= OnSceneEvent;
             }
             if (CharSelectData)
             {
@@ -161,46 +164,27 @@ namespace LF2.Server
             }
         }
 
-        public override void NetworkStart()
+        public override void OnNetworkSpawn()
         {
-            base.NetworkStart();
             if (!IsServer)
             {
                 enabled = false;
             }
             else
             {
-                NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
                 NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectCallback;
                 CharSelectData.OnClientChangedSeat += OnClientChangedSeat;
 
-                if (IsHost)
-                {
-                    // host doesn't get an OnClientConnected()
-                    // and other clients could be connects from last game
-                    // So look for any existing connections to do intiial setup
-                    var clients = NetworkManager.Singleton.ConnectedClientsList;
-                    foreach (var net_cl in clients)
-                    {
-                        OnClientConnected(net_cl.ClientId);
-                    }
-                }
+                NetworkManager.Singleton.SceneManager.OnSceneEvent += OnSceneEvent;
             }
         }
 
-        private void OnClientConnected(ulong clientId)
+        private void OnSceneEvent(SceneEvent sceneEvent)
         {
-            StartCoroutine(WaitToSeatNewPlayer(clientId));
-        }
-
-        private IEnumerator WaitToSeatNewPlayer(ulong clientId)
-        {
-            //TODO-FIXME:MLAPI We are receiving NetworkVar updates too early on the client when doing this immediately on client connection,
-            //causing the NetworkList of lobby players to get out of sync.
-            //tracking MLAPI issue: https://github.com/Unity-Technologies/com.unity.multiplayer.mlapi/issues/745
-            //When issue is resolved, we should be able to call SeatNewPlayer directly in the client connection callback. 
-            yield return new WaitForSeconds(2.5f);
-            SeatNewPlayer(clientId);
+            // We need to filter out the event that are not a client has finished loading the scene
+            if (sceneEvent.SceneEventType != SceneEventType.LoadComplete) return;
+            // When the client finishes loading the Lobby Map, we will need to Seat it
+            SeatNewPlayer(sceneEvent.ClientId);
         }
 
         private int GetAvailablePlayerNum()
@@ -230,10 +214,8 @@ namespace LF2.Server
             int playerNum = GetAvailablePlayerNum();
             if (playerNum == -1)
             {
-                // we ran out of seats... there was no room!
-                CharSelectData.FatalLobbyErrorClientRpc(CharSelectData.FatalLobbyError.LobbyFull,
-                    new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { clientId } } });
-                return;
+                // Sanity check. We ran out of seats... there was no room!
+                throw new Exception($"we shouldn't be here, connection approval should have refused this connection already for client ID {clientId} and player num {playerNum}");
             }
 
             string playerName = m_ServerNetPortal.GetPlayerName(clientId,playerNum);

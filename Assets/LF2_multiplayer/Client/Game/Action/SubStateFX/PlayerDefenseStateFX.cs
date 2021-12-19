@@ -15,6 +15,11 @@ namespace LF2.Visual{
 
         public override void Enter()
         {
+            if(!Anticipated)
+            {
+                PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz);
+            }
+            base.Enter();
         }
 
 
@@ -25,7 +30,6 @@ namespace LF2.Visual{
 
         public override bool LogicUpdate()
         {
-
             Debug.Log("Defense Visual");
             return true;
         }
@@ -36,9 +40,10 @@ namespace LF2.Visual{
         }
 
 
-        public override void PlayAnim(StateType currentState)
+        public override void PlayAnim(StateType currentState , int nbanim = 0)
         {
             base.PlayAnim(currentState);
+            Debug.Log("Defense_anim");
             m_PlayerFX.m_ClientVisual.OurAnimator.Play("Defense_anim");
         }
     }

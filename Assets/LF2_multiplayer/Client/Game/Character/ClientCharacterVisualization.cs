@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using LF2.Client;
 // using Cinemachine;
-using MLAPI;
+using Unity.Netcode;
 using System;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -11,14 +11,15 @@ namespace LF2.Visual
     /// <summary>
     /// <see cref="ClientCharacterVisualization"/> is responsible for displaying a character on the client's screen based on state information sent by the server.
     /// </summary>
-    public class ClientCharacterVisualization : NetworkBehaviour
+    public class ClientCharacterVisualization : MonoBehaviour
     {
         [SerializeField]
         private Animator m_ClientVisualsAnimator;
 
-        [SerializeField]
-        private CharacterSwap m_CharacterSwapper;
+        // [SerializeField]
+        // private CharacterSwap m_CharacterSwapper;
 
+        private ClientInputSender inputSender;
         [SerializeField]
         private VisualizationConfiguration m_VisualizationConfiguration;
         
@@ -31,9 +32,22 @@ namespace LF2.Visual
         public bool CanPerformActions { get { return m_NetState.CanPerformActions; } }
 
 
-        private NetworkCharacterState m_NetState;
+        PhysicsWrapper m_PhysicsWrapper;
 
-        private PlayerStateFX m_statePlayerViz;
+        
+        // public CoreMovement m_coreMovement {get ; private set;}
+        [SerializeField]
+        public CoreMovement coreMovement  ;
+
+
+        public NetworkCharacterState m_NetState;
+
+        public ulong NetworkObjectId => m_NetState.NetworkObjectId;
+
+
+        // public Transform Parent { get; private set; }
+
+        public PlayerStateFX m_statePlayerViz{ get; private set; } 
 
 
         /// Player characters need to report health changes and chracter info to the PartyHUD
@@ -42,95 +56,68 @@ namespace LF2.Visual
         float m_SmoothedSpeed;
 
         int m_HitStateTriggerID;
-        private ClientInputSender inputSender;
         private float m_MaxDistance = 0.2f;
 
-        event Action Destroyed;
+
+        public event Action<Animator> animatorSet;
+
 
         /// <inheritdoc />
-        public override void NetworkStart()
+        public void Start()
         {
-            if (!IsClient || transform.parent == null)
+            if (!NetworkManager.Singleton.IsClient || transform.parent == null)
             {
                 enabled = false;
                 return;
             }
 
-            // m_HitStateTriggerID = Animator.StringToHash(ActionFX.k_DefaultHitReact);
-
-
-            // Parent = transform.parent;
-
             m_NetState = GetComponentInParent<NetworkCharacterState>();
-            m_NetState.DoActionEventClient += PerformActionFX;
-            m_NetState.CancelAllActionsEventClient += CancelAllActionFXs;
-            m_NetState.CancelActionsByTypeEventClient += CancelActionFXByType;
-            // m_NetState.NetworkLifeState.LifeState.OnValueChanged += OnLifeStateChanged;
-            m_NetState.OnPerformHitReaction += OnPerformHitReaction;
-            m_NetState.OnStopChargingUpClient += OnStoppedChargingUp;
-            m_NetState.IsStealthy.OnValueChanged += OnStealthyChanged;
-            // Debug.Log(m_NetState.CharacterType);
 
+
+            // Parent = m_NetState.transform;
+
+            // if (Parent.TryGetComponent(out ClientAvatarGuidHandler clientAvatarGuidHandler))
+            // {
+            //     m_ClientVisualsAnimator = clientAvatarGuidHandler.graphicsAnimator;
+
+            //     // Netcode for GameObjects (Netcode) does not currently support NetworkAnimator binding at runtime. The
+            //     // following is a temporary workaround. Future refactorings will enable this functionality.
+            //     animatorSet?.Invoke(clientAvatarGuidHandler.graphicsAnimator);
+            // }
+
+            m_PhysicsWrapper = m_NetState.GetComponent<PhysicsWrapper>();
             m_statePlayerViz = new PlayerStateFX( this,m_NetState.CharacterType);
 
 
+            m_NetState.DoActionEventClient += PerformActionFX;
+            m_NetState.CancelAllActionsEventClient += CancelAllActionFXs;
+            m_NetState.CancelActionsByTypeEventClient += CancelActionFXByType;
+            m_NetState.OnStopChargingUpClient += OnStoppedChargingUp;
+            m_NetState.IsStealthy.OnValueChanged += OnStealthyChanged;
+
             // sync our visualization position & rotation to the most up to date version received from server
-            // var parentMovement = m_NetState.GetComponent<INetMovement>();
-            // transform.position = parentMovement.NetworkPosition.Value;
-            // transform.rotation = Quaternion.Euler(0, parentMovement.NetworkRotationY.Value, 0);
 
-            transform.SetPositionAndRotation(m_NetState.transform.position, m_NetState.transform.rotation);
+            transform.SetPositionAndRotation(m_PhysicsWrapper.Transform.position, m_PhysicsWrapper.Transform.rotation);
 
-
-            // listen for char-select info to change (in practice, this info doesn't
-            // change, but we may not have the values set yet) ...
-            m_NetState.CharacterAppearance.OnValueChanged += OnCharacterAppearanceChanged;
-
-            // ...and visualize the current char-select value that we know about
-            OnCharacterAppearanceChanged(0, m_NetState.CharacterAppearance.Value);
 
             // ...and visualize the current char-select value that we know about
             SetAppearanceSwap();
 
-            // sync our animator to the most up to date version received from server
-            // SyncEntryAnimation(m_NetState.LifeState);
 
             if (!m_NetState.IsNpc)
             {
-                // track health for heroes
-                m_NetState.HealthState.HitPoints.OnValueChanged += OnHealthChanged;
+                name = "AvatarGraphics" + m_NetState.OwnerClientId;
 
-                // find the emote bar to track its buttons
-                GameObject partyHUDobj = GameObject.FindGameObjectWithTag("PartyHUD");
-                m_PartyHUD = partyHUDobj.GetComponent<Visual.PartyHUD>();
-
-                if (IsLocalPlayer)
+                if (m_NetState.IsOwner)
                 {
                     // gameObject.AddComponent<CameraController>();
+                    inputSender = GetComponentInParent<ClientInputSender>();
+                    // Debug.Log(inputSender);
+                    // TODO: revisit; anticipated actions would play twice on the host
                     
-                    // // UI 
-                    m_PartyHUD.SetHeroData(m_NetState);
-
-                    inputSender = GetComponentInParent<ClientInputSender>(); 
                     inputSender.ActionInputEvent += OnActionInput;
                     inputSender.ClientMoveEvent += OnMoveInput;
-                }
-                else
-                {
-                    // m_PartyHUD.SetAllyData(m_NetState);
-
-                    // getting our parent's NetworkObjectID for PartyHUD removal on Destroy
-                    var parentNetworkObjectID = m_NetState.NetworkObjectId;
-
-                    // once this object is destroyed, remove this ally from the PartyHUD UI
-                    // NOTE: architecturally this will be refactored
-                    // Destroyed += () =>
-                    // {
-                    //     if (m_PartyHUD != null)
-                    //     {
-                    //         m_PartyHUD.RemoveAlly(parentNetworkObjectID);
-                    //     }
-                    // };
+                
                 }
             }
         }
@@ -138,7 +125,6 @@ namespace LF2.Visual
         // Do anticipate State : Only play Animation , not change state
         private void OnActionInput(StateRequestData data)
         {
-            // m_ActionViz.AnticipateAction(ref data);
             m_statePlayerViz.AnticipateState(ref data);
         }
 
@@ -152,12 +138,9 @@ namespace LF2.Visual
         // Play Animation and change state between Idle and Move State Visual
         private void OnMoveInput(Vector2 position)
         {
-
+            // OurAnimator.SetInteger("Speed" , 1);
             m_statePlayerViz.OnMoveInput(position);
         }
-
-
-
 
         private void OnDestroy()
         {
@@ -166,22 +149,22 @@ namespace LF2.Visual
                 m_NetState.DoActionEventClient -= PerformActionFX;
                 m_NetState.CancelAllActionsEventClient -= CancelAllActionFXs;
                 m_NetState.CancelActionsByTypeEventClient -= CancelActionFXByType;
-                // m_NetState.NetworkLifeState.LifeState.OnValueChanged -= OnLifeStateChanged;
-                m_NetState.OnPerformHitReaction -= OnPerformHitReaction;
                 m_NetState.OnStopChargingUpClient -= OnStoppedChargingUp;
                 m_NetState.IsStealthy.OnValueChanged -= OnStealthyChanged;
 
-                inputSender.ActionInputEvent -= OnActionInput;
-                inputSender.ClientMoveEvent -= OnMoveInput;
+                if (m_NetState.IsOwner)
+                {
+                    
+                        inputSender.ActionInputEvent -= OnActionInput;
+                        inputSender.ClientMoveEvent -= OnMoveInput;
+
+                }
+                
             }
 
-            Destroyed?.Invoke();
         }
 
-        private void OnPerformHitReaction()
-        {
-            m_ClientVisualsAnimator.SetTrigger(m_HitStateTriggerID);
-        }
+
 
         private void CancelAllActionFXs()
         {
@@ -195,43 +178,27 @@ namespace LF2.Visual
         {
         }
 
-        // private void OnLifeStateChanged(LifeState previousValue, LifeState newValue)
+
+
+        // private void OnHealthChanged(int previousValue, int newValue)
         // {
-        //     switch (newValue)
+        //     // don't do anything if party HUD goes away - can happen as Dungeon scene is destroyed
+        //     if (m_PartyHUD == null) { return; }
+
+        //     if (IsLocalPlayer)
         //     {
-        //         case LifeState.Alive:
-        //             m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.AliveStateTriggerID);
-        //             break;
-        //         case LifeState.Fainted:
-        //             m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.FaintedStateTriggerID);
-        //             break;
-        //         case LifeState.Dead:
-        //             m_ClientVisualsAnimator.SetTrigger(m_VisualizationConfiguration.DeadStateTriggerID);
-        //             break;
-        //         default:
-        //             throw new ArgumentOutOfRangeException(nameof(newValue), newValue, null);
+        //         this.m_PartyHUD.SetHeroHealth(newValue);
         //     }
+        //     // else
+        //     // {
+        //     //     this.m_PartyHUD.SetAllyHealth(m_NetState.NetworkObjectId, newValue);
+        //     // }
         // }
 
-        private void OnHealthChanged(int previousValue, int newValue)
-        {
-            // don't do anything if party HUD goes away - can happen as Dungeon scene is destroyed
-            if (m_PartyHUD == null) { return; }
-
-            if (IsLocalPlayer)
-            {
-                this.m_PartyHUD.SetHeroHealth(newValue);
-            }
-            // else
-            // {
-            //     this.m_PartyHUD.SetAllyHealth(m_NetState.NetworkObjectId, newValue);
-            // }
-        }
-
-        private void OnCharacterAppearanceChanged(int oldValue, int newValue)
-        {
-            SetAppearanceSwap();
-        }
+        // private void OnCharacterAppearanceChanged(int oldValue, int newValue)
+        // {
+        //     SetAppearanceSwap();
+        // }
 
         private void OnStealthyChanged(bool oldValue, bool newValue)
         {
@@ -240,18 +207,27 @@ namespace LF2.Visual
 
         private void SetAppearanceSwap()
         {
-            if (m_CharacterSwapper)
-            {
+            // if (m_CharacterSwapper)
+            // {
 
-                m_CharacterSwapper.SwapToModel(m_NetState.CharacterAppearance.Value);
-            }
+            //     m_CharacterSwapper.SwapToModel(m_NetState.CharacterAppearance.Value);
+            // }
         }
 
 
 
         void Update()
         {
+
+
+            if (m_ClientVisualsAnimator)
+            {
+                OurAnimator.SetFloat("Speed", GetVisualMovementSpeed());
+
+            }
+
             m_statePlayerViz.Update();
+            
         }
 
         // Huy : Not use Yet        
@@ -263,6 +239,29 @@ namespace LF2.Visual
 
             m_statePlayerViz.OnAnimEvent(id);
         }
+
+        /// <summary>
+        /// Returns the value we should set the Animator's "Speed" variable, given current gameplay conditions.
+        /// </summary>
+        private float GetVisualMovementSpeed()
+        {
+            // Assert.IsNotNull(m_VisualizationConfiguration);
+            // if (m_NetState.NetworkLifeState.LifeState.Value != LifeState.Alive)
+            // {
+            //     return m_VisualizationConfiguration.SpeedDead;
+            // }
+
+            switch (m_NetState.MovementStatus.Value)
+            {
+
+                case MovementStatus.Walking:
+                    return 1;
+                default:
+                    return 0;
+            }
+        }
+
+        
 
     }
 }

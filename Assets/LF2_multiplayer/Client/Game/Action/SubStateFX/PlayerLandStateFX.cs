@@ -12,7 +12,7 @@ namespace LF2.Visual{
         {
         }
 
-        public override void AnticipateState(StateRequestData data)
+        public override void AnticipateState(ref StateRequestData data)
         {
             if (data.StateTypeEnum == StateType.Jump){
                 m_PlayerFX.stateMachineViz.GetState(StateType.DoubleJump).PlayAnim(StateType.DoubleJump);
@@ -29,7 +29,7 @@ namespace LF2.Visual{
             amountOfJumpLeft--;
          }
 
-        public override void PlayAnim(StateType currentState)
+        public override void PlayAnim(StateType currentState , int nbanim = 0)
         {
             base.PlayAnim(currentState);
             m_PlayerFX.m_ClientVisual.OurAnimator.Play("Land_anim");
@@ -58,7 +58,7 @@ namespace LF2.Visual{
 
 
         public override bool LogicUpdate(){
-            Debug.Log("Land Visual");
+            // Debug.Log("Land Visual");
             return true;
         }
 

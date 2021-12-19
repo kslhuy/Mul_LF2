@@ -1,6 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
-using MLAPI;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace LF2.Server
@@ -23,17 +22,14 @@ namespace LF2.Server
         [SerializeField]
         ServerCharacter m_CachedServerCharacter;
 
-        public override void NetworkStart()
+        public override void OnNetworkSpawn()
         {
             if( !IsServer )
             {
                 enabled = false;
             }
-        }
-
-        void OnEnable()
-        {
             s_ActivePlayers.Add(m_CachedServerCharacter);
+
         }
 
         void OnDisable()
