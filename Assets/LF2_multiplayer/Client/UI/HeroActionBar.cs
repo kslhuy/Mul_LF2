@@ -6,6 +6,7 @@ using LF2.Client;
 
 // using SkillTriggerStyle = LF2.Client.ClientInputSender.SkillTriggerStyle;
 using UnityEngine.InputSystem.OnScreen;
+using System.Collections;
 
 namespace LF2.Visual
 {
@@ -60,6 +61,7 @@ namespace LF2.Visual
         private float InputPressedStartTime ;
 
         private bool InputPressed ;
+        private int m_NbAttack;
 
         public float AttackPressedStartTime { get; private set; }
         public bool AttackPressed { get; private set; }
@@ -160,13 +162,26 @@ namespace LF2.Visual
                     AttackPressed = false;
                 }
             } 
-
-            if (!AttackPressed){
+            if (!AttackPressed) {
                 AttackPressed = true;
                 AttackPressedStartTime = Time.time;
                 // send input to begin the action associated with this button
-                m_InputSender.RequestAction(attackState);
+                m_NbAttack += 1; 
+                if (m_NbAttack > 3) {
+                    m_NbAttack = 1 ;
+                }
+                m_InputSender.RequestAction(attackState,m_NbAttack);
             }
+            // Reset Attack every 0.5 s if we in attack combo
+            if (m_NbAttack > 1){
+                StartCoroutine(ResetAttack());
+            }
+
+        }
+
+        IEnumerator ResetAttack(){
+            yield return new WaitForSeconds (1f);
+            m_NbAttack = 0;
         }
 
         void OnJump()

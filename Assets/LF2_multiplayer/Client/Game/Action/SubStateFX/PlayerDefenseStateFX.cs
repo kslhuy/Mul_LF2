@@ -40,7 +40,7 @@ namespace LF2.Visual{
         }
 
 
-        public override void PlayAnim(StateType currentState)
+        public override void PlayAnim(StateType currentState , int nbanim = 0)
         {
             base.PlayAnim(currentState);
             Debug.Log("Defense_anim");

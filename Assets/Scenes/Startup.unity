@@ -413,7 +413,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04df56706da6f1b4380f8b2c6c1aa9e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_GameState: {fileID: 2787597832671325909, guid: e62e45e324d80bc488d62f02a2bb6725, type: 3}
+  m_GameState: {fileID: 631951071426593979, guid: e62e45e324d80bc488d62f02a2bb6725, type: 3}
 --- !u!1 &1032217008
 GameObject:
   m_ObjectHideFlags: 0
@@ -473,7 +473,12 @@ MonoBehaviour:
       SourceHashToOverride: 0
       OverridingTargetPrefab: {fileID: 0}
     - Override: 0
-      Prefab: {fileID: 2211256271649509472, guid: e62e45e324d80bc488d62f02a2bb6725, type: 3}
+      Prefab: {fileID: 7220787923388136116, guid: e62e45e324d80bc488d62f02a2bb6725, type: 3}
+      SourcePrefabToOverride: {fileID: 0}
+      SourceHashToOverride: 0
+      OverridingTargetPrefab: {fileID: 0}
+    - Override: 0
+      Prefab: {fileID: 3165636493918647440, guid: e1e6fa40b644751498970cb113c8b0a1, type: 3}
       SourcePrefabToOverride: {fileID: 0}
       SourceHashToOverride: 0
       OverridingTargetPrefab: {fileID: 0}

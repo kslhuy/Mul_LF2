@@ -49,6 +49,7 @@ namespace LF2.Client
             // public SkillTriggerStyle TriggerStyle;
             public StateType RequestedAction;
             public ulong TargetId;
+            public int NbAnim;
         }
         
         #region event
@@ -112,19 +113,6 @@ namespace LF2.Client
         }
 
 
-        // private void OnDrawGizmos() {
-        //     Debug.DrawRay(transform.position , transform.forward,Color.blue);
-        //     Debug.DrawRay(transform.position , transform.up,Color.red);
-        //     Debug.DrawRay(transform.position , transform.right,Color.green);
-        //     // Gizmos.DrawCube(transform.position , transform.forward,Color.blue);
-
-        //     size =  new Vector3(m_Collider.bounds.extents.x,m_Collider.bounds.extents.y,m_Collider.bounds.size.z);
-        //     // Debug.Log(size);
-        //     //Draw a Ray forward from GameObject toward the maximum distance
-        //     Gizmos.DrawRay(m_Collider.bounds.center, transform.right * m_MaxDistance);
-        //     //Draw a cube at the maximum distance
-        //     Gizmos.DrawWireCube(m_Collider.bounds.center + transform.right * m_MaxDistance, size);
-        // }
         public void OnMoveInput(InputAction.CallbackContext context){
             
 
@@ -212,13 +200,17 @@ namespace LF2.Client
 
             // In the furture may be we can developp this feature
         /// <param name="triggerStyle">What input style triggered this action.</param>
-        public void RequestAction(StateType action, ulong targetId = 0)
+        public void RequestAction(StateType action,int Nbanimation = 0, ulong targetId = 0 )
         {
             if (m_ActionRequestCount < m_ActionRequests.Length)
             {
+
                 m_ActionRequests[m_ActionRequestCount].RequestedAction = action;
                 // m_ActionRequests[m_ActionRequestCount].TriggerStyle = triggerStyle;
                 m_ActionRequests[m_ActionRequestCount].TargetId = targetId;
+                if (Nbanimation != 0 ){
+                    m_ActionRequests[m_ActionRequestCount].NbAnim = Nbanimation;
+                }
                 m_ActionRequestCount++;
             }
         }
@@ -229,13 +221,15 @@ namespace LF2.Client
         /// <param name="actionType">The action you want to play. Note that "Skill1" may be overriden contextually depending on the target.</param>
         /// <param name="triggerStyle">What sort of input triggered this skill?</param>
         /// <param name="targetId">(optional) Pass in a specific networkID to target for this action</param>
-        private void PerformSkill(StateType actionType, ulong targetId = 0)
+        private void PerformSkill(StateType actionType, int nbAniamtion = 0, ulong targetId = 0  )
         {
             // In that time we can extend data more 
             // But now only StateType are send 
             var data = new StateRequestData();
             data.StateTypeEnum = actionType;
-
+            if (nbAniamtion != 0){
+                data.NbAnimation = nbAniamtion;
+            }
             SendInput(data);
 
         }
@@ -246,7 +240,7 @@ namespace LF2.Client
             // So this code may be can change (I dont know)
             for (int i = 0; i < m_ActionRequestCount; ++i)
             {
-                PerformSkill(m_ActionRequests[i].RequestedAction,  m_ActionRequests[0].TargetId); 
+                PerformSkill(m_ActionRequests[i].RequestedAction, m_ActionRequests[i].NbAnim,  m_ActionRequests[i].TargetId ); 
             }
             m_ActionRequestCount = 0;
         }

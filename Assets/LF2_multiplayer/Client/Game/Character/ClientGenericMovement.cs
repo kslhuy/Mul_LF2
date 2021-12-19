@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -31,22 +32,21 @@ namespace LF2.Client
                 this.enabled = false;
             }
             m_Initialized = true;
+
+            m_MovementSource.NetworkRotationY.OnValueChanged += SetRotation;
+
         }
 
-        // Update is called once per frame
-        void Update()
+        private void SetRotation(int previousValue, int newValue)
         {
-            if (!m_Initialized) { return; }
-
-            // transform.position = m_MovementSource.NetworkPosition.Value;
-            transform.rotation = Quaternion.Euler(0, m_MovementSource.NetworkRotationY.Value, 0);
-
-            // if (m_Rigidbody != null)
-            // {
-            //     m_Rigidbody.position = transform.position;
-            //     m_Rigidbody.rotation = transform.rotation;
-            // }
+            // In client predict the rotation so dont need to change 
+            if (transform.rotation.y != newValue){
+                transform.rotation = Quaternion.Euler(0, newValue, 0);
+            }
         }
+
+
+      
     }
 }
 

@@ -7,7 +7,7 @@ namespace LF2
     /// This ScriptableObject will be the container for all possible Avatars inside BossRoom.
     /// <see cref="Avatar"/>
     /// </summary>
-    [CreateAssetMenu]
+    [CreateAssetMenu(menuName = "Collection/AvatarRegistry", order = 4)]
     public class AvatarRegistry : ScriptableObject
     {
         [SerializeField]

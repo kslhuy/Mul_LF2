@@ -7,7 +7,8 @@ namespace LF2
     /// between scene objects.
     /// </summary>
 
-    [CreateAssetMenu(menuName = "Variable/Transform", order = 2)]    public class TransformVariable : ScriptableObject
+    [CreateAssetMenu(menuName = "Variable/Transform", order = 2)]    
+    public class TransformVariable : ScriptableObject
     {
         public Transform Value;
     }

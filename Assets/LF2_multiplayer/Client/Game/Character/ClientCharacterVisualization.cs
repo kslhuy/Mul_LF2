@@ -19,8 +19,9 @@ namespace LF2.Visual
         // [SerializeField]
         // private CharacterSwap m_CharacterSwapper;
 
-        // [SerializeField]
-        // private VisualizationConfiguration m_VisualizationConfiguration;
+        private ClientInputSender inputSender;
+        [SerializeField]
+        private VisualizationConfiguration m_VisualizationConfiguration;
         
 
         /// <summary>
@@ -39,11 +40,14 @@ namespace LF2.Visual
         public CoreMovement coreMovement  ;
 
 
-        private NetworkCharacterState m_NetState;
+        public NetworkCharacterState m_NetState;
+
+        public ulong NetworkObjectId => m_NetState.NetworkObjectId;
+
 
         // public Transform Parent { get; private set; }
 
-        private PlayerStateFX m_statePlayerViz;
+        public PlayerStateFX m_statePlayerViz{ get; private set; } 
 
 
         /// Player characters need to report health changes and chracter info to the PartyHUD
@@ -52,7 +56,6 @@ namespace LF2.Visual
         float m_SmoothedSpeed;
 
         int m_HitStateTriggerID;
-        private ClientInputSender inputSender;
         private float m_MaxDistance = 0.2f;
 
 
@@ -108,14 +111,11 @@ namespace LF2.Visual
                 if (m_NetState.IsOwner)
                 {
                     // gameObject.AddComponent<CameraController>();
-                    ClientInputSender inputSender = GetComponentInParent<ClientInputSender>();
+                    inputSender = GetComponentInParent<ClientInputSender>();
                     // Debug.Log(inputSender);
                     // TODO: revisit; anticipated actions would play twice on the host
-                    if (!NetworkManager.Singleton.IsServer)
-                    {
-                        inputSender.ActionInputEvent += OnActionInput;
-                        
-                    }
+                    
+                    inputSender.ActionInputEvent += OnActionInput;
                     inputSender.ClientMoveEvent += OnMoveInput;
                 
                 }
@@ -125,7 +125,6 @@ namespace LF2.Visual
         // Do anticipate State : Only play Animation , not change state
         private void OnActionInput(StateRequestData data)
         {
-            // m_ActionViz.AnticipateAction(ref data);
             m_statePlayerViz.AnticipateState(ref data);
         }
 
@@ -139,12 +138,9 @@ namespace LF2.Visual
         // Play Animation and change state between Idle and Move State Visual
         private void OnMoveInput(Vector2 position)
         {
-
+            // OurAnimator.SetInteger("Speed" , 1);
             m_statePlayerViz.OnMoveInput(position);
         }
-
-
-
 
         private void OnDestroy()
         {
@@ -156,10 +152,14 @@ namespace LF2.Visual
                 m_NetState.OnStopChargingUpClient -= OnStoppedChargingUp;
                 m_NetState.IsStealthy.OnValueChanged -= OnStealthyChanged;
 
-                ClientInputSender inputSender = GetComponentInParent<ClientInputSender>();
-                inputSender.ActionInputEvent -= OnActionInput;
-                inputSender.ClientMoveEvent -= OnMoveInput;
+                if (m_NetState.IsOwner)
+                {
+                    
+                        inputSender.ActionInputEvent -= OnActionInput;
+                        inputSender.ClientMoveEvent -= OnMoveInput;
 
+                }
+                
             }
 
         }
@@ -218,16 +218,13 @@ namespace LF2.Visual
 
         void Update()
         {
-            // if (Parent == null)
-            // {
-            //     // since we aren't in the transform hierarchy, we have to explicitly die when our parent dies.
-            //     Destroy(gameObject);
-            //     return;
-            // }
 
-            // NetworkTransform is interpolated - we can just apply it's position value to our visual object
-            // transform.position = m_PhysicsWrapper.Transform.position;
-            // transform.rotation = m_PhysicsWrapper.Transform.rotation;
+
+            if (m_ClientVisualsAnimator)
+            {
+                OurAnimator.SetFloat("Speed", GetVisualMovementSpeed());
+
+            }
 
             m_statePlayerViz.Update();
             
@@ -242,6 +239,29 @@ namespace LF2.Visual
 
             m_statePlayerViz.OnAnimEvent(id);
         }
+
+        /// <summary>
+        /// Returns the value we should set the Animator's "Speed" variable, given current gameplay conditions.
+        /// </summary>
+        private float GetVisualMovementSpeed()
+        {
+            // Assert.IsNotNull(m_VisualizationConfiguration);
+            // if (m_NetState.NetworkLifeState.LifeState.Value != LifeState.Alive)
+            // {
+            //     return m_VisualizationConfiguration.SpeedDead;
+            // }
+
+            switch (m_NetState.MovementStatus.Value)
+            {
+
+                case MovementStatus.Walking:
+                    return 1;
+                default:
+                    return 0;
+            }
+        }
+
+        
 
     }
 }

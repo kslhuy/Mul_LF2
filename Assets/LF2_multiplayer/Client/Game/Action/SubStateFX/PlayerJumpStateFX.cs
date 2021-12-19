@@ -12,8 +12,10 @@ namespace LF2.Visual{
         {
         }
 
-        public override void AnticipateState(StateRequestData data)
+        public override void AnticipateState(ref StateRequestData data)
         {
+            Debug.Log(data);
+            
             if (data.StateTypeEnum == StateType.Attack){
                 m_PlayerFX.stateMachineViz.GetState(StateType.AttackJump1).PlayAnim(StateType.AttackJump1);
             }
@@ -30,7 +32,7 @@ namespace LF2.Visual{
             amountOfJumpLeft--;
         }
 
-        public override void PlayAnim(StateType currentState)
+        public override void PlayAnim(StateType currentState , int nbanim = 0)
         {
             base.PlayAnim(currentState);
             m_PlayerFX.m_ClientVisual.OurAnimator.Play("Jump_anim");

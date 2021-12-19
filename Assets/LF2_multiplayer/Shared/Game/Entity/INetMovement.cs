@@ -18,7 +18,7 @@ namespace LF2
         /// <summary>
         /// The networked rotation of this entity. This reflects the authorative rotation on the server.
         /// </summary>
-        public NetworkVariable<float> NetworkRotationY { get; }
+        public NetworkVariable<int> NetworkRotationY { get; }
 
         /// <summary>
         /// The current speed of this entity in m/s.
@@ -28,6 +28,6 @@ namespace LF2
         // public void InitNetworkPositionAndRotationY(Vector3 initPosition, float initRotationY);
         
 
-        public void InitNetworkRotationY(float initRotationY);
+        public void InitNetworkRotationY(int initRotationY);
     }
 }

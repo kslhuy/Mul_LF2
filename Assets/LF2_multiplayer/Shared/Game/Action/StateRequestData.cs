@@ -50,7 +50,7 @@ namespace LF2
         public Vector3 Direction;          //direction of skill, if not inferrable from the character's current facing.
         public ulong[] TargetIds;          //NetworkObjectIds of targets, or null if untargeted.
         public float Amount;               //can mean different things depending on the Action. For a ChaseAction, it will be target range the ChaseAction is trying to achieve.
-        public bool ShouldQueue;           //if true, this action should queue. If false, it should clear all current actions and play immediately.
+        public int NbAnimation;           //if true, this action should queue. If false, it should clear all current actions and play immediately.
         public bool ShouldClose;           //if true, the server should synthesize a ChaseAction to close to within range of the target before playing the Action. Ignored for untargeted actions.
         public bool CancelMovement;        // if true, movement is cancelled before playing this action
 
@@ -64,7 +64,7 @@ namespace LF2
             HasDirection = 1 << 1,
             HasTargetIds = 1 << 2,
             HasAmount = 1 << 3,
-            ShouldQueue = 1 << 4,
+            HasNbAnimation = 1 << 4,
             ShouldClose = 1 << 5,
             CancelMovement = 1 << 6,
             //currently serialized with a byte. Change Read/Write if you add more than 8 fields.
@@ -75,7 +75,7 @@ namespace LF2
         /// </summary>
         public bool Compare(ref StateRequestData rhs)
         {
-            bool scalarParamsEqual = (StateTypeEnum, Position, Direction, Amount) == (rhs.StateTypeEnum, rhs.Position, rhs.Direction, rhs.Amount);
+            bool scalarParamsEqual = (StateTypeEnum, Position, Direction, Amount,NbAnimation) == (rhs.StateTypeEnum, rhs.Position, rhs.Direction, rhs.Amount,rhs.NbAnimation);
             if (!scalarParamsEqual) { return false; }
 
             if (TargetIds == rhs.TargetIds) { return true; } //covers case of both being null.
@@ -96,7 +96,8 @@ namespace LF2
             if (Direction != Vector3.zero) { flags |= PackFlags.HasDirection; }
             if (TargetIds != null) { flags |= PackFlags.HasTargetIds; }
             if (Amount != 0) { flags |= PackFlags.HasAmount; }
-            if (ShouldQueue) { flags |= PackFlags.ShouldQueue; }
+            if (NbAnimation != 0) { flags |= PackFlags.HasNbAnimation; }
+            
             if (ShouldClose) { flags |= PackFlags.ShouldClose; }
             if (CancelMovement) { flags |= PackFlags.CancelMovement; }
 
@@ -117,9 +118,14 @@ namespace LF2
 
             if (serializer.IsReader)
             {
-                ShouldQueue = (flags & PackFlags.ShouldQueue) != 0;
+                // ShouldQueue = (flags & PackFlags.ShouldQueue) != 0;
                 CancelMovement = (flags & PackFlags.CancelMovement) != 0;
                 ShouldClose = (flags & PackFlags.ShouldClose) != 0;
+            }
+            
+            if ((flags & PackFlags.HasNbAnimation) != 0)
+            {
+                serializer.SerializeValue(ref NbAnimation);
             }
 
             if ((flags & PackFlags.HasPosition) != 0)

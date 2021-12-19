@@ -7,7 +7,7 @@ namespace LF2
     /// This ScriptableObject defines a Player Character for BossRoom. It defines its CharacterClass field for
     /// associated game-specific properties, as well as its graphics representation.
     /// </summary>
-    [CreateAssetMenu]
+    [CreateAssetMenu(menuName = "Collection/Avatar", order = 1)]
     [Serializable]
     public class Avatar : GuidScriptableObject
     {

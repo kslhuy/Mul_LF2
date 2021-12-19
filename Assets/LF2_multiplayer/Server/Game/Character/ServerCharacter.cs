@@ -5,7 +5,7 @@ using UnityEngine;
 namespace LF2.Server
 {
     // [RequireComponent(typeof(ServerCharacterMovement), typeof(NetworkCharacterState))]
-    public class ServerCharacter : NetworkBehaviour, IDamageable
+    public class ServerCharacter : NetworkBehaviour
     {
         [SerializeField]
         NetworkCharacterState m_NetworkCharacterState;
@@ -30,7 +30,7 @@ namespace LF2.Server
         private float m_KilledDestroyDelaySeconds = 3.0f;
 
 
-        private PlayerState m_statePlayer;
+        public PlayerState m_statePlayer { get; private set; } 
 
 
         // ***** ***
@@ -39,6 +39,11 @@ namespace LF2.Server
         // private AIBrainNew m_AIBrain;
 
         // Cached component reference
+
+        
+        [SerializeField]
+        DamageReceiver m_DamageReceiver;
+
         [SerializeField]
         ServerCharacterMovement m_Movement;
 
@@ -49,10 +54,10 @@ namespace LF2.Server
 
         public PhysicsWrapper physicsWrapper => m_PhysicsWrapper;
 
-        [SerializeField]
-        ServerAnimationHandler m_ServerAnimationHandler;
+        // [SerializeField]
+        // ServerAnimationHandler m_ServerAnimationHandler;
 
-        public ServerAnimationHandler serverAnimationHandler => m_ServerAnimationHandler;
+        // public ServerAnimationHandler serverAnimationHandler => m_ServerAnimationHandler;
         
 
 
@@ -71,6 +76,8 @@ namespace LF2.Server
                 // NetState.OnStopChargingUpServer += OnStoppedChargingUp;
                 NetState.NetworkLifeState.LifeState.OnValueChanged += OnLifeStateChanged;
 
+                m_DamageReceiver.damageReceived += ReceiveHP;
+                // m_DamageReceiver.collisionEntered += CollisionEntered;
                 // if (NetState.IsNpc)
                 // {
                 //     m_AIBrain = new AIBrain(this, m_ActionPlayer);
@@ -89,6 +96,12 @@ namespace LF2.Server
                 NetState.ReceivedClientInput -= OnClientMoveRequest;
                 // NetState.OnStopChargingUpServer -= OnStoppedChargingUp;
                 NetState.NetworkLifeState.LifeState.OnValueChanged -= OnLifeStateChanged;
+            }
+
+            if (m_DamageReceiver)
+            {
+                m_DamageReceiver.damageReceived -= ReceiveHP;
+                // m_DamageReceiver.collisionEntered -= CollisionEntered;
             }
         }
 
@@ -252,10 +265,7 @@ namespace LF2.Server
         //     return IDamageable.SpecialDamageFlags.None;
         // }
 
-        public bool IsDamageable()
-        {
-            return NetState.NetworkLifeState.LifeState.Value == LifeState.Alive;
-        }
+
 
         /// <summary>
         /// This character's AIBrain. Will be null if this is not an NPC.

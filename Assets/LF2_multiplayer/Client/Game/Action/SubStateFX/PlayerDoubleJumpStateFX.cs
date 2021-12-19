@@ -11,7 +11,7 @@ namespace LF2.Visual{
         {
         }
 
-        public override void AnticipateState(StateRequestData data)
+        public override void AnticipateState(ref StateRequestData data)
         {
         }
 
@@ -25,7 +25,7 @@ namespace LF2.Visual{
             base.Enter();
          }
 
-        public override void PlayAnim(StateType currentState)
+        public override void PlayAnim(StateType currentState , int nbanim = 0)
         {
             base.PlayAnim(currentState);
             m_PlayerFX.m_ClientVisual.OurAnimator.Play("DoubleJump_anim");

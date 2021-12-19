@@ -27,7 +27,7 @@ namespace LF2.Server
     {
         protected PlayerState player;
 
-        protected StateRequestData m_Data;
+        public StateRequestData m_Data;
 
         protected MovementState currentMovementState;
         

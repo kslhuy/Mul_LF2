@@ -20,11 +20,11 @@ namespace LF2
     public enum MovementStatus
     {
         Idle,         // not trying to move
-        Normal,       // character is moving (normally)
+        Walking,      // character should appear to be "walking" rather than normal running (e.g. for cut-scenes)
         Uncontrolled, // character is being moved by e.g. a knockback -- they are not in control!
         Slowed,       // character's movement is magically hindered
         Hasted,       // character's movement is magically enhanced
-        Walking,      // character should appear to be "walking" rather than normal running (e.g. for cut-scenes)
+        Air,
     }
 
     /// <summary>
@@ -34,11 +34,11 @@ namespace LF2
     public class NetworkCharacterState : NetworkBehaviour, ITargetable , INetMovement
     {
 
-        public void InitNetworkRotationY(float initRotationY)
+        public void InitNetworkRotationY(int initRotationY)
         {
             NetworkRotationY.Value = initRotationY;        
         }
-        public NetworkVariable<float> NetworkRotationY { get; } = new NetworkVariable<float>();
+        public NetworkVariable<int> NetworkRotationY { get; } = new NetworkVariable<int>();
 
         /// Indicates how the character's movement should be depicted.
         public NetworkVariable<MovementStatus> MovementStatus { get; } = new NetworkVariable<MovementStatus>();
@@ -112,6 +112,7 @@ namespace LF2
         /// </summary>
         public CharacterTypeEnum CharacterType => m_CharacterClassContainer.CharacterClass.CharacterType;
 
+
         /// <summary>
         /// Gets invoked when inputs are received from the client which own this networked character.
         /// </summary>
@@ -134,6 +135,8 @@ namespace LF2
         }
 
         // ACTION SYSTEM
+
+        // public event Action<StateRequestData> SendPassiveActionServerRPC ;
 
         /// <summary>
         /// This event is raised on the server when an action request arrives
@@ -186,6 +189,16 @@ namespace LF2
         {
             DoActionEventServer?.Invoke(data);
         }
+
+        /// <summary>
+        /// Client->Server RPC that sends a request to play an action.
+        /// </summary>
+        /// <param name="data">Data about which action to play and its associated details. </param>
+        // [ServerRpc(RequireOwnership = false)]
+        // public void DoPassiveActionServerRPC(StateRequestData data) {
+        //     SendPassiveActionServerRPC?.Invoke(data);
+        // } 
+            
 
         // UTILITY AND SPECIAL-PURPOSE RPCs
 

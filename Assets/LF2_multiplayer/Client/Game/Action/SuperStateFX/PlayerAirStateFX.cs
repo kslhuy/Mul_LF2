@@ -12,9 +12,8 @@ namespace LF2.Visual{
         {
         }
 
-        public override void AnticipateState(StateRequestData data)
+        public override void AnticipateState(ref StateRequestData data)
         {
-
         }
 
         public override void Enter()

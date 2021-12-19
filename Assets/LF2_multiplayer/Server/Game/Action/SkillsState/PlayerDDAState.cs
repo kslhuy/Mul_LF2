@@ -87,11 +87,11 @@ namespace LF2.Server{
             var projectile = GameObject.Instantiate(projectileInfo.ProjectilePrefab, projectileInfo.ProjectilePrefab.transform.position, projectileInfo.ProjectilePrefab.transform.rotation);
 
             // point the projectile the same way we're facing
-            projectile.transform.right = player.serverplayer.transform.right;
+            projectile.transform.right = player.serverplayer.physicsWrapper.Transform.right;
 
             //this way, you just need to "place" the arrow by moving it in the prefab, and that will control
             //where it appears next to the player.
-            projectile.transform.position = player.serverplayer.transform.localToWorldMatrix.MultiplyPoint(projectile.transform.position);
+            projectile.transform.position = player.serverplayer.physicsWrapper.Transform.localToWorldMatrix.MultiplyPoint(projectile.transform.position);
             projectile.GetComponent<ServerProjectileLogic>().Initialize(player.serverplayer.NetworkObjectId, in projectileInfo);
 
             projectile.GetComponent<NetworkObject>().Spawn();

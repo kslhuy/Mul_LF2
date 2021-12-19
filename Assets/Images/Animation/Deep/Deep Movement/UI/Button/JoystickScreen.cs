@@ -64,7 +64,8 @@ namespace UnityEngine.InputSystem.OnScreen
             ((RectTransform)transform).anchoredPosition = m_StartPos + (Vector3)delta;
 
             var newPos = new Vector2(delta.x / movementRange, delta.y / movementRange);
-            
+            newPos = newPos.normalized;
+            // Debug.Log(newPos.normalized); 
             // SendValueToControl(newPos);
             // Debug.Log("onDrag");
             SendControlValue?.Invoke(newPos);

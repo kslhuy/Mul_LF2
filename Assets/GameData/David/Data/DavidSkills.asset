@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CharacterType: 1
   SkillsDescription:
-  - {fileID: 11400000, guid: 711acd695cece8f46843acb63beb2e26, type: 2}
   - {fileID: 11400000, guid: 5b87b037ba928b745a1daaa2dc534a02, type: 2}
   - {fileID: 11400000, guid: 6c4889dcf35f6da4491a1464ec178123, type: 2}
   - {fileID: 11400000, guid: 722cbc03b92fe3649b68421113e33e39, type: 2}
+  - {fileID: 11400000, guid: 4c7454404b2803f40b4e73ebf5bca368, type: 2}
+  - {fileID: 11400000, guid: 844fb60800fd14046846a9f824b0ea5b, type: 2}
+  - {fileID: 11400000, guid: e10e1dd35db6fe14a8ab2c03fd479f61, type: 2}

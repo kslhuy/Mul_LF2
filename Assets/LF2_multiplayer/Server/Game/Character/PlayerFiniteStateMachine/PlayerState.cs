@@ -37,6 +37,9 @@ namespace LF2.Server{
             stateMachine.RegisterState(new PlayerAttackJump1(chacterType,this ));
             stateMachine.RegisterState(new PlayerDefenseState(chacterType,this));
 
+            stateMachine.RegisterState(new PlayerHurtState(chacterType,this));
+
+
 
             stateMachine.RegisterState(new PlayerDDAState(chacterType,this));
 
@@ -54,16 +57,23 @@ namespace LF2.Server{
             stateMachine.PhysicUpdate();
         }
 
-        public void RequestToState(ref StateRequestData action)
+        // Client send input to Server to change the state of player
+        public void RequestToState(ref StateRequestData requestData)
         {
-            stateMachine.RequestChangeState(action);
+            // Get data resquest to state correspond
+            stateMachine.GetState(requestData.StateTypeEnum).m_Data = requestData;
+            stateMachine.RequestChangeState(requestData);
         }
+
+        // Client request to Server to Move the state of player
 
         public void SetMovementDirection(Vector2 targetPosition)
         {
             stateMachine.SetMovementDirection(targetPosition);
         }
-
+        // Something happen in the game 
+        // Used to change State passively (tu chuyen doi state khi gap mot su kien nao do)
+        // Exemple : Hurt (Attack by someone) change state player in Server to HurtState
         public void OnGameplayActivity(State.GameplayActivity activityThatOccurred){
             stateMachine.OnGameplayActivity(activityThatOccurred);
         }

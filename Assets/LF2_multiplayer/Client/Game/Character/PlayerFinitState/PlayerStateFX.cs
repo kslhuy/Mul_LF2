@@ -43,6 +43,8 @@ namespace LF2.Visual{
 
             stateMachineViz.RegisterState(new PlayerDefenseStateFX(characterType,this));
 
+            stateMachineViz.RegisterState(new PlayerHurtStateFX(characterType,this));
+
             stateMachineViz.RegisterState(new PlayerDDAStateFX(characterType,this));
 
 
@@ -60,7 +62,7 @@ namespace LF2.Visual{
         // Aticipate State in CLient , Just run Animation , So not run Update () 
         public void AnticipateState(ref StateRequestData data)
         {
-            stateMachineViz.GetState(stateMachineViz.CurrentStateViz).AnticipateState(data);
+            stateMachineViz.GetState(stateMachineViz.CurrentStateViz).AnticipateState(ref data);
         }
 
         // Play correct State that sent by Server 
@@ -73,7 +75,7 @@ namespace LF2.Visual{
 
         public void OnMoveInput(Vector2 position)
         {
-            stateMachineViz.OnMoveInput( position);
+            stateMachineViz.OnMoveInput(position);
         }
 
         public void OnAnimEvent(string id)

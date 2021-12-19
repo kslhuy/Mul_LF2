@@ -25,7 +25,7 @@ namespace LF2.Server
             
             //
             m_Data.StateTypeEnum = StateType.DoubleJump;
-            player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
+            // player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
             //
         }
         public override void PhysicsUpdate()

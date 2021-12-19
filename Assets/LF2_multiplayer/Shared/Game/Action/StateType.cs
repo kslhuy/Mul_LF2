@@ -17,6 +17,6 @@ namespace LF2{
         DDA,
 
         Ground,
-        
+        Hurt,
     }
 }

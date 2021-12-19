@@ -24,7 +24,7 @@ namespace LF2.Server{
             base.Enter();
 
             m_Data.StateTypeEnum = StateType.Defense;
-            player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
+            // player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
         }
 
         public override void Exit()

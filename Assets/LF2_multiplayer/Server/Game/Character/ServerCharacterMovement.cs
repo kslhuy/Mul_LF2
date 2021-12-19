@@ -1,3 +1,4 @@
+
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -28,8 +29,12 @@ namespace LF2.Server
         public float JumpHieght = 9f;
         public float JumpLength = 3f;
 
+        
 
-        private BoxCollider m_BoxCollider;
+
+
+        [SerializeField] 
+        BoxCollider m_BoxCollider;
 
         [SerializeField]
         Rigidbody m_Rigidbody;
@@ -57,11 +62,12 @@ namespace LF2.Server
         public float  SpeedWalk = 1f ;
         private float gaviti = 1f ;
         private int k_GroundLayerMask;
+        private Vector3 size;
 
         private void Awake()
         {
             // m_CharLogic = GetComponent<ServerCharacter>();
-            m_BoxCollider = GetComponent<BoxCollider>();
+        
             FacingDirection = 1;
             m_MovementState = MovementState.Idle;
         }
@@ -74,10 +80,14 @@ namespace LF2.Server
                 enabled = false;
                 return;
             }
-            m_NetworkCharacterState.InitNetworkRotationY(transform.rotation.eulerAngles.y);
+            m_NetworkCharacterState.InitNetworkRotationY((int)transform.rotation.eulerAngles.y);
             k_GroundLayerMask = LayerMask.GetMask(new[] { "Ground" });
 
         }
+
+        
+
+        
 
         /// <summary>
         /// Sets a movement target. We will path to this position, .
@@ -85,8 +95,8 @@ namespace LF2.Server
         /// <param name="position">Position in world space to path to. </param>
 
         public void SetVelocityXZ(Vector3 targetposition){
-      
-            transform.position += targetposition*Time.deltaTime;
+            m_MovementState = MovementState.Move;
+
             CheckIfShouldFlip(Mathf.RoundToInt(targetposition.x));
 
         }
@@ -158,7 +168,7 @@ namespace LF2.Server
         /// </summary>
         public void CancelMove()
         {
-            m_MovementState = MovementState.UnControl;
+            m_MovementState = MovementState.Idle;
         }
 
         /// <summary>
@@ -180,7 +190,8 @@ namespace LF2.Server
 
         private void FixedUpdate()
         {
-            m_NetworkCharacterState.NetworkRotationY.Value = transform.rotation.eulerAngles.y;
+            // Debug.Log(m_MovementState);
+            m_NetworkCharacterState.MovementStatus.Value = GetMovementStatus();
         }
  
 
@@ -232,24 +243,26 @@ namespace LF2.Server
         //     return characterClass.Speed;
         // }
 
-        // /// <summary>
-        // /// Determines the appropriate MovementStatus for the character. The
-        // /// MovementStatus is used by the client code when animating the character.
-        // /// </summary>
-        // private MovementStatus GetMovementStatus()
-        // {
-        //     switch (m_MovementState)
-        //     {
-        //         case MovementState.Move:
-        //             return MovementStatus.Move;
-        //         case MovementState.Knockback:
-        //             return MovementStatus.Uncontrolled;
-        //         case MovementState.Air:
-        //             return MovementStatus.Air;
-        //         default:
-        //             return MovementStatus.Idle;
-        //     }
-        // }
+        /// <summary>
+        /// Determines the appropriate MovementStatus for the character. The
+        /// MovementStatus is used by the client code when animating the character.
+        /// </summary>
+        private MovementStatus GetMovementStatus()
+        {
+            switch (m_MovementState)
+            {
+                case MovementState.Move:
+                    return MovementStatus.Walking;
+                case MovementState.Knockback:
+                    return MovementStatus.Uncontrolled;
+                case MovementState.Air:
+                    return MovementStatus.Air;
+                default:
+                    return MovementStatus.Idle;
+            }
+        }
+
+        
         public void CheckIfShouldFlip(int xInput){
             if (xInput != 0 && xInput != FacingDirection){
                 Flip();
@@ -258,6 +271,13 @@ namespace LF2.Server
         public void Flip(){
             FacingDirection *=-1;
             transform.Rotate(0.0f,180.0f,0.0f);
+            if (FacingDirection == 1){
+                m_NetworkCharacterState.NetworkRotationY.Value = 0;
+            }
+            else{
+                m_NetworkCharacterState.NetworkRotationY.Value = 180;
+            }
+
         }
     }
 }
