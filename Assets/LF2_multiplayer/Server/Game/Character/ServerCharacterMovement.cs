@@ -112,8 +112,12 @@ namespace LF2.Server
 
         public void SetDoubleJump(Vector3 moveDir)
         {
-            m_Rigidbody.AddForce(JumpHieght*Vector3.up + (JumpLength+1)*FacingDirection*Vector3.right,ForceMode.Impulse); 
-        }
+            if (moveDir.x != 0){
+                m_Rigidbody.AddForce(JumpHieght*Vector3.up + (JumpLength+1)*moveDir.x*Vector3.right,ForceMode.Impulse); 
+            }
+            else {
+                m_Rigidbody.AddForce(JumpHieght*Vector3.up + (JumpLength+1)*FacingDirection*Vector3.right,ForceMode.Impulse); 
+            }        }
 
         public void StartForwardCharge(float speed, float duration)
         {
@@ -202,10 +206,6 @@ namespace LF2.Server
                 gaviti = m_gravity.Evaluate(Time.deltaTime);
                 m_Rigidbody.velocity += gaviti * Physics.gravity.y * Vector3.up * Time.deltaTime;
             }
-            // if (IsGounded() && Time.time - m_startTime > 0.2f)
-            // {
-            //     m_MovementState = MovementState.Idle;
-            // }
         }
 
 
@@ -270,7 +270,7 @@ namespace LF2.Server
         }
         public void Flip(){
             FacingDirection *=-1;
-            transform.Rotate(0.0f,180.0f,0.0f);
+            // transform.Rotate(0.0f,180.0f,0.0f);
             if (FacingDirection == 1){
                 m_NetworkCharacterState.NetworkRotationY.Value = 0;
             }

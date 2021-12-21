@@ -21,6 +21,9 @@ namespace LF2
         [Tooltip("Starting Mana of this character class")]
         public IntVariable BaseMana;
 
+        [Tooltip("How many time character can jump ")]
+        public IntVariable NbJump;
+
         [Tooltip("Base movement speed of this character class (in meters/sec)")]
         public float Speed;
 
@@ -32,6 +35,8 @@ namespace LF2
 
         [Tooltip("For players, this is the displayed \"class name\". (Not used for monsters)")]
         public string DisplayedName;
+
+        
 
         // [Tooltip("For players, this is the class banner (when active). (Not used for monsters)")]
         // public Sprite ClassBannerLit;

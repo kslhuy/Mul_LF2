@@ -69,7 +69,12 @@ namespace LF2.Client{
         }
 
         public void SetDoubleJump(Vector3 moveDir){
-            m_Rigidbody.AddForce(JumpHieght*Vector3.up + (JumpLength+1)*FacingDirection*Vector3.right,ForceMode.Impulse); 
+            if (moveDir.x != 0){
+                m_Rigidbody.AddForce(JumpHieght*Vector3.up + (JumpLength+1)*moveDir.x*Vector3.right,ForceMode.Impulse); 
+            }
+            else {
+                m_Rigidbody.AddForce(JumpHieght*Vector3.up + (JumpLength+1)*FacingDirection*Vector3.right,ForceMode.Impulse); 
+            }
         }
 
 
@@ -135,14 +140,16 @@ namespace LF2.Client{
 
         public void Flip(){
             FacingDirection *=-1;
-            if (FacingDirection == 1){
-                m_Rigidbody.transform.Rotate(0,0,0);
+            m_Rigidbody.transform.Rotate(0,0,0);
 
-            }
-            else {
-                m_Rigidbody.transform.Rotate(0,180,0);            
+            // if (FacingDirection == 1){
+            //     m_Rigidbody.transform.Rotate(0,0,0);
+
+            // }
+            // else {
+            //     m_Rigidbody.transform.Rotate(0,180,0);            
                 
-            }
+            // }
 
         }
 

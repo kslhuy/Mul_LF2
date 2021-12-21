@@ -18,5 +18,8 @@ namespace LF2{
 
         Ground,
         Hurt,
+
+        Sliding,
+        Rolling,
     }
 }
