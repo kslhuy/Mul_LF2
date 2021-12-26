@@ -14,10 +14,8 @@ namespace LF2.Visual{
 
         public override void AnticipateState(ref StateRequestData requestData)
         {
-            if ( moveDir.z >0.9f || moveDir.z < -0.9f  ){
-                m_PlayerFX.stateMachineViz.ChangeState(StateType.Sliding);
-            }
-            else if (requestData.StateTypeEnum == StateType.Jump){
+
+            if (requestData.StateTypeEnum == StateType.Jump){
                 m_PlayerFX.stateMachineViz.ChangeState(StateType.DoubleJump);
             }
             else if (requestData.StateTypeEnum == StateType.Defense){
@@ -53,6 +51,7 @@ namespace LF2.Visual{
         public override void SetMovementTarget(Vector2 position)
         {
             base.SetMovementTarget(position);
+            Debug.Log(moveDir.z);
         }
 
 
@@ -75,6 +74,11 @@ namespace LF2.Visual{
 
         public override bool LogicUpdate()
         {
+            m_PlayerFX.m_ClientVisual.coreMovement.SetRun(2f);
+            if ( moveDir.z >0.9f || moveDir.z < -0.9f  ){
+                m_PlayerFX.stateMachineViz.ChangeState(StateType.Idle);
+            }
+
             return true;
         }
     }

@@ -13,10 +13,8 @@ namespace LF2.Server{
 
         public override void CanChangeState(StateRequestData actionRequestData)
         {
-            if ( moveDir.z >0.9f || moveDir.z < -0.9f  ){
-                player.stateMachine.ChangeState(StateType.Sliding);
-            }
-            else if (actionRequestData.StateTypeEnum == StateType.Jump){
+
+            if (actionRequestData.StateTypeEnum == StateType.Jump){
                 player.stateMachine.ChangeState(StateType.DoubleJump);
             }
             else if (actionRequestData.StateTypeEnum == StateType.Defense){
@@ -58,6 +56,9 @@ namespace LF2.Server{
         public override void PhysicsUpdate()
         {
             base.PhysicsUpdate();
+            if ( moveDir.z >0.9f || moveDir.z < -0.9f  ){
+                player.stateMachine.ChangeState(StateType.Idle);
+            }
             // core.SetMovement.SetVelocityRun(runVelocity);
 
         }

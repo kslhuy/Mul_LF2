@@ -27,6 +27,8 @@ namespace LF2.Server{
             // Debug.Log(chacterType);
             stateMachine.RegisterState(new PlayerIdleState(chacterType, this ));
             stateMachine.RegisterState(new PlayerMoveState(chacterType,this ));
+            stateMachine.RegisterState(new PlayerRunState(chacterType,this));
+
             stateMachine.RegisterState(new PlayerJumpState(chacterType,this ));
             stateMachine.RegisterState(new PlayerDoubleJumpState(chacterType,this ));
             
