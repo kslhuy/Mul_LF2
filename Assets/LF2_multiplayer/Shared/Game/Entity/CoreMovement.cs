@@ -104,11 +104,12 @@ namespace LF2.Client{
 
 
 
-        // public void SetVelocityRun(float velocityRun ){
-        //     moveDir.Set(velocityRun*FacingDirection ,0, 0);
-        //     Rigidbody.velocity = moveDir;
-        //     // transform.position += moveDir*Time.deltaTime;
-        // }
+        public void SetRun(float velocityRun ){
+            moveDir.Set(velocityRun*FacingDirection ,0, 0);
+            // Rigidbody.velocity = moveDir;
+            transform.position += moveDir*Time.deltaTime;
+        }
+
         // public void SetFallingDown(){
         //     Rigidbody.velocity += 0.5f*Physics.gravity.y*Vector3.up*Time.deltaTime ;
         // }

@@ -30,6 +30,8 @@ namespace LF2.Visual{
             stateMachineViz = new PlayerStateMachineFX();
             stateMachineViz.RegisterState(new PlayerIdleStateFX(characterType,this));
             stateMachineViz.RegisterState(new PlayerMoveStateFX(characterType,this));
+            stateMachineViz.RegisterState(new PlayerRunStateFX(characterType,this));
+
 
             stateMachineViz.RegisterState(new PlayerJumpStateFX(characterType,this));
             stateMachineViz.RegisterState(new PlayerDoubleJumpStateFX(characterType,this));

@@ -213,6 +213,8 @@ MonoBehaviour:
   m_JoystickScreen: {fileID: 1901921017}
   m_DownSlotButton: {fileID: 2131331406}
   m_UpSlotButton: {fileID: 597840561}
+  m_RunLeftButton: {fileID: 947786673}
+  m_RunRightButton: {fileID: 145942836}
 --- !u!1 &123088789
 GameObject:
   m_ObjectHideFlags: 0

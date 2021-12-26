@@ -7,6 +7,7 @@ using LF2.Client;
 // using SkillTriggerStyle = LF2.Client.ClientInputSender.SkillTriggerStyle;
 using UnityEngine.InputSystem.OnScreen;
 using System.Collections;
+using System;
 
 namespace LF2.Visual
 {
@@ -34,6 +35,12 @@ namespace LF2.Visual
 
         [SerializeField]
         UpSlotButton m_UpSlotButton;
+        
+        [SerializeField]
+        RunLeftButton m_RunLeftButton;
+
+        [SerializeField]
+        RunRightButton m_RunRightButton;
 
         /// <summary>
         /// Our input-sender. Initialized in RegisterInputSender()
@@ -122,6 +129,9 @@ namespace LF2.Visual
             m_AttackButton.AttackAction += OnAtack;
             m_DefenseButton.DefenseAction += OnDefense;
             m_JumpButton.JumpAction += OnJump;
+
+            m_RunLeftButton.runLeftEvent += OnRunleft;
+            m_RunRightButton.runRightEvent += OnRunRight;
         }
 
 
@@ -227,8 +237,16 @@ namespace LF2.Visual
             m_InputSender.OnMoveInputUI(position);
         }
 
+        // Run Event 
+        private void OnRunRight()
+        {
+            m_InputSender.RequestAction(StateType.Run);
+        }
 
-
+        private void OnRunleft()
+        {
+            m_InputSender.RequestAction(StateType.Run);  
+        }
 
 
     }
