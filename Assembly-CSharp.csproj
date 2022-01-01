@@ -76,7 +76,6 @@
      <Compile Include="Assets\LF2_multiplayer\Server\Game\Action\SubState\PlayerHurtState.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\UI\ConnectionAnimation.cs" />
      <Compile Include="Assets\Images\Image\Deep\Deep\Deep Movement\UI\Button\JoystickScreen.cs" />
-     <Compile Include="Assets\Images\Image\Dennis\Dennis\State Machine\SO_ComboAttack.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\Game\Action\SubStateFX\Movement\PlayerRollingStateFX.cs" />
      <Compile Include="Assets\LF2_multiplayer\Shared\ScriptableObjects\GuidScriptableObject.cs" />
      <Compile Include="Assets\LF2_multiplayer\Client\UI\CharSelect\StartupUI.cs" />
