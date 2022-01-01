@@ -110,7 +110,7 @@ namespace LF2.Visual
 
                 if (m_NetState.IsOwner)
                 {
-                    // gameObject.AddComponent<CameraController>();
+                    gameObject.AddComponent<CameraController>();
                     inputSender = GetComponentInParent<ClientInputSender>();
                     // Debug.Log(inputSender);
                     // TODO: revisit; anticipated actions would play twice on the host
