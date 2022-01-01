@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 5979144275471180238}
   - component: {fileID: 5979144275471180239}
   - component: {fileID: 5979144275471180232}
-  - component: {fileID: 1910492601173405656}
   m_Layer: 0
   m_Name: Davis_Ball
   m_TagString: Untagged
@@ -134,15 +133,3 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!114 &1910492601173405656
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5979144275471180233}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72d387bbe6865c7458a66e650092b091, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
