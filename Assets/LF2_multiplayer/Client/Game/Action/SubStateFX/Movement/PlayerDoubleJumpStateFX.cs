@@ -7,7 +7,7 @@ namespace LF2.Visual{
     public class PlayerDoubleJumpStateFX : PlayerAirStateFX
     {
 
-        public PlayerDoubleJumpStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX ) : base(characterType, m_PlayerFX)
+        public PlayerDoubleJumpStateFX(PlayerStateMachineFX mPlayerMachineFX ) : base(mPlayerMachineFX)
         {
         }
 
@@ -20,7 +20,7 @@ namespace LF2.Visual{
             
             if( !Anticipated)
             {
-                PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz);
+                MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("DoubleJump_anim");
             }
             base.Enter();
          }
@@ -28,7 +28,7 @@ namespace LF2.Visual{
         public override void PlayAnim(StateType currentState , int nbanim = 0)
         {
             base.PlayAnim(currentState);
-            m_PlayerFX.m_ClientVisual.OurAnimator.Play("DoubleJump_anim");
+            MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("DoubleJump_anim");
         }
 
         
@@ -47,8 +47,8 @@ namespace LF2.Visual{
             return StateType.DoubleJump;
         }
 
-        public override bool LogicUpdate() {
-            return base.LogicUpdate();
+        public override void LogicUpdate() {
+            base.LogicUpdate();
         }
 
     }

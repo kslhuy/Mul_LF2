@@ -6,7 +6,7 @@ namespace LF2.Server
 {
     public class PlayerDoubleJumpState : PlayerAirState
     {
-        public PlayerDoubleJumpState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
+        public PlayerDoubleJumpState(PlayerStateMachine player) : base(player)
         {
         }
 
@@ -23,20 +23,12 @@ namespace LF2.Server
         {
             base.Enter();
             
-            //
+            
             m_Data.StateTypeEnum = StateType.DoubleJump;
-            // player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
-            //
-        }
-        public override void PhysicsUpdate()
-        {
-            base.PhysicsUpdate();
-
+            player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
+            
         }
 
-        public override void SetMovementTarget(Vector2 position)
-        {
-            base.SetMovementTarget(position);
-        }
+
     }
 }

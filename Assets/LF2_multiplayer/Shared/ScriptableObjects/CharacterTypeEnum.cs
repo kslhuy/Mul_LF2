@@ -10,12 +10,14 @@ public enum CharacterTypeEnum
     David,
     Dennis,
     John,
-    Freeze,
-    Louis,
-
-    Bandit,
-    Henry,
     Firen,
+    Freeze,
+
+    Henry,
     Woody,
+    Louis,
+    Bandit,
+    Hunter,
+    Rudolf,
 }
 

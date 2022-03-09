@@ -25,7 +25,7 @@ namespace LF2.Client
 
         public override void OnNetworkSpawn()
         {
-            if (IsServer)
+            if (!IsClient)
             {
                 //this component is not needed on the host (or dedicated server), because ServerCharacterMovement will directly
                 //update the character's position.

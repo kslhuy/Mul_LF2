@@ -8,7 +8,7 @@ namespace LF2.Visual{
     {
         private int amountOfJumpLeft ;
 
-        public PlayerAirStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX ) : base(characterType, m_PlayerFX)
+        public PlayerAirStateFX(PlayerStateMachineFX mPlayerMachineFX ) : base(mPlayerMachineFX)
         {
         }
 
@@ -28,14 +28,13 @@ namespace LF2.Visual{
         }
 
         
-        public override bool LogicUpdate() {
+        public override void LogicUpdate() {
 
-            // Debug.Log("AirState");
-            m_PlayerFX.m_ClientVisual.coreMovement.CheckIfShouldFlip((int)moveDir.x);
-            if (m_PlayerFX.m_ClientVisual.coreMovement.IsGounded() && Time.time - TimeStarted > 0.3f ){
-                return false;
+            
+            // Debug.Log($" Air_FX = {Time.time - TimeStarted_Animation}"); 
+            if (MPlayerMachineFX.CoreMovement.IsGounded() && Time.time - TimeStarted_Animation > 0.2f ){
+                MPlayerMachineFX.GetState(StateType.Land).PlayAnim(StateType.Land);
             }
-            return true;
         }
 
         public override void SetMovementTarget(Vector2 position)
@@ -43,10 +42,7 @@ namespace LF2.Visual{
             base.SetMovementTarget(position);
         }
 
-        public override void End()
-        {
-            m_PlayerFX.stateMachineViz.ChangeState(StateType.Land);
-        }
+
 
 
         public void DecreaseAmountOfJumpsLeft()=>amountOfJumpLeft--;

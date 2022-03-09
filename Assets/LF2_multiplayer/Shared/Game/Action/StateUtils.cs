@@ -46,6 +46,30 @@ namespace LF2
             return DetectNearbyEntities(!isNPC, isNPC, attacker, range, out results);
         }
 
+        public static int DetectNearbyEntitiesByCombo( bool wantPcs, bool wantNpcs, Collider attacker, out RaycastHit[] results)
+        {
+            var myBounds = attacker.bounds;
+
+            if (s_layer_PCs == -1)
+                s_layer_PCs = LayerMask.NameToLayer("PCs");
+            if (s_layer_NPCs == -1)
+                s_layer_NPCs = LayerMask.NameToLayer("NPCs");
+
+
+            int mask = 0;
+            if (wantPcs)
+                mask |= (1 << s_layer_PCs);
+            if (wantNpcs)
+                mask |= (1 << s_layer_NPCs);
+
+            int numResults = Physics.BoxCastNonAlloc(attacker.transform.position,myBounds.extents,
+                attacker.transform.right, s_Hits, Quaternion.identity, 0,mask);
+            
+            results = s_Hits;
+            return numResults;
+
+        }
+
         /// <summary>
         /// Detects friends and/or foes near us.
         /// </summary>

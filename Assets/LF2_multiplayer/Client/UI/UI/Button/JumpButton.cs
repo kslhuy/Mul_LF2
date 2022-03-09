@@ -2,13 +2,14 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.Layouts;
+using LF2;
+
 
 namespace UnityEngine.InputSystem.OnScreen
 {
     public class JumpButton : MonoBehaviour, IPointerDownHandler,IDropHandler
     {
-        public event Action<TypeSkills> classJumpComboEvent;
-        public Action JumpAction;
+        public Action<StateType> JumpAction;
         
         [InputControl(layout = "Button")]
         [SerializeField]
@@ -22,11 +23,6 @@ namespace UnityEngine.InputSystem.OnScreen
 
         private DefenseButton defenseButton;
 
-        // protected override string controlPathInternal
-        // {
-        //     get => m_ControlPath;
-        //     set => m_ControlPath = value;
-        // }
         private void Awake() {
             slotUpButton = GameObject.FindGameObjectWithTag("UpSlotUI").GetComponent<UpSlotButton>();            
             slotDownButton = GameObject.FindGameObjectWithTag("DownSlotUI").GetComponent<DownSlotButton>();       
@@ -47,22 +43,21 @@ namespace UnityEngine.InputSystem.OnScreen
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            // SendValueToControl(1.0f);
-            JumpAction?.Invoke();
+            JumpAction?.Invoke(StateType.Jump);
         }
 
         public void OnDrop(PointerEventData eventData)
         {
             if (Up && Def) 
             {
-                classJumpComboEvent?.Invoke(TypeSkills.DefUpJump);
+                JumpAction?.Invoke(StateType.DUJ);
                 Def = false;
                 Up = false;
             }
 
             else if (Down && Def) 
             {
-                classJumpComboEvent?.Invoke(TypeSkills.DefDownJump);
+                JumpAction?.Invoke(StateType.DDJ);
                 Def = false;
                 Down = false;
             }

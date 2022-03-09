@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c75cb39abf163764db0fa484f34cfbfd, type: 3}
+  m_Name: John
+  m_EditorClassIdentifier: 
+  m_Guid: 876b6fa91c5384409c5983a740bf0780
+  CharacterClass: {fileID: 11400000, guid: 2d80b94515cad4b45a2b693fcaffe211, type: 2}
+  Graphics: {fileID: 5307423579264072845, guid: 88e85a07040e0d9418b69ecd07c5dcd6, type: 3}
+  GraphicsCharacterSelect: {fileID: 5307423579264072845, guid: 1a2a7928aa4b78344a9f12d94b605091, type: 3}
+  Portrait: {fileID: 21300000, guid: 2cc9d7fcfd4386c46a275192952bd766, type: 3}

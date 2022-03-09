@@ -6,17 +6,15 @@ namespace LF2.Server{
     //                 Do a jump physics , and check every frame  player touch Ground
     public class PlayerJumpState : PlayerAirState
     {
-        private int amountOfJumpLeft ;
-        float timeStartJump;
 
-        public PlayerJumpState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
+        public PlayerJumpState(PlayerStateMachine player) : base(player)
         {
         }
 
         public override void CanChangeState(StateRequestData actionRequestData)
         {
             if (actionRequestData.StateTypeEnum == StateType.Attack ){
-                player.stateMachine.ChangeState(StateType.AttackJump1);
+                player.ChangeState(StateType.AttackJump1);
             }
         }
 
@@ -27,17 +25,12 @@ namespace LF2.Server{
             player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
         }
 
-        public override void PhysicsUpdate() {
-            base.PhysicsUpdate();
-            Debug.Log("JumpState");
- 
-        }
-        public override void SetMovementTarget(Vector2 position)
-        {
-            base.SetMovementTarget(position);
+        public override void LogicUpdate(){
+            player.ServerCharacterMovement.CheckIfShouldFlip((int)player.moveDir.x);
+            base.LogicUpdate();
         }
 
-
+        
 
         public override StateType GetId()
         {

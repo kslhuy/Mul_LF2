@@ -7,7 +7,7 @@ namespace LF2.Server{
 
     public class PlayerAttackJump1 : PlayerAirState
     {
-        public PlayerAttackJump1(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
+        public PlayerAttackJump1(PlayerStateMachine player) : base(player)
         {
         }
 
@@ -23,10 +23,7 @@ namespace LF2.Server{
             player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
         }
 
-        public override void PhysicsUpdate()
-        {
-            base.PhysicsUpdate();
-        }
+
 
         public override StateType GetId()
         {

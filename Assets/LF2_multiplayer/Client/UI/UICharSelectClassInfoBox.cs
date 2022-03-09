@@ -1,4 +1,3 @@
-using LF2;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -16,12 +15,36 @@ namespace LF2.Client
     /// </remarks>
     public class UICharSelectClassInfoBox : MonoBehaviour
     {
+
+        [SerializeField]
+        private GameObject m_HideWhenNoClassSelected;
+        [SerializeField]
+
+        private GameObject m_SelectBackGroundClassSelected;
+
+        
         [SerializeField]
         private TextMeshProUGUI m_WelcomeBanner;
         [SerializeField]
-        private TextMeshProUGUI m_ClassLabel;
+        private TextMeshProUGUI m_NamePlayer;
         [SerializeField]
-        private GameObject m_HideWhenNoClassSelected;
+        private TextMeshProUGUI m_InfoChampion;
+
+        [SerializeField]
+
+        private TextMeshProUGUI NameBackGround;
+
+        [SerializeField]
+        private Button m_LeftBackGround;
+
+        [SerializeField]
+        private Image m_ImageBackGround;
+
+        [SerializeField]
+        private Image m_ReadyButtonImage;
+
+                    /// Not use yet 
+
         // [SerializeField]
         // private Image m_ClassBanner;
         // [SerializeField]
@@ -30,10 +53,10 @@ namespace LF2.Client
         // private Image m_Skill2;
         // [SerializeField]
         // private Image m_Skill3;
+
         [SerializeField]
-        private Image m_ReadyButtonImage;
-        [SerializeField]
-        private GameObject m_Checkmark;
+        private GameObject m_Checkmark; // player locked his champ
+
         [SerializeField]
         [Tooltip("Message shown in the char-select screen. {0} will be replaced with the player's seat number")]
         [Multiline]
@@ -45,17 +68,25 @@ namespace LF2.Client
 
         private bool m_IsLockedIn = false;
 
+        public void ConfigureForNoSelection()
+        {
+            m_HideWhenNoClassSelected.SetActive(false);
+            m_SelectBackGroundClassSelected.SetActive(false);
+
+            SetLockedIn(false);
+        }
+
+
+        #region Select Champion
+            
         public void OnSetPlayerNumber(int playerNumber)
         {
             m_WelcomeBanner.text = string.Format(m_WelcomeMsg, (playerNumber + 1));
         }
 
-        public void ConfigureForNoSelection()
-        {
-            m_HideWhenNoClassSelected.SetActive(false);
-            SetLockedIn(false);
-        }
 
+
+        // UI lien quan den lockedIn (color Startbutton , checkmark )
         public void SetLockedIn(bool lockedIn)
         {
             m_ReadyButtonImage.color = lockedIn ? Color.green : Color.white;
@@ -63,21 +94,24 @@ namespace LF2.Client
             m_Checkmark.SetActive(lockedIn);
         }
 
-        public void ConfigureForClass(CharacterClass characterClass)
+        // Public information of champs to screen 
+        public void ConfigureForChampion(CharacterClass characterClass)
         {
             m_HideWhenNoClassSelected.SetActive(true);
 
             m_Checkmark.SetActive(m_IsLockedIn);
 
-            // CharacterClass characterClass = GameDataSource.Instance.CharacterDataByType[characterType];
-            // m_ClassLabel.text = characterClass.DisplayedName;
-            // m_ClassBanner.sprite = characterClass.ClassBannerLit;
+            m_NamePlayer.text = characterClass.DisplayedName;
+
+            /// Not use yet 
+            // m_InfoChampion.text = characterClass.InfoChampion;
 
             // ConfigureSkillIcon(m_Skill1, characterClass.Skill1);
             // ConfigureSkillIcon(m_Skill2, characterClass.Skill2);
             // ConfigureSkillIcon(m_Skill3, characterClass.Skill3);
         }
 
+        /// Not use yet
         // private void ConfigureSkillIcon(Image iconSlot, StateType type)
         // {
         //     if (type == StateType.None)
@@ -95,6 +129,44 @@ namespace LF2.Client
         //             tooltipDetector.SetText(string.Format(m_TooltipFormat, data.DisplayedName, data.Description));
         //         }
         //     }
+        // }
+ 
+        #endregion
+
+        #region Select BackGround 
+        public void ConfigureForSelectionBackGround()
+        {
+            m_HideWhenNoClassSelected.SetActive(false);
+            m_SelectBackGroundClassSelected.SetActive(true);
+
+            SetLockedIn(false);
+        }
+                    /// Not use yet 
+
+        private void ConfigureNameOfBackGround(TextMeshProUGUI NameBackGround)
+        {
+            // if (type == StateType.None)
+            // {
+            //     iconSlot.gameObject.SetActive(false);
+            // }
+            // else
+            // {
+            //     iconSlot.gameObject.SetActive(true);
+            //     var data = GameDataSource.Instance.ActionDataByType[type];
+            //     iconSlot.sprite = data.Icon;
+            //     UITooltipDetector tooltipDetector = iconSlot.GetComponent<UITooltipDetector>();
+            //     if (tooltipDetector)
+            //     {
+            //         tooltipDetector.SetText(string.Format(m_TooltipFormat, data.DisplayedName, data.Description));
+            //     }
+            // }
+        }
+        #endregion
+
+
+        // public void OnClickedNextBackGround()
+        // {
+        //     ClientCharSelectState.Instance.OnHostClickedNextBackGround();
         // }
     }
 }

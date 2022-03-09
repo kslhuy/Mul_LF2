@@ -1,6 +1,5 @@
-using Unity.Netcode;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 using UnityEngine.Assertions;
 using LF2.Client;
 
@@ -30,11 +29,6 @@ namespace LF2.Visual
         [SerializeField]
         JoystickScreen m_JoystickScreen;
 
-        [SerializeField]
-        DownSlotButton m_DownSlotButton;
-
-        [SerializeField]
-        UpSlotButton m_UpSlotButton;
         
         [SerializeField]
         RunLeftButton m_RunLeftButton;
@@ -65,9 +59,6 @@ namespace LF2.Visual
 
         private float m_InputHoldTime = 0.2f;
 
-        private float InputPressedStartTime ;
-
-        private bool InputPressed ;
         private int m_NbAttack;
 
         public float AttackPressedStartTime { get; private set; }
@@ -175,14 +166,16 @@ namespace LF2.Visual
             if (!AttackPressed) {
                 AttackPressed = true;
                 AttackPressedStartTime = Time.time;
+                
                 // send input to begin the action associated with this button
                 m_NbAttack += 1; 
                 if (m_NbAttack > 3) {
                     m_NbAttack = 1 ;
                 }
+                // send ramdom attack nb_animation
                 m_InputSender.RequestAction(attackState,m_NbAttack);
             }
-            // Reset Attack every 0.5 s if we in attack combo
+            // Reset Attack every 1 s if we in attack combo
             if (m_NbAttack > 1){
                 StartCoroutine(ResetAttack());
             }
@@ -194,7 +187,7 @@ namespace LF2.Visual
             m_NbAttack = 0;
         }
 
-        void OnJump()
+        void OnJump(StateType jumpAction)
         {
             if (JumpPressed){
                 if ( Time.time >= JumpPressedStartTime + m_InputHoldTime){
@@ -206,25 +199,24 @@ namespace LF2.Visual
                 JumpPressed = true;
                 JumpPressedStartTime = Time.time;
                 // send input to begin the action associated with this button
-                m_InputSender.RequestAction(StateType.Jump);
+                m_InputSender.RequestAction(jumpAction);
             }
         }
 
         void OnDefense()
         {
-            // if (DefensePressed){
-            //     if ( Time.time >= DefensePressedStartTime + m_InputHoldTime){
-            //         DefensePressed = false;
-            //     }
-            // } 
+            if (DefensePressed){
+                if ( Time.time >= DefensePressedStartTime + m_InputHoldTime){
+                    DefensePressed = false;
+                }
+            } 
 
-            // if (!DefensePressed){
-            //     DefensePressed = true;
-            //     DefensePressedStartTime = Time.time;
-            //     // send input to begin the action associated with this button
-            //     m_InputSender.RequestAction(StateType.Defense);
-            // }
-            m_InputSender.RequestAction(StateType.Defense);
+            if (!DefensePressed){
+                DefensePressed = true;
+                DefensePressedStartTime = Time.time;
+                // send input to begin the action associated with this button
+                m_InputSender.RequestAction(StateType.Defense);
+            }
 
         }
 

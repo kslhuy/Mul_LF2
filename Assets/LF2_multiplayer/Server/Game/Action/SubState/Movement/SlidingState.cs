@@ -8,31 +8,32 @@ namespace  LF2.Server{
         private float _runSpeed;
         private float _gainDecreaseRunSpeed;
 
-        public SlidingState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
+        public SlidingState(PlayerStateMachine player) : base(player)
         {
+            _runSpeed = player.serverplayer.NetState.CharacterClass.Speed;
+            _gainDecreaseRunSpeed = 4f;
+            
         }
 
-        //     _runSpeed =playerData.runVelocity;
-        // _gainDecreaseRunSpeed = playerData.GainDecreaseRunSpeed;
 
-        public override void CanChangeState(StateRequestData actionRequestData){
-            
+        public override void Enter()
+        {
+            base.Enter();
+            // ko cho nhay lan thu 2 khi Run
+            m_Data.StateTypeEnum = StateType.Sliding;
+            player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
         }
 
         public override void LogicUpdate()
         {
-            // _runSpeed -= _runSpeed*Time.deltaTime*_gainDecreaseRunSpeed;
-            // core.SetMovement.SetVelocitySliding(_gainDecreaseRunSpeed , _runSpeed);
+
+            _runSpeed -= _runSpeed*Time.deltaTime*_gainDecreaseRunSpeed;
             
-            // if (_runSpeed <= 0.1f ){
-            //     stateMachine.ChangeState(player.IdleState);
-            // }
+            if (_runSpeed < 0f ){
+                player.ChangeState(StateType.Idle);
+            }
         }
 
-        public override void PhysicsUpdate()
-        {
-            base.PhysicsUpdate();
-        }
 
         public override void Exit()
         {
@@ -41,7 +42,7 @@ namespace  LF2.Server{
         }
 
         public void ResetRunVelocity(){
-            // _runSpeed = playerData.runVelocity;
+            _runSpeed = player.serverplayer.NetState.CharacterClass.Speed;
         }
 
         public override StateType GetId(){

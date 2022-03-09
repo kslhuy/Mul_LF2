@@ -9,7 +9,7 @@ namespace LF2.Visual{
     {
         float attack12distance;
 
-        public PlayerAttackJump1FX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX) : base(characterType, m_PlayerFX)
+        public PlayerAttackJump1FX(PlayerStateMachineFX mPlayerMachineFX) : base(mPlayerMachineFX)
         {
         }
 
@@ -18,7 +18,7 @@ namespace LF2.Visual{
         {
             if(!Anticipated)
             {
-                PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz);
+                PlayAnim(StateType.AttackJump1);
             }
             base.Enter();
         }
@@ -29,21 +29,20 @@ namespace LF2.Visual{
             return StateType.AttackJump1;
         }
 
-        public override bool LogicUpdate()
+        public override void LogicUpdate()
         {
             base.LogicUpdate();
-            return true;
         }
 
 
         public override void End(){
-            m_PlayerFX.stateMachineViz.ChangeState(StateType.Idle);
+            MPlayerMachineFX.idle();
         }
 
         public override void PlayAnim(StateType currentState , int nbanim = 0)
         {
             base.PlayAnim(currentState);
-            m_PlayerFX.m_ClientVisual.OurAnimator.Play("AttackJump1_anim");
+            MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("AttackJump1_anim");
         }
     }
 }

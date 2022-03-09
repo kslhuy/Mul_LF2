@@ -14,7 +14,7 @@ namespace LF2{
     {
         public StateType StateType; //The kind of the move
         
-        public ActionLogic ActionLogic;
+        public ComboLogic ComboLogic;
         public int Amount;
 
         public int ManaCost;
@@ -27,6 +27,11 @@ namespace LF2{
         public float DurationSeconds;
 
         public bool expirable;
+
+        public float ReuseTimeSeconds;
+
+        public float maxRange;
+        
 
         [Serializable]
         public class ProjectileInfo
@@ -47,6 +52,7 @@ namespace LF2{
         public ProjectileInfo[] Projectiles;
         // [SerializeField] int ComboPriorty = 0; //the more complicated the move the higher the Priorty
 
+        public GameObject[] Spawns;
     }
 }
 

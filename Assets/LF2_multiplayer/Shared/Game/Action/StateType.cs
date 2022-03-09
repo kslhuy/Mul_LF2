@@ -1,3 +1,5 @@
+using LF2.Visual;
+
 namespace LF2{
     public enum StateType
     {
@@ -21,5 +23,12 @@ namespace LF2{
 
         Sliding,
         Rolling,
+
+        DDJ,
+        DUJ,
+
+        Fall,
+        
     }
+
 }

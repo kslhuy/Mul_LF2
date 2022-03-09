@@ -5,9 +5,9 @@ namespace LF2.Server{
 
     public class PlayerMoveState : State
     {
-        public float SpeedWalk = 1f ;
 
-        public PlayerMoveState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
+
+        public PlayerMoveState(PlayerStateMachine player) : base(player)
         {
         }
         
@@ -16,9 +16,11 @@ namespace LF2.Server{
             if (actionRequestData.StateTypeEnum == StateType.Jump){
                 // SetJump here because Vector moveDir is available ;
                 // If we move , so wanna Jump , Jump to that direction 
-                player.ServerCharacterMovement.SetJump(moveDir);
-                player.stateMachine.ChangeState(StateType.Jump);
+                player.ChangeState(StateType.Jump);
             }
+            else if(actionRequestData.StateTypeEnum == StateType.Attack || actionRequestData.StateTypeEnum == StateType.Defense )              
+                player.ChangeState(actionRequestData.StateTypeEnum);
+            
 
         }
 
@@ -29,24 +31,21 @@ namespace LF2.Server{
 
         public override void Enter(){
             m_Data.StateTypeEnum = StateType.Move;
-            // player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
-            
-        }
-        public override void PhysicsUpdate() {
-
-            player.ServerCharacterMovement.SetVelocityXZ(moveDir);
-
+            player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
         }
 
-  
+        public override void LogicUpdate(){
+            player.ServerCharacterMovement.SetVelocityXZ(player.moveDir);
+        }
 
 
-        public override void SetMovementTarget(Vector2 position)
+        
+        public override void SetMovementDir(Vector2 position)
         {
-            base.SetMovementTarget(position);
+            base.SetMovementDir(position);
 
             if (!IsMove){
-                player.stateMachine.ChangeState(StateType.Idle);
+                player.ChangeState(StateType.Idle);
             }
         }
 

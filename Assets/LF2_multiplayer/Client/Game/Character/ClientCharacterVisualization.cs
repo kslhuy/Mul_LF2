@@ -15,9 +15,8 @@ namespace LF2.Visual
     {
         [SerializeField]
         private Animator m_ClientVisualsAnimator;
+        CharacterSwap m_CharacterSwapper;
 
-        // [SerializeField]
-        // private CharacterSwap m_CharacterSwapper;
 
         private ClientInputSender inputSender;
         [SerializeField]
@@ -31,13 +30,14 @@ namespace LF2.Visual
 
         public bool CanPerformActions { get { return m_NetState.CanPerformActions; } }
 
+        public Transform Parent { get; private set; }
 
         PhysicsWrapper m_PhysicsWrapper;
 
-        
-        // public CoreMovement m_coreMovement {get ; private set;}
+        public PhysicsWrapper PhysicsWrapper => m_PhysicsWrapper ;
+
         [SerializeField]
-        public CoreMovement coreMovement  ;
+        public ClientCoreMovement coreMovement  ;
 
 
         public NetworkCharacterState m_NetState;
@@ -45,26 +45,18 @@ namespace LF2.Visual
         public ulong NetworkObjectId => m_NetState.NetworkObjectId;
 
 
-        // public Transform Parent { get; private set; }
 
-        public PlayerStateFX m_statePlayerViz{ get; private set; } 
+        public PlayerStateMachineFX MStateMachinePlayerViz{ get; private set; } 
 
 
         /// Player characters need to report health changes and chracter info to the PartyHUD
         PartyHUD m_PartyHUD;
 
-        float m_SmoothedSpeed;
-
-        int m_HitStateTriggerID;
-        private float m_MaxDistance = 0.2f;
-
-
-        public event Action<Animator> animatorSet;
 
 
         /// <inheritdoc />
         public void Start()
-        {
+        {            
             if (!NetworkManager.Singleton.IsClient || transform.parent == null)
             {
                 enabled = false;
@@ -73,40 +65,35 @@ namespace LF2.Visual
 
             m_NetState = GetComponentInParent<NetworkCharacterState>();
 
+            Parent = m_NetState.transform;
 
-            // Parent = m_NetState.transform;
 
-            // if (Parent.TryGetComponent(out ClientAvatarGuidHandler clientAvatarGuidHandler))
-            // {
-            //     m_ClientVisualsAnimator = clientAvatarGuidHandler.graphicsAnimator;
-
-            //     // Netcode for GameObjects (Netcode) does not currently support NetworkAnimator binding at runtime. The
-            //     // following is a temporary workaround. Future refactorings will enable this functionality.
-            //     animatorSet?.Invoke(clientAvatarGuidHandler.graphicsAnimator);
-            // }
 
             m_PhysicsWrapper = m_NetState.GetComponent<PhysicsWrapper>();
-            m_statePlayerViz = new PlayerStateFX( this,m_NetState.CharacterType);
+
+            MStateMachinePlayerViz = new PlayerStateMachineFX( this,m_NetState.CharacterType);
 
 
             m_NetState.DoActionEventClient += PerformActionFX;
-            m_NetState.CancelAllActionsEventClient += CancelAllActionFXs;
-            m_NetState.CancelActionsByTypeEventClient += CancelActionFXByType;
-            m_NetState.OnStopChargingUpClient += OnStoppedChargingUp;
-            m_NetState.IsStealthy.OnValueChanged += OnStealthyChanged;
+    
 
             // sync our visualization position & rotation to the most up to date version received from server
 
             transform.SetPositionAndRotation(m_PhysicsWrapper.Transform.position, m_PhysicsWrapper.Transform.rotation);
 
 
-            // ...and visualize the current char-select value that we know about
-            SetAppearanceSwap();
-
-
             if (!m_NetState.IsNpc)
             {
                 name = "AvatarGraphics" + m_NetState.OwnerClientId;
+                if (Parent.TryGetComponent(out ClientAvatarGuidHandler clientAvatarGuidHandler))
+                {
+                    m_ClientVisualsAnimator = clientAvatarGuidHandler.graphicsAnimator;
+                }
+
+                m_CharacterSwapper = GetComponentInChildren<CharacterSwap>();
+
+                // ...and visualize the current char-select value that we know about
+                SetAppearanceSwap();
 
                 if (m_NetState.IsOwner)
                 {
@@ -122,24 +109,30 @@ namespace LF2.Visual
             }
         }
 
+        // HUY extend late :  Co the su dung lam chieu tang' hinh' cua Rudolf 
+        void SetAppearanceSwap()
+        {
+            m_CharacterSwapper.SwapToModel();
+        }
+
         // Do anticipate State : Only play Animation , not change state
         private void OnActionInput(StateRequestData data)
         {
-            m_statePlayerViz.AnticipateState(ref data);
+            MStateMachinePlayerViz.AnticipateState(ref data);
         }
 
         
         private void PerformActionFX(StateRequestData data)
         {
             // That event do actual State from Server .
-            m_statePlayerViz.PerformActionFX(ref data);
+            MStateMachinePlayerViz.PerformActionFX(ref data);
         }
 
         // Play Animation and change state between Idle and Move State Visual
         private void OnMoveInput(Vector2 position)
         {
-            // OurAnimator.SetInteger("Speed" , 1);
-            m_statePlayerViz.OnMoveInput(position);
+            
+            MStateMachinePlayerViz.OnMoveInput(position);
         }
 
         private void OnDestroy()
@@ -147,11 +140,7 @@ namespace LF2.Visual
             if (m_NetState)
             {
                 m_NetState.DoActionEventClient -= PerformActionFX;
-                m_NetState.CancelAllActionsEventClient -= CancelAllActionFXs;
-                m_NetState.CancelActionsByTypeEventClient -= CancelActionFXByType;
-                m_NetState.OnStopChargingUpClient -= OnStoppedChargingUp;
-                m_NetState.IsStealthy.OnValueChanged -= OnStealthyChanged;
-
+  
                 if (m_NetState.IsOwner)
                 {
                     
@@ -166,68 +155,11 @@ namespace LF2.Visual
 
 
 
-        private void CancelAllActionFXs()
-        {
-        }
-
-        private void CancelActionFXByType(StateType actionType)
-        {
-        }
-
-        private void OnStoppedChargingUp(float finalChargeUpPercentage)
-        {
-        }
-
-
-
-        // private void OnHealthChanged(int previousValue, int newValue)
-        // {
-        //     // don't do anything if party HUD goes away - can happen as Dungeon scene is destroyed
-        //     if (m_PartyHUD == null) { return; }
-
-        //     if (IsLocalPlayer)
-        //     {
-        //         this.m_PartyHUD.SetHeroHealth(newValue);
-        //     }
-        //     // else
-        //     // {
-        //     //     this.m_PartyHUD.SetAllyHealth(m_NetState.NetworkObjectId, newValue);
-        //     // }
-        // }
-
-        // private void OnCharacterAppearanceChanged(int oldValue, int newValue)
-        // {
-        //     SetAppearanceSwap();
-        // }
-
-        private void OnStealthyChanged(bool oldValue, bool newValue)
-        {
-            SetAppearanceSwap();
-        }
-
-        private void SetAppearanceSwap()
-        {
-            // if (m_CharacterSwapper)
-            // {
-
-            //     m_CharacterSwapper.SwapToModel(m_NetState.CharacterAppearance.Value);
-            // }
-        }
-
 
 
         void Update()
         {
-
-
-            if (m_ClientVisualsAnimator)
-            {
-                OurAnimator.SetFloat("Speed", GetVisualMovementSpeed());
-
-            }
-
-            m_statePlayerViz.Update();
-            
+            MStateMachinePlayerViz.Update();
         }
 
         // Huy : Not use Yet        
@@ -237,7 +169,7 @@ namespace LF2.Visual
             //and calls a method of the same name on a component on the same GameObject as the Animator. See the "attack1" Animation Clip as one
             //example of where this is configured.
 
-            m_statePlayerViz.OnAnimEvent(id);
+            MStateMachinePlayerViz.OnAnimEvent(id);
         }
 
         /// <summary>
@@ -245,15 +177,8 @@ namespace LF2.Visual
         /// </summary>
         private float GetVisualMovementSpeed()
         {
-            // Assert.IsNotNull(m_VisualizationConfiguration);
-            // if (m_NetState.NetworkLifeState.LifeState.Value != LifeState.Alive)
-            // {
-            //     return m_VisualizationConfiguration.SpeedDead;
-            // }
-
             switch (m_NetState.MovementStatus.Value)
             {
-
                 case MovementStatus.Walking:
                     return 1;
                 default:
@@ -261,7 +186,16 @@ namespace LF2.Visual
             }
         }
 
-        
+        public void OnGameplayActivityVisual(ref StateRequestData stateRequestData){
+            MStateMachinePlayerViz.OnGameplayActivityVisual(ref stateRequestData);
+        }
 
+        private void OnTriggerEnter(Collider other) {
+            MStateMachinePlayerViz.OnTriggerEnter(other);
+        }
+
+        private void OnTriggerExit(Collider other) {
+            MStateMachinePlayerViz.OnTriggerExit(other);
+        }
     }
 }

@@ -9,47 +9,36 @@ namespace LF2.Server{
     //                  Can do some initilize (for Exemple reset number Jump)
     public class PlayerIdleState : State
     {
-        public PlayerIdleState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
+        public PlayerIdleState(PlayerStateMachine player) : base(player)
         {
         }
 
         public override void CanChangeState(StateRequestData actionRequestData)
         {
-            // if (actionRequestData.StateTypeEnum == StateType.Jump){
-            //     player.ServerCharacterMovement.SetJump(Vector3.zero);
-            // }
-            // if we are Idle wanna jump so , Jump up 
-            player.stateMachine.ChangeState(actionRequestData.StateTypeEnum);
-            
+            player.ChangeState(actionRequestData.StateTypeEnum);
         }
 
-        public override void SetMovementTarget(Vector2 position)
+        public override void SetMovementDir(Vector2 position)
         {
-            base.SetMovementTarget(position);
+            base.SetMovementDir(position);
             if (IsMove){
-                player.stateMachine.ChangeState(StateType.Move);
+                player.ChangeState(StateType.Move);
             }
         }
 
 
         public override void Enter()
         {
-            base.Enter();
-            player.ServerCharacterMovement.CancelMove();
+            m_Data.StateTypeEnum = StateType.Idle;
+            player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
 
         }
 
-
-        public override void Exit()
-        {
-            base.Exit();
-        }
 
         public override StateType GetId()
         {
             return StateType.Idle;
         }
-
 
 
 

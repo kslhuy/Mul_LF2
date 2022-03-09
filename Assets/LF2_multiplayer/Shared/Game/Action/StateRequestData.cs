@@ -12,20 +12,15 @@ namespace LF2
     /// <summary>
     /// List of all Types of Actions. There is a many-to-one mapping of Actions to ActionLogics.
     /// </summary>
-    public enum ActionLogic
+    public enum ComboLogic
     {
-    
-        RangedTargeted,
-        Chase,
-        Revive,
         LaunchProjectile,
-        Emote,
         RangedFXTargeted,
         AoE,
         Trample,
         ChargedShield,
         Stunned,
-     
+        Linearskillshots,
         ChargedLaunchProjectile,
         StealthMode,
         DashAttack,

@@ -9,17 +9,13 @@ namespace LF2.Visual{
         // private int amountOfJumpLeft = 1 ;
 
 
-        public PlayerLandStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX) : base(characterType, m_PlayerFX)
-        {
-
-        }
+        public PlayerLandStateFX(PlayerStateMachineFX mPlayerMachineFX) : base(mPlayerMachineFX) { }
 
         public override void AnticipateState(ref StateRequestData data)
         {
             if (data.StateTypeEnum == StateType.Jump ){
-                Debug.Log(moveDir);
-                m_PlayerFX.m_ClientVisual.coreMovement.SetDoubleJump(moveDir);
-                m_PlayerFX.stateMachineViz.GetState(StateType.DoubleJump).PlayAnim(StateType.DoubleJump);
+                MPlayerMachineFX.m_ClientVisual.coreMovement.SetDoubleJump(MPlayerMachineFX.moveDir);
+                MPlayerMachineFX.GetState(StateType.DoubleJump).PlayAnim(StateType.DoubleJump);
             }
         }
 
@@ -27,23 +23,19 @@ namespace LF2.Visual{
         {
             if( !Anticipated)
             {
-                PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz);
+                MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("Land_anim");
             }
             base.Enter();
-            // if (amountOfJumpLeft == 0){
-            //     amountOfJumpLeft = 1 ;
-            // }
          }
 
         public override void PlayAnim(StateType currentState , int nbanim = 0)
         {
             base.PlayAnim(currentState);
-            m_PlayerFX.m_ClientVisual.OurAnimator.Play("Land_anim");
+            MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("Land_anim");
         }
 
-
         public override void End(){
-            m_PlayerFX.stateMachineViz.ChangeState(StateType.Idle);
+            MPlayerMachineFX.idle();
         }
         
 
@@ -58,9 +50,7 @@ namespace LF2.Visual{
 
 
 
-        public override bool LogicUpdate(){
-            // Debug.Log("Land Visual");
-            return true;
+        public override void LogicUpdate(){
         }
 
 

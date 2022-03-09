@@ -9,17 +9,18 @@ namespace LF2.Client
     /// Client-side component that awaits a state change on an avatar's Guid, and fetches matching Avatar from the
     /// AvatarRegistry, if possible. Once fetched, the Graphics GameObject is spawned.
     /// </summary>
-    // [RequireComponent(typeof(NetworkAvatarGuidState))]
+    [RequireComponent(typeof(NetworkAvatarGuidState))]
     public class ClientAvatarGuidHandler : NetworkBehaviour
     {
         [SerializeField]
-        ClientCharacter m_ClientCharacter;
+        ClientDamageReceiver m_ClientCharacter;
 
         [SerializeField]
         NetworkAvatarGuidState m_NetworkAvatarGuidState;
 
         [SerializeField]
-        private Animator m_Animator;
+        Animator m_GraphicsAnimator;
+        public Animator graphicsAnimator => m_GraphicsAnimator;
 
 
         public event Action<GameObject> AvatarGraphicsSpawned;
@@ -27,32 +28,31 @@ namespace LF2.Client
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
+            Debug.Log("huy spawn");
             InstantiateAvatar();
         }
 
         void InstantiateAvatar()
         {
-            if (m_ClientCharacter.ChildVizObject)
+           if (m_GraphicsAnimator.transform.childCount > 0)
             {
                 // we may receive a NetworkVariable's OnValueChanged callback more than once as a client
                 // this makes sure we don't spawn a duplicate graphics GameObject
                 return;
             }
-            var graphicsGameObject = m_NetworkAvatarGuidState.RegisteredAvatar.Graphics;
+            Instantiate(m_NetworkAvatarGuidState.RegisteredAvatar.Graphics, m_GraphicsAnimator.transform);
 
-            m_Animator.runtimeAnimatorController = graphicsGameObject.GetComponent<Animator>().runtimeAnimatorController;
+            m_GraphicsAnimator.Rebind();
+            m_GraphicsAnimator.Update(0f);
+            // var graphicsGameObject = m_NetworkAvatarGuidState.RegisteredAvatar.Graphics;
 
-            // m_GraphicsAnimator = graphicsGameObject.GetComponent<Animator>();
+            // m_GraphicsAnimator.runtimeAnimatorController = graphicsGameObject.GetComponent<Animator>().runtimeAnimatorController;
 
-            // spawn avatar graphics GameObject
-            // var graphicsGameObject = Instantiate(m_NetworkAvatarGuidState.RegisteredAvatar.Graphics, m_GraphicsAnimator.transform);
+            // Debug.Log(m_GraphicsAnimator.runtimeAnimatorController);
+            // m_ClientCharacter.SetCharacterVisualization(GetComponent<ClientCharacterVisualization>());
 
-            m_ClientCharacter.SetCharacterVisualization(GetComponent<ClientCharacterVisualization>());
+            // AvatarGraphicsSpawned?.Invoke(m_GraphicsAnimator.gameObject);
 
-            // m_GraphicsAnimator.Rebind();
-            // m_GraphicsAnimator.Update(0f);
-
-            // AvatarGraphicsSpawned?.Invoke(graphicsGameObject);
         }
     }
 }

@@ -5,7 +5,7 @@ namespace LF2.Server{
     public class PlayerLandState : State
     {
 
-        public PlayerLandState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
+        public PlayerLandState(PlayerStateMachine player) : base(player)
         {
         }
 
@@ -15,16 +15,15 @@ namespace LF2.Server{
             // DDA , DUA  
             if (actionRequestData.StateTypeEnum == StateType.Jump){
                 // player.ServerCharacterMovement.SetDoubleJump(moveDir);
-                player.stateMachine.ChangeState(StateType.DoubleJump);
+                player.ChangeState(StateType.DoubleJump);
             }
 
         }
 
         public override void Enter()
         {
-            base.Enter();
             m_Data.StateTypeEnum = StateType.Land;
-            // player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
+            player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
         }
 
         public override StateType GetId()
@@ -34,14 +33,8 @@ namespace LF2.Server{
 
         public override void End()
         {
-            player.stateMachine.ChangeState(StateType.Idle );
+            base.End();
         }
-
-        public override void SetMovementTarget(Vector2 position)
-        {
-            base.SetMovementTarget(position);
-        }
-
 
     }
 }

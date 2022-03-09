@@ -6,15 +6,22 @@ using UnityEngine;
 namespace LF2.Visual{
     public class PlayerMoveStateFX : StateFX
     {
-        public PlayerMoveStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX) : base(characterType, m_PlayerFX)
+        public PlayerMoveStateFX(PlayerStateMachineFX mPlayerMachineFX) : base(mPlayerMachineFX)
         {
         }
 
         public override void AnticipateState(ref StateRequestData data)
         {
-            if (data.StateTypeEnum == StateType.Attack || data.StateTypeEnum == StateType.Jump ){
-                Anticipated = true;
-                m_PlayerFX.stateMachineViz.GetState(data.StateTypeEnum).PlayAnim(data.StateTypeEnum);
+            if ( data.StateTypeEnum == StateType.Jump ){
+                MPlayerMachineFX.m_ClientVisual.coreMovement.SetJump(MPlayerMachineFX.moveDir);
+                MPlayerMachineFX.GetState(data.StateTypeEnum).PlayAnim(data.StateTypeEnum);
+            }
+            else if (data.StateTypeEnum == StateType.Attack)
+            {
+                MPlayerMachineFX.GetState(data.StateTypeEnum).PlayAnim(data.StateTypeEnum);
+            }
+            else if (data.StateTypeEnum == StateType.Defense){
+                MPlayerMachineFX.GetState(data.StateTypeEnum).PlayAnim(data.StateTypeEnum);
             }
         }
 
@@ -22,8 +29,9 @@ namespace LF2.Visual{
         public override void SetMovementTarget(Vector2 position)
         {
             base.SetMovementTarget(position);
+
             if (!IsMove){
-                m_PlayerFX.stateMachineViz.ChangeState(StateType.Idle);
+                MPlayerMachineFX.GetState(StateType.Idle).PlayAnim(StateType.Idle);
             }
         }
 
@@ -33,13 +41,13 @@ namespace LF2.Visual{
         {
             if( !Anticipated)
             {
-                PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz);
+                PlayAnim(StateType.Move);
             }
             base.Enter();
         }
         public override void PlayAnim(StateType currentState , int nbanim = 0)
         {
-            // m_PlayerFX.m_ClientVisual.OurAnimator.Play("Walk_anim");
+            MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("Walk_anim");
         }
 
         public override StateType GetId()
@@ -47,12 +55,9 @@ namespace LF2.Visual{
             return StateType.Move;
         }
 
-
-
-        public override bool LogicUpdate()
+        public override void LogicUpdate()
         {
-            m_PlayerFX.m_ClientVisual.coreMovement.SetVelocityXZ(moveDir);
-            return true;
+            MPlayerMachineFX.CoreMovement.SetVelocityXZ(MPlayerMachineFX.moveDir);
         }
     }
 }

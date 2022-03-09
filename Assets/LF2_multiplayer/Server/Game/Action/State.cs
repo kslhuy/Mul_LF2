@@ -23,68 +23,60 @@ namespace LF2.Server
 
     // / Note also that if Start() returns false, no other functions are called on the Action, not even End().
     /// </remarks>
-    public abstract class State : StateBase
+    public abstract class State 
     {
-        protected PlayerState player;
+        protected PlayerStateMachine player;
 
         public StateRequestData m_Data;
 
         protected MovementState currentMovementState;
         
 
-        // protected StateRequestData m_ActionRequestData;
-
         public bool IsMove { get; private set; }
 
         //Vector use for All Movement of player
         protected Vector3 moveDir;
 
-
+        public float TimeStarted_Server { get ; protected set;}
         protected static ulong OurNetWorkID ;
 
-        protected State(CharacterTypeEnum characterType, PlayerState player) : base(characterType)
+        protected State(PlayerStateMachine player)
         {
+            
             this.player = player;
         }
 
-        
 
         // Get the StateType of current State  
         public abstract StateType GetId();
         public virtual void Enter(){
-            TimeStarted = Time.time;
+            TimeStarted_Server = Time.time;
         }
-        public virtual void LogicUpdate() {}
+        public virtual void LogicUpdate() {
+        }
 
-        public virtual void PhysicsUpdate(){}
+
    
 
-        public virtual void Exit(){
-        }
+        public virtual void Exit(){ }
 
         // If we have a request so check if we can change to desired state 
         // NOTE :   (Only 3 basic State can check Attack , Jump , Defense)
-        public abstract void  CanChangeState(StateRequestData actionRequestData);
+        public virtual void  CanChangeState(StateRequestData actionRequestData){}
 
-        public virtual void SetMovementTarget(Vector2 position)
+        public virtual void SetMovementDir(Vector2 position)
         {
-            moveDir.Set(position.x , 0, position.y);   
             IsMove  = position.x != 0 || position.y != 0;
         }
 
         public virtual void End()
         {
+            player.ChangeState(StateType.Idle);
         }
 
-        public enum GameplayActivity
-        {
-            AttackedByEnemy,
-            Healed,
-            StoppedChargingUp,
-            UsingAttackAction, // called immediately before we perform the attack Action
-        }
 
-        public virtual void OnGameplayActivity(GameplayActivity activityThatOccurred)
+
+        public virtual void OnGameplayActivity(StateGameplayActivity activityThatOccurred)
         {
         }
     }

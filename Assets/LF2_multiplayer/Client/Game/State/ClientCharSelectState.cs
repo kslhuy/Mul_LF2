@@ -22,15 +22,9 @@ namespace LF2.Client
         public override GameState ActiveState { get { return GameState.CharSelect; } }
         public CharSelectData CharSelectData { get; private set; }
 
-        // [SerializeField]
-        // [Tooltip("This is triggered when the player chooses a character")]
-        // private string m_AnimationTriggerOnCharSelect = "BeginRevive";
+        public BackGroundSelectData BackGroundSelectData { get; private set; }
 
-        // [SerializeField]
-        // [Tooltip("This is triggered when the player presses the \"Ready\" button")]
-        // private string m_AnimationTriggerOnCharChosen = "BeginRevive";
-
-        [Header("Lobby Seats")]
+        [Header("----- Lobby Seats ------")]
         [SerializeField]
         [Tooltip("Collection of 8 portrait-boxes, one for each potential lobby member")]
         private List<UICharSelectPlayerSeat> m_PlayerSeats;
@@ -52,7 +46,10 @@ namespace LF2.Client
         [Tooltip("Text element for the Ready button")]
         private TextMeshProUGUI m_ReadyButtonText;
 
-        [Header("UI Elements for different lobby modes")]
+
+        #region UI Elements for different lobby modes
+    
+        [Header("--- UI Elements for different lobby modes --- ")]
         [SerializeField]
         [Tooltip("UI elements to turn on when the player hasn't chosen their seat yet. Turned off otherwise!")]
         private List<GameObject> m_UIElementsForNoSeatChosen;
@@ -62,14 +59,19 @@ namespace LF2.Client
         private List<GameObject> m_UIElementsForSeatChosen;
 
         [SerializeField]
+        [Tooltip("UI elements to turn on when the player has locked in their seat choice (and is now waiting for other players to do the same). Turned off otherwise!")]
+        private List<GameObject> m_UIElementsForBackGroundChosen;
+
+        [SerializeField]
         [Tooltip("UI elements to turn on when the lobby is closed (and game is about to start). Turned off otherwise!")]
         private List<GameObject> m_UIElementsForLobbyEnding;
 
         [SerializeField]
         [Tooltip("UI elements to turn on when there's been a fatal error (and the client cannot proceed). Turned off otherwise!")]
         private List<GameObject> m_UIElementsForFatalError;
+#endregion
 
-        [Header("Misc")]
+        [Header("--- Misc --- ")]
         [SerializeField]
         [Tooltip("The controller for the class-info box")]
         private UICharSelectClassInfoBox m_ClassInfoBox;
@@ -98,18 +100,27 @@ namespace LF2.Client
             SeatChosen, // "Waiting for other players!" stage
             LobbyEnding, // "Get ready! Game is starting!" stage
             FatalError, // "Fatal Error" stage
+
+            // Huy add new
+            ChooseBackGround, // "Choose your BackGround!" stage , only host can choose background
+                            // Can not unlock in this mode
+
         }
 
         private Dictionary<LobbyMode, List<GameObject>> m_LobbyUIElementsByMode;
+        private Avatar avatar;
 
         private void Awake()
         {
             Instance = this;
             CharSelectData = GetComponent<CharSelectData>();
+            BackGroundSelectData = GetComponent<BackGroundSelectData>();
+
             m_LobbyUIElementsByMode = new Dictionary<LobbyMode, List<GameObject>>()
             {
                 { LobbyMode.ChooseSeat, m_UIElementsForNoSeatChosen },
                 { LobbyMode.SeatChosen, m_UIElementsForSeatChosen },
+                { LobbyMode.ChooseBackGround, m_UIElementsForNoSeatChosen },
                 { LobbyMode.LobbyEnding, m_UIElementsForLobbyEnding },
                 { LobbyMode.FatalError, m_UIElementsForFatalError },
             };
@@ -126,13 +137,35 @@ namespace LF2.Client
             ConfigureUIForLobbyMode(LobbyMode.ChooseSeat);
             UpdateCharacterSelection(CharSelectData.SeatState.Inactive);
         }
+        public override void OnNetworkSpawn()
+
+        {
+            if (!IsClient)
+            {
+                enabled = false;
+            }
+            else
+            {
+                // CharSelectData.IsLobbyClosed.OnValueChanged += OnLobbyClosedChanged;
+                CharSelectData.LobbyPlayers.OnListChanged += OnLobbyPlayerStateChanged;
+                BackGroundSelectData.IsStateChooseBackGround.OnValueChanged += OnLobbyBackground;
+                BackGroundSelectData.IsLobbyClosed.OnValueChanged += OnLobbyClosedChanged;
+            }
+        }
+
+
 
         public override void OnNetworkDespawn()
         {
             if (CharSelectData)
             {
-                CharSelectData.IsLobbyClosed.OnValueChanged -= OnLobbyClosedChanged;
+                // CharSelectData.IsLobbyClosed.OnValueChanged -= OnLobbyClosedChanged;
                 CharSelectData.LobbyPlayers.OnListChanged -= OnLobbyPlayerStateChanged;
+            }
+            if(BackGroundSelectData){
+                BackGroundSelectData.IsStateChooseBackGround.OnValueChanged -= OnLobbyBackground;
+                BackGroundSelectData.IsLobbyClosed.OnValueChanged -= OnLobbyClosedChanged;
+
             }
 
             if (Instance == this)
@@ -141,18 +174,6 @@ namespace LF2.Client
             }
         }
 
-        public override void OnNetworkSpawn()
-        {
-            if (!IsClient)
-            {
-                enabled = false;
-            }
-            else
-            {
-                CharSelectData.IsLobbyClosed.OnValueChanged += OnLobbyClosedChanged;
-                CharSelectData.LobbyPlayers.OnListChanged += OnLobbyPlayerStateChanged;
-            }
-        }
 
         /// <summary>
         /// Called when our PlayerNumber (e.g. P1, P2, etc.) has been assigned by the server
@@ -162,7 +183,7 @@ namespace LF2.Client
         {
             m_ClassInfoBox.OnSetPlayerNumber(playerNum);
         }
-
+        // Update bao nhieu player trong lobby
         private void UpdatePlayerCount()
         {
             int count = CharSelectData.LobbyPlayers.Count;
@@ -189,12 +210,14 @@ namespace LF2.Client
                 }
             }
 
+            // case ERROR (dont care much)
             if (localPlayerIdx == -1)
             {
                 // we aren't currently participating in the lobby!
                 // this can happen for various reasons, such as the lobby being full and us not getting a seat.
                 UpdateCharacterSelection(CharSelectData.SeatState.Inactive);
             }
+            
             else if (CharSelectData.LobbyPlayers[localPlayerIdx].SeatState == CharSelectData.SeatState.Inactive)
             {
                 // we haven't chosen a seat yet (or were kicked out of our seat by someone else)
@@ -210,9 +233,8 @@ namespace LF2.Client
         }
 
         /// <summary>
-        /// Internal utility that sets the character-graphics and class-info box based on
-        /// our chosen seat. It also triggers a LobbyMode change when it notices that our seat-state
-        /// is LockedIn.
+        /// Internal utility that sets the character-graphics and class-info box based on our chosen seat. 
+        /// It also triggers a LobbyMode change when it notices that our seat-state is LockedIn.
         /// </summary>
         /// <param name="state">Our current seat state</param>
         /// <param name="seatIdx">Which seat we're sitting in, or -1 if SeatState is Inactive</param>
@@ -221,6 +243,7 @@ namespace LF2.Client
             bool isNewSeat = m_LastSeatSelected != seatIdx;
 
             m_LastSeatSelected = seatIdx;
+            // Bat dau chon champion
             if (state == CharSelectData.SeatState.Inactive)
             {
                 if (m_CurrentCharacterGraphics)
@@ -230,6 +253,7 @@ namespace LF2.Client
 
                 m_ClassInfoBox.ConfigureForNoSelection();
             }
+
             else
             {
                 if (seatIdx != -1)
@@ -237,6 +261,10 @@ namespace LF2.Client
                     // change character preview when selecting a new seat
                     if (isNewSeat)
                     {
+                        // Lay thong tin champion
+                        
+                        // CharSelectData.AvatarByHero.TryGetValue(m_PlayerSeats[seatIdx].NameChampion,out avatar);
+                        // Debug.Log(avatar.CharacterClass.CharacterType); 
                         var selectedCharacterGraphics = GetCharacterGraphics(CharSelectData.AvatarConfiguration[seatIdx]);
 
                         if (m_CurrentCharacterGraphics)
@@ -248,9 +276,10 @@ namespace LF2.Client
                         m_CurrentCharacterGraphics = selectedCharacterGraphics;
                         m_CurrentCharacterGraphicsAnimator = m_CurrentCharacterGraphics.GetComponent<Animator>();
 
-                        m_ClassInfoBox.ConfigureForClass(CharSelectData.AvatarConfiguration[seatIdx].CharacterClass);
+                        m_ClassInfoBox.ConfigureForChampion(CharSelectData.AvatarConfiguration[seatIdx].CharacterClass);
                     }
                 }
+                
                 if (state == CharSelectData.SeatState.LockedIn && !m_HasLocalPlayerLockedIn)
                 {
                     // the local player has locked in their seat choice! Rearrange the UI appropriately
@@ -268,10 +297,7 @@ namespace LF2.Client
                         m_HasLocalPlayerLockedIn = false;
                     }
                 }
-                // else if (state == CharSelectData.SeatState.Active && isNewSeat)
-                // {
-                //     m_CurrentCharacterGraphicsAnimator.SetTrigger(m_AnimationTriggerOnCharSelect);
-                // }
+
             }
         }
 
@@ -312,6 +338,13 @@ namespace LF2.Client
             if (isLobbyClosed)
             {
                 ConfigureUIForLobbyMode(LobbyMode.LobbyEnding);
+            }
+        }
+
+        private void OnLobbyBackground(bool notcare, bool BackgroundChoose)
+        {
+            if (BackgroundChoose){
+                ConfigureUIForLobbyMode(LobbyMode.ChooseBackGround);
             }
         }
 
@@ -356,6 +389,17 @@ namespace LF2.Client
                     m_ClassInfoBox.SetLockedIn(true);
                     m_ReadyButtonText.text = "UNREADY";
                     break;
+
+                case LobbyMode.ChooseBackGround:
+                    isSeatsDisabledInThisMode = true;
+                    m_ClassInfoBox.ConfigureForSelectionBackGround();
+                    m_ClassInfoBox.SetLockedIn(true); // Set UI checkmark , button color 
+                    // m_ReadyButtonText.text = "Waitting";
+                    if (NetworkManager.IsHost){
+                        m_ReadyButtonText.text = "Start Game";
+                    }
+                    break;
+
                 case LobbyMode.FatalError:
                     isSeatsDisabledInThisMode = true;
                     m_ClassInfoBox.ConfigureForNoSelection();
@@ -375,6 +419,8 @@ namespace LF2.Client
 
         }
 
+        #region Call Back Function
+            
         /// <summary>
         /// Called directly by UI elements!
         /// </summary>
@@ -385,13 +431,22 @@ namespace LF2.Client
         }
 
         /// <summary>
-        /// Called directly by UI elements!
+        /// Called directly by UI elements! 
         /// </summary>
         public void OnPlayerClickedReady()
         {
             // request to lock in or unlock if already locked in
             CharSelectData.ChangeSeatServerRpc(NetworkManager.Singleton.LocalClientId, m_LastSeatSelected, !m_HasLocalPlayerLockedIn );
         }
+
+        
+        public void OnHostClickedStartGame(){
+            if (NetworkManager.IsHost){
+                BackGroundSelectData.StartGameServerRpc();
+            }
+        }
+
+
 
         /// <summary>
         /// Called directly by UI elements!
@@ -404,12 +459,18 @@ namespace LF2.Client
             gameNetPortal.RequestDisconnect();
             SceneManager.LoadScene("MainMenu");
         }
-
+        #endregion
+                      
+                      
+        // Lay thong tin champion in Avatar SOs
+    
         GameObject GetCharacterGraphics(Avatar avatar)
         {
             if (!m_SpawnedCharacterGraphics.TryGetValue(avatar.Guid, out GameObject characterGraphics))
             {
                 characterGraphics = Instantiate(avatar.GraphicsCharacterSelect, m_CharacterGraphicsParent);
+                // characterGraphics = Instantiate(avatar.Graphics, m_CharacterGraphicsParent);
+
                 m_SpawnedCharacterGraphics.Add(avatar.Guid, characterGraphics);
             }
 

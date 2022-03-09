@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee81cb3018bfa61458ffc2d56701fc6f, type: 3}
+  m_Name: DavidSkills
+  m_EditorClassIdentifier: 
+  CharacterType: 1
+  SkillsDescription:
+  - {fileID: 11400000, guid: 5b87b037ba928b745a1daaa2dc534a02, type: 2}
+  - {fileID: 11400000, guid: 6c4889dcf35f6da4491a1464ec178123, type: 2}
+  - {fileID: 11400000, guid: 722cbc03b92fe3649b68421113e33e39, type: 2}
+  - {fileID: 11400000, guid: 4c7454404b2803f40b4e73ebf5bca368, type: 2}
+  - {fileID: 11400000, guid: 844fb60800fd14046846a9f824b0ea5b, type: 2}
+  - {fileID: 11400000, guid: 8e6c75f62df860c43a1eb14ba3d0f67e, type: 2}
+  - {fileID: 11400000, guid: e10e1dd35db6fe14a8ab2c03fd479f61, type: 2}
+  - {fileID: 11400000, guid: a4a9d11d963d0cd4da40cbb2d139bedc, type: 2}
+  - {fileID: 11400000, guid: 4879af833bdf78143a1be55e61725824, type: 2}
+  - {fileID: 11400000, guid: f7e57d6fb82a68a45ab5d0a6180e73e9, type: 2}
+  - {fileID: 11400000, guid: c794fefdff64b5a4e965ed227f4ada66, type: 2}
+  - {fileID: 11400000, guid: d336df625e8cb724a86775783dbf95fd, type: 2}
+  - {fileID: 11400000, guid: 25ecf90fab07d57478a2a31b51cbadb9, type: 2}
+  - {fileID: 11400000, guid: 92e81679558b2344eafc298e50e5fda9, type: 2}

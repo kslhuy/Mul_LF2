@@ -8,23 +8,25 @@ namespace LF2.Server{
     {
         private int xInput;
 
-        public PlayerDefenseState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
+        public PlayerDefenseState(PlayerStateMachine player) : base(player)
         {
         }
 
         public override void CanChangeState(StateRequestData actionRequestData)
         {
-            if (actionRequestData.StateTypeEnum == StateType.DDA){
-                player.stateMachine.ChangeState(actionRequestData.StateTypeEnum);
+            if (actionRequestData.StateTypeEnum == StateType.DDA||
+                actionRequestData.StateTypeEnum == StateType.DDJ||
+                actionRequestData.StateTypeEnum == StateType.DUA||
+                actionRequestData.StateTypeEnum == StateType.DUJ){
+                player.ChangeState(actionRequestData.StateTypeEnum);
             }
         }
 
         public override void Enter()
         {
             base.Enter();
-
             m_Data.StateTypeEnum = StateType.Defense;
-            // player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
+            player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
         }
 
         public override void Exit()
@@ -34,18 +36,13 @@ namespace LF2.Server{
 
         public override void End()
         {
-            player.stateMachine.ChangeState(StateType.Idle);
+            player.ChangeState(StateType.Idle);
 
         }
 
         public override StateType GetId()
         {
             return StateType.Defense;
-        }
-
-        public override void PhysicsUpdate()
-        {
-            base.PhysicsUpdate();
         }
 
 

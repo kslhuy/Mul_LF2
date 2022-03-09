@@ -5,16 +5,12 @@ namespace LF2.Server{
 
     public class PlayerDDAState : State
     {
-        // private List<IDamageable> dectectedDamageable = new List<IDamageable>();
-        // Transform attackTransform ;
+
         bool m_ExecutionFired;
         float m_MaxDistance = 0.35f;
 
 
-        private ulong m_ProvisionalTarget;
-        private bool m_Launched;
-
-        public PlayerDDAState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
+        public PlayerDDAState(PlayerStateMachine player) : base(player)
         {
         }
 
@@ -27,13 +23,12 @@ namespace LF2.Server{
         {      
             base.Enter();
 
-            ActionLogic skillsDescription = SkillDescription(StateType.DDA).ActionLogic;
+            ComboLogic skillsDescription = player.SkillDescription(StateType.DDA).ComboLogic;
             switch (skillsDescription){
-                case ActionLogic.LaunchProjectile :{
+                case ComboLogic.LaunchProjectile :{
                     LaunchProjectile();
                     break;
                 }   
-
             }
           
         }
@@ -44,18 +39,10 @@ namespace LF2.Server{
             return StateType.DDA;
         }
 
-        public override void PhysicsUpdate()
-        {
-            Debug.Log("DDA State");
-        }
 
         public override void End()
         {
-            player.stateMachine.ChangeState(StateType.Idle);
-        }
-
-        public override void Exit()
-        {
+            player.ChangeState(StateType.Idle);
         }
 
       
@@ -66,7 +53,7 @@ namespace LF2.Server{
         /// <exception cref="System.Exception">thrown if no Projectiles are valid</exception>
         protected  SkillsDescription.ProjectileInfo GetProjectileInfo()
         {
-            foreach (var projectileInfo in SkillDescription(StateType.DDA).Projectiles)
+            foreach (var projectileInfo in player.SkillDescription(StateType.DDA).Projectiles)
             {
                 if (projectileInfo.ProjectilePrefab && projectileInfo.ProjectilePrefab.GetComponent<NetworkProjectileState>())
                     return projectileInfo;
@@ -85,13 +72,16 @@ namespace LF2.Server{
 
             var projectileInfo = GetProjectileInfo();
             var projectile = GameObject.Instantiate(projectileInfo.ProjectilePrefab, projectileInfo.ProjectilePrefab.transform.position, projectileInfo.ProjectilePrefab.transform.rotation);
-
+            var playerPOS = player.serverplayer.physicsWrapper.Transform;
+            
             // point the projectile the same way we're facing
-            projectile.transform.right = player.serverplayer.physicsWrapper.Transform.right;
+            projectile.transform.right = playerPOS.right;
+            var corrigePivot =   new Vector3((float)(playerPOS.right.x*0.4),0.36f,0);
 
             //this way, you just need to "place" the arrow by moving it in the prefab, and that will control
             //where it appears next to the player.
-            projectile.transform.position = player.serverplayer.physicsWrapper.Transform.localToWorldMatrix.MultiplyPoint(projectile.transform.position);
+
+            projectile.transform.position = corrigePivot + playerPOS.localToWorldMatrix.MultiplyPoint(projectile.transform.position);
             projectile.GetComponent<ServerProjectileLogic>().Initialize(player.serverplayer.NetworkObjectId, in projectileInfo);
 
             projectile.GetComponent<NetworkObject>().Spawn();

@@ -166,7 +166,7 @@ namespace LF2.Client
         
         public void OnAttackInput(InputAction.CallbackContext context){
             if (context.started){
-                Debug.Log("OnAttackInput");
+                // Debug.Log("OnAttackInput");
                 AttackInput = true;
                 // Same with Jump
                 RequestAction(StateType.Attack);

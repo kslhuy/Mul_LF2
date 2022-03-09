@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace LF2
 {
@@ -32,7 +34,7 @@ namespace LF2
 
             public SeatState SeatState;
 
-
+            // Constructeur 
             public LobbyPlayerState(ulong clientId, string name, int playerNum, SeatState state, int seatIdx = -1, float lastChangeTime = 0)
             {
                 ClientId = clientId;
@@ -75,6 +77,29 @@ namespace LF2
         private NetworkList<LobbyPlayerState> m_LobbyPlayers;
 
         public Avatar[] AvatarConfiguration;
+        private Dictionary<CharacterTypeEnum, Avatar> m_AvatarByHero;
+
+        public Dictionary<CharacterTypeEnum, Avatar> AvatarByHero{
+            get
+                {
+                    if( m_AvatarByHero == null )
+                    {
+                        m_AvatarByHero = new Dictionary<CharacterTypeEnum, Avatar>();
+                        // Hoi bi rac roi cach viet
+                        // co 1 list SkillsDescription o tren , lay tung cai 1 .
+                        foreach (Avatar avatar in AvatarConfiguration)
+                        {
+                            Debug.Log(avatar);
+                            if (m_AvatarByHero.ContainsKey(avatar.CharacterClass.CharacterType))
+                            {
+                                throw new System.Exception($"Duplicate action definition detected: {avatar.CharacterClass.CharacterType}");
+                            }
+                            m_AvatarByHero[avatar.CharacterClass.CharacterType] = avatar;
+                        }
+                    }
+                    return m_AvatarByHero;
+                }
+        }
 
         private void Awake()
         {

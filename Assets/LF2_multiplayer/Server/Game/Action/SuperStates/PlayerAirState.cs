@@ -9,13 +9,15 @@ namespace LF2.Server{
     {
         private int amountOfJumpLeft ;
 
-        public PlayerAirState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
+        public float AirStateTimeStarted { get; private set; }
+
+        public PlayerAirState(PlayerStateMachine player) : base(player)
         {
         }
 
         public override void Enter()
         {
-            base.Enter();
+            AirStateTimeStarted = Time.time;
         }
 
         public bool CanJump(){
@@ -24,20 +26,14 @@ namespace LF2.Server{
             }else return false;
         }
 
-        public override void PhysicsUpdate() {
+        public override void LogicUpdate() {
 
-            Debug.Log("AirState");
             // Add some gravity for player
-            player.ServerCharacterMovement.CheckIfShouldFlip((int)moveDir.x);
             // // Check play touched ground ?? 
-            if (player.ServerCharacterMovement.IsGounded() && Time.time - TimeStarted > 0.3f ){
-                player.stateMachine.ChangeState(StateType.Land);
+            // Debug.Log($" Air_Server = {Time.time - AirStateTimeStarted}"); 
+            if (player.ServerCharacterMovement.IsGounded() && Time.time - AirStateTimeStarted > 0.3f   ){
+                player.ChangeState(StateType.Land);
             }
-        }
-
-        public override void SetMovementTarget(Vector2 position)
-        {
-            base.SetMovementTarget(position);
         }
 
         public override StateType GetId()

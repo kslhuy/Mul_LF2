@@ -8,7 +8,7 @@ using UnityEngine;
 
         private int m_nbHurt; 
 
-        public PlayerHurtState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
+        public PlayerHurtState(PlayerStateMachine player) : base(player)
         {
         }
 
@@ -20,21 +20,16 @@ using UnityEngine;
         {
             base.Enter();
             m_nbHurt += 1;
-            // if (m_nbHurt){
 
-            // }
             m_Data.StateTypeEnum = StateType.Hurt;
             player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
 
         }
 
-
         public override void Exit()
         {
             base.Exit();
         }
-
-
 
         public override void LogicUpdate()
         {
@@ -42,18 +37,11 @@ using UnityEngine;
 
         }
 
-        public override void PhysicsUpdate()
-        {
-            base.PhysicsUpdate();
-        }
 
         public override void End()
         {
-            player.stateMachine.ChangeState(StateType.Idle);
+            player.ChangeState(StateType.Idle);
 
-            // if ( Time.time > startTime + 0.3f){
-            //     stateMachine.ChangeState(player.IdleState);
-            // }
         }
 
         public override StateType GetId()

@@ -3,29 +3,50 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace  LF2.Visual{
 
-    public class SlidingState : StateFX
+    public class SlidingStateFX : StateFX
     {
         private float _runSpeed;
         private float _gainDecreaseRunSpeed;
 
-        public SlidingState(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX) : base(characterType, m_PlayerFX)
+        public SlidingStateFX(PlayerStateMachineFX mPlayerMachineFX) : base(mPlayerMachineFX)
         {
+            _runSpeed = mPlayerMachineFX.m_ClientVisual.m_NetState.CharacterClass.Speed;
+            _gainDecreaseRunSpeed = 4f;
         }
 
 
-        //     _runSpeed =playerData.runVelocity;
-        // _gainDecreaseRunSpeed = playerData.GainDecreaseRunSpeed;
+        public override void Enter()
+        {
+            if(!Anticipated)
+            {
+                MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("Sliding_anim");    
+            }
+            base.Enter();
+        }
+
+        public override void PlayAnim(StateType currentState, int nbAniamtion = 0)
+        {
+            MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("Sliding_anim");  
+            base.PlayAnim(currentState, nbAniamtion);
+
+        }
 
 
+        public override void LogicUpdate()
+        {
+            _runSpeed -= _gainDecreaseRunSpeed*Time.deltaTime;
+            MPlayerMachineFX.m_ClientVisual.coreMovement.SetRunORRoll(_runSpeed);
 
+            if (_runSpeed < 0){
+                MPlayerMachineFX.GetState(StateType.Idle).PlayAnim(StateType.Idle);
+            }
+        }
+
+        
         public override void Exit()
         {
             base.Exit();
             ResetRunVelocity();
-        }
-
-        public void ResetRunVelocity(){
-            // _runSpeed = playerData.runVelocity;
         }
 
         public override StateType GetId(){
@@ -33,40 +54,17 @@ namespace  LF2.Visual{
         }
 
 
-
-        public override void Enter()
-        {
-            base.Enter();
-        }
-
-        public override void OnAnimEvent(string id)
-        {
-            base.OnAnimEvent(id);
-        }
-
-        public override void PlayAnim(StateType currentState, int nbAniamtion = 0)
-        {
-            base.PlayAnim(currentState, nbAniamtion);
-        }
-
+        
         public override void SetMovementTarget(Vector2 position)
         {
             base.SetMovementTarget(position);
         }
 
-        public override void AnticipateState(ref StateRequestData requestData)
-        {
-            base.AnticipateState(ref requestData);
+
+        public void ResetRunVelocity(){
+            _runSpeed = MPlayerMachineFX.m_ClientVisual.m_NetState.CharacterClass.Speed;
         }
 
-        public override void End()
-        {
-            base.End();
-        }
 
-        public override bool LogicUpdate()
-        {
-            return true;
-        }
     }
 }

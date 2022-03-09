@@ -7,30 +7,32 @@ namespace LF2.Visual{
 
     public class PlayerAttackStateFX : StateFX
     {
-        // private List<IDamageable> dectectedDamageable = new List<IDamageable>();
-        // Transform attackTransform ;
+        private List<ClientDamageReceiver> AllTargets = new List<ClientDamageReceiver>();
         float attack12distance;
         private bool m_ImpactPlayed;
 
-        private Client.ClientCharacter clientChar;
+        private ClientDamageReceiver clientChar;
 
         private SO_AttackDetails attackDetails;
+        private List<SpecialFXGraphic> m_SpawnedGraphics = null;
 
 
-        public PlayerAttackStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX) : base(characterType, m_PlayerFX)
+
+        public PlayerAttackStateFX(PlayerStateMachineFX mPlayerMachineFX) : base(mPlayerMachineFX)
         {
 
         }
-
 
         public override void Enter()
         {
             if(!Anticipated)
             {
-                PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz , Data.NbAnimation);
+                PlayAnim(MPlayerMachineFX.CurrentStateViz.GetId() , Data.NbAnimation);
             }
             base.Enter();
+
             PlayHitReact();
+
         }
 
 
@@ -39,73 +41,67 @@ namespace LF2.Visual{
             return StateType.Attack;
         }
 
-        public override bool LogicUpdate()
-        {
-            Debug.Log("Attack Visual");
-            return true;
-        }
+        public override void LogicUpdate()
+        {        }
 
 
         public override void Exit()
         {
-            base.Exit();
+            AllTargets = new List<ClientDamageReceiver>();
         }
 
         public override void End(){
-            m_PlayerFX.stateMachineViz.ChangeState(StateType.Idle);
+            MPlayerMachineFX.idle();
         }
 
 
-        public override void PlayAnim(StateType currentState , int nbanim )
+        public override void PlayAnim(StateType state , int nbanim )
         {
-            base.PlayAnim(currentState,nbanim);
+            base.PlayAnim(state,nbanim);
+
 
             // DownCasting data 
 
-            if (SkillDescription(StateType.Attack).GetType() == typeof(SO_AttackDetails)){
-                attackDetails =(SO_AttackDetails)SkillDescription(StateType.Attack);
+            if (MPlayerMachineFX.SkillDescription(StateType.Attack).GetType() == typeof(SO_AttackDetails)){
+                attackDetails =(SO_AttackDetails)MPlayerMachineFX.SkillDescription(StateType.Attack);
             }
-
+            
+            // reset nbanim (case some champ not have a triple attack (combo attack))
             if (attackDetails.AttackDetails.Length < 3 && nbanim == 3 ){
                 nbanim = 1;
-            // Debug.Log(nbanim);
             }
-            switch (nbanim){
+
+            // run Animation
+            if (nbanim < 3 ){
+                int ramdom_anim = UnityEngine.Random.Range(1,3);
+                switch (ramdom_anim) {
                 default : 
-                    m_PlayerFX.m_ClientVisual.OurAnimator.Play("Attack1_anim");
+                    MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("Attack1_anim");
                     break;
                 case 2 : 
-                    m_PlayerFX.m_ClientVisual.OurAnimator.Play("Attack2_anim");
+                    MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("Attack2_anim");
                     break;
-                case 3 : 
-                    m_PlayerFX.m_ClientVisual.OurAnimator.Play("AttackRun_anim");
-                    break;
-            } 
-            // Debug.Log(" AnimationAttack");
-
-           
+                }
+            }
+            else{
+                MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("AttackRun_anim");
+            }
+            
         }
 
 
 
         private void PlayHitReact()
         {
-            // if (m_ImpactPlayed) { return; }
-            // m_ImpactPlayed = true;
-            // Debug.Log("PlayHitReact");
-            // Debug.Log(Data);
-            //Is my original target still in range? Then definitely get him!
             if (Data.TargetIds != null && 
                 Data.TargetIds.Length > 0 && 
                 NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(Data.TargetIds[0], out var targetNetworkObj)
                 && targetNetworkObj != null)
             {
-                if (targetNetworkObj.NetworkObjectId != m_PlayerFX.m_ClientVisual.NetworkObjectId)
+                if (targetNetworkObj.NetworkObjectId != MPlayerMachineFX.m_ClientVisual.NetworkObjectId)
                 {
-                    // string hitAnim = Description.ReactAnim;
-                    // if(string.IsNullOrEmpty(hitAnim)) { hitAnim = k_DefaultHitReact; }
-                    clientChar = targetNetworkObj.GetComponent<Client.ClientCharacter>();
-                    // Debug.Log(originalTarget);
+
+                    clientChar = targetNetworkObj.GetComponent<ClientDamageReceiver>();
 
                     if (clientChar && clientChar.ChildVizObject && clientChar.ChildVizObject.OurAnimator)
                     {
@@ -113,23 +109,12 @@ namespace LF2.Visual{
                         StateRequestData m_data = new StateRequestData();
                         m_data.StateTypeEnum = StateType.Hurt;
                         m_data.NbAnimation = Data.NbAnimation;
-                        // Debug.Log(Data.Direction);
-                        // if (Data.Direction != null){
-                        //     m_data.Direction = Data.Direction;
-                        // } 
-                        // clientChar.ChildVizObject.m_NetState.DoPassiveActionServerRPC(m_data);
-                        // clientChar.ChildVizObject.m_statePlayerViz.stateMachineViz.ChangeState(StateType.Hurt);
-                        clientChar.ChildVizObject.m_statePlayerViz.AnticipateState(ref m_data);
-
-                        // clientChar.ChildVizObject.OurAnimator.Play("Hurt1_anim");
-
                     }
+                        
+                    m_SpawnedGraphics = InstantiateSpecialFXGraphics(targetNetworkObj.transform, true,GetId());
+
                 }
-
             }
-
-            //in the future we may do another physics check to handle the case where a target "ran under our weapon".
-            //But for now, if the original target is no longer present, then we just don't play our hit react on anything.
         }
     }
 }

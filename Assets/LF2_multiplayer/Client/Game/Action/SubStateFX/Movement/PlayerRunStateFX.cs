@@ -7,7 +7,7 @@ namespace LF2.Visual{
     {
         private float runVelocity ;
 
-        public PlayerRunStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX) : base(characterType, m_PlayerFX)
+        public PlayerRunStateFX(PlayerStateMachineFX mPlayerMachineFX) : base(mPlayerMachineFX)
         {
         }
 
@@ -15,24 +15,31 @@ namespace LF2.Visual{
         public override void AnticipateState(ref StateRequestData requestData)
         {
 
-            if (requestData.StateTypeEnum == StateType.Jump){
-                m_PlayerFX.stateMachineViz.ChangeState(StateType.DoubleJump);
+            if (requestData.StateTypeEnum == StateType.Jump || requestData.StateTypeEnum == StateType.Defense || requestData.StateTypeEnum == StateType.Attack ){
+                MPlayerMachineFX.GetState(requestData.StateTypeEnum).PlayAnim(requestData.StateTypeEnum);
+
+                // MPlayerMachineFX.ChangeState(new PlayerDoubleJumpStateFX(MPlayerMachineFX));
             }
             else if (requestData.StateTypeEnum == StateType.Defense){
-                m_PlayerFX.stateMachineViz.ChangeState(StateType.Rolling);
+                // MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("Rolling_anim");
+                MPlayerMachineFX.GetState(StateType.Defense).PlayAnim(StateType.Rolling);
+
             }
             else if (requestData.StateTypeEnum == StateType.Attack)
             {
-                m_PlayerFX.stateMachineViz.ChangeState(StateType.Attack);
+                MPlayerMachineFX.GetState(StateType.Attack).PlayAnim(StateType.Attack);
             }           
         }
 
 
         public override void Enter()
         {
+            if(!Anticipated)
+            {
+                MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("Run_anim");
+            }
             base.Enter();
-            // ko cho nhay lan thu 2 khi Run
-            // player.JumpState.DecreaseAmountOfJumpsLeft();
+
         }
 
 
@@ -51,7 +58,7 @@ namespace LF2.Visual{
         public override void SetMovementTarget(Vector2 position)
         {
             base.SetMovementTarget(position);
-            Debug.Log(moveDir.z);
+
         }
 
 
@@ -64,22 +71,17 @@ namespace LF2.Visual{
         public override void PlayAnim(StateType currentState, int nbAniamtion = 0)
         {
             base.PlayAnim(currentState, nbAniamtion);
+            MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("Run_anim");
         }
 
 
-        public override void End()
+        public override void LogicUpdate()
         {
-            base.End();
-        }
-
-        public override bool LogicUpdate()
-        {
-            m_PlayerFX.m_ClientVisual.coreMovement.SetRun(2f);
-            if ( moveDir.z >0.9f || moveDir.z < -0.9f  ){
-                m_PlayerFX.stateMachineViz.ChangeState(StateType.Idle);
+            MPlayerMachineFX.m_ClientVisual.coreMovement.SetRunORRoll(2f);
+            if ( MPlayerMachineFX.moveDir.z >0.9f || MPlayerMachineFX.moveDir.z < -0.9f  ){
+                MPlayerMachineFX.ChangeState(StateType.Sliding);
             }
 
-            return true;
         }
     }
 }

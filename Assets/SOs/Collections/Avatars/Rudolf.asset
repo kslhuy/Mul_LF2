@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c75cb39abf163764db0fa484f34cfbfd, type: 3}
+  m_Name: Rudolf
+  m_EditorClassIdentifier: 
+  m_Guid: a9ca5b66853c0045836dfbd7982e12c5
+  CharacterClass: {fileID: 11400000, guid: 56dbb45f36a3aba4787aab26dd2917d7, type: 2}
+  Graphics: {fileID: 5307423579264072845, guid: 15109df9c9ac672468afd97f7cc8ccfb, type: 3}
+  GraphicsCharacterSelect: {fileID: 5307423579264072845, guid: ebb287fd0a591c048884bd32536c69cb, type: 3}
+  Portrait: {fileID: 0}

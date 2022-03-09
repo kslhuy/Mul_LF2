@@ -1,6 +1,7 @@
 using UnityEngine.Assertions;
 using UnityEngine;
 using System.Collections.Generic;
+using LF2.Visual;
 
 namespace LF2.Client
 {
@@ -12,14 +13,13 @@ namespace LF2.Client
         [System.Serializable]
         public class CharacterModelSet
         {
-            public Sprite image;
+            public Visual.AnimatorTriggeredSpecialFX specialFx; // should be a component on the same GameObject as the Animator!
+            public AnimatorOverrideController animatorOverrides; // references a separate stand-alone object in the project
 
-            public RuntimeAnimatorController animatorOverrides; // references a separate stand-alone object in the project
-            
         }
 
         [SerializeField]
-        private CharacterModelSet[] m_CharacterModels;
+        CharacterModelSet m_CharacterModel;
 
         /// <summary>
         /// Reference to our shared-characters' animator.
@@ -34,60 +34,40 @@ namespace LF2.Client
         /// </summary>
         private RuntimeAnimatorController m_OriginalController;
 
-        [SerializeField]
-        private GameObject Background;
-
-
-
-
-        /// <summary>
-        /// When we swap all our Materials out for a special material,
-        /// we keep the old references here, so we can swap them back.
-        /// </summary>
-        private Dictionary<Renderer, Material> m_OriginalMaterials = new Dictionary<Renderer, Material>();
-        private bool firstime = true;
+        ClientCharacterVisualization m_ClientCharacterVisualization;
 
         private void Awake()
         {
-            if (m_Animator)
-            {
-                m_OriginalController = m_Animator.runtimeAnimatorController;
-            }
+            m_ClientCharacterVisualization = GetComponentInParent<ClientCharacterVisualization>();
+            m_Animator = m_ClientCharacterVisualization.OurAnimator;
+            m_OriginalController = m_Animator.runtimeAnimatorController;
         }
 
-        private void OnDisable()
-        {
-            // It's important that the original Materials that we pulled out of the renderers are put back.
-            // Otherwise nothing will Destroy() them and they will leak! (Alternatively we could manually
-            // Destroy() these in our OnDestroy(), but in this case it makes more sense just to put them back.)
-        }
 
         /// <summary>
         /// Swap the visuals of the character to the index passed in.
         /// </summary>
         /// <param name="modelIndex">Zero-based array index of the model</param>
         /// <param name="specialMaterialMode">Special Material to apply to all body parts</param>
-        public void SwapToModel(int modelIndex)
+        public void SwapToModel()
         {
-            Assert.IsTrue(modelIndex < m_CharacterModels.Length);
 
-            if (firstime ){
-                Background.SetActive(true);
-                firstime = false ; 
+            if (m_CharacterModel.specialFx)
+            {
+                m_CharacterModel.specialFx.enabled = true;
             }
-            
 
             if (m_Animator)
             {
                 // plug in the correct animator override... or plug the original non - overridden version back in!
-                if (m_CharacterModels[modelIndex].animatorOverrides)
+                if (m_CharacterModel.animatorOverrides)
                 {
-                    m_Animator.runtimeAnimatorController = m_CharacterModels[modelIndex].animatorOverrides;
+                    m_Animator.runtimeAnimatorController = m_CharacterModel.animatorOverrides;
                 }
                 else
                 {
                     m_Animator.runtimeAnimatorController = m_OriginalController;
-                }            
+                }
             }
 
         }

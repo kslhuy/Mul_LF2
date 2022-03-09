@@ -64,6 +64,7 @@ namespace LF2
             }
     }
 
+        public int BackGround;
 
 
         private void Awake()

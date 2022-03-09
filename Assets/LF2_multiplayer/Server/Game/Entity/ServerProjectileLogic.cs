@@ -99,10 +99,7 @@ namespace LF2.Server
             //     networkObject.Despawn();
             // }
 
-            // if (!m_IsDead)
-            // {
-            //     DetectCollisions();
-            // }
+            DetectCollisions();
         }
 
         private void DetectCollisions()
@@ -138,12 +135,8 @@ namespace LF2.Server
                     {
                         m_NetState.RecvHitEnemyClientRPC(targetNetObj.NetworkObjectId);
 
-                        //retrieve the person that created us, if he's still around.
-                        NetworkObject spawnerNet;
-                        NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(m_SpawnerId, out spawnerNet);
-                        ServerCharacter spawnerObj = spawnerNet != null ? spawnerNet.GetComponent<ServerCharacter>() : null;
-
-                        m_CollisionCache[i].GetComponent<IDamageable>().ReceiveHP(spawnerObj, -m_ProjectileInfo.Damage);
+                        StateRequestData stateRequestData = new StateRequestData();
+                        m_CollisionCache[i].GetComponent<IDamageable>().ReceiveHP(stateRequestData, -m_ProjectileInfo.Damage);
                     }
 
                     if (m_IsDead)

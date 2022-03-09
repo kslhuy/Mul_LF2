@@ -31,8 +31,6 @@ namespace LF2.Server
 
         
 
-
-
         [SerializeField] 
         BoxCollider m_BoxCollider;
 
@@ -44,7 +42,8 @@ namespace LF2.Server
 
         private MovementState m_MovementState;
 
-        // private ServerCharacter m_CharLogic;
+        public MovementState MovementState => m_MovementState;
+
 
         // when we are in charging and knockback mode, we use these additional variables
         private float m_ForcedSpeed;
@@ -54,6 +53,11 @@ namespace LF2.Server
         private Vector3 m_KnockbackVector;
         private float m_startTime;
         private Vector3 moveDir;
+
+        public Vector3 PivotCenter { 
+            get => m_BoxCollider.center;  
+        }
+
       
 
         public int FacingDirection { get; private set; }
@@ -66,7 +70,6 @@ namespace LF2.Server
 
         private void Awake()
         {
-            // m_CharLogic = GetComponent<ServerCharacter>();
         
             FacingDirection = 1;
             m_MovementState = MovementState.Idle;
@@ -87,8 +90,6 @@ namespace LF2.Server
 
         
 
-        
-
         /// <summary>
         /// Sets a movement target. We will path to this position, .
         /// </summary>
@@ -98,7 +99,10 @@ namespace LF2.Server
             m_MovementState = MovementState.Move;
 
             CheckIfShouldFlip(Mathf.RoundToInt(targetposition.x));
+        }
 
+        public void FollowTarget(Vector3 dir){
+            transform.position += dir *  Time.deltaTime;
         }
 
         /// <summary>
@@ -119,20 +123,7 @@ namespace LF2.Server
                 m_Rigidbody.AddForce(JumpHieght*Vector3.up + (JumpLength+1)*FacingDirection*Vector3.right,ForceMode.Impulse); 
             }        }
 
-        public void StartForwardCharge(float speed, float duration)
-        {
-            m_MovementState = MovementState.Charging;
-            m_ForcedSpeed = speed;
-            m_SpecialModeDurationRemaining = duration;
-        }
 
-        public void StartKnockback(Vector3 knocker, float speed, float duration)
-        {
-            m_MovementState = MovementState.Knockback;
-            m_KnockbackVector = transform.position - knocker;
-            m_ForcedSpeed = speed;
-            m_SpecialModeDurationRemaining = duration;
-        }
 
         public bool IsGounded(){
             bool hit_ground = Physics.Raycast(m_BoxCollider.bounds.center,Vector3.down ,m_BoxCollider.bounds.extents.y,k_GroundLayerMask);
@@ -175,22 +166,6 @@ namespace LF2.Server
             m_MovementState = MovementState.Idle;
         }
 
-        /// <summary>
-        /// Instantly moves the character to a new position. NOTE: this cancels any active movement operation!
-        /// This does not notify the client that the movement occurred due to teleportation, so that needs to
-        /// happen in some other way, such as with the custom action visualization in DashAttackActionFX. (Without
-        /// this, the clients will animate the character moving to the new destination spot, rather than instantly
-        /// appearing in the new spot.)
-        /// </summary>
-        /// <param name="newPosition">new coordinates the character should be at</param>
-        public void Teleport(Vector3 newPosition)
-        {
-            CancelMove();
-
-
-            m_Rigidbody.position = transform.position;
-            m_Rigidbody.rotation = transform.rotation;
-        }
 
         private void FixedUpdate()
         {
@@ -209,39 +184,7 @@ namespace LF2.Server
         }
 
 
-        public void SetMovementState(MovementState movementState){
-            m_MovementState = movementState;
-        }
-        public MovementState GetMovementState(){
-            
-            return m_MovementState;
 
-        }
-
-
-        // private float GetMaxMovementSpeed()
-        // {
-        //     switch (m_MovementState)
-        //     {
-        //         case MovementState.Charging:
-        //         case MovementState.Knockback:
-        //             return m_ForcedSpeed;
-        //         case MovementState.Idle:
-        //         case MovementState.Move:
-        //         default:
-        //             return GetBaseMovementSpeed();
-        //     }
-        // }
-
-        // /// <summary>
-        // /// Retrieves the speed for this character's class.
-        // /// </summary>
-        // private float GetBaseMovementSpeed()
-        // {
-        //     CharacterClass characterClass = GameDataSource.Instance.CharacterDataByType[m_CharLogic.NetState.CharacterType];
-        //     Assert.IsNotNull(characterClass, $"No CharacterClass data for character type {m_CharLogic.NetState.CharacterType}");
-        //     return characterClass.Speed;
-        // }
 
         /// <summary>
         /// Determines the appropriate MovementStatus for the character. The
@@ -264,11 +207,14 @@ namespace LF2.Server
 
         
         public void CheckIfShouldFlip(int xInput){
+            // Debug.Log(FacingDirection);
+
             if (xInput != 0 && xInput != FacingDirection){
                 Flip();
             }
         }
         public void Flip(){
+            // Debug.Log("flip server");
             FacingDirection *=-1;
             // transform.Rotate(0.0f,180.0f,0.0f);
             if (FacingDirection == 1){

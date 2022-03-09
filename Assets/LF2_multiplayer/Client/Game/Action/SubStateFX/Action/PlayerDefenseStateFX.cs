@@ -8,8 +8,20 @@ namespace LF2.Visual{
     public class PlayerDefenseStateFX : StateFX
     {
 
-        public PlayerDefenseStateFX(CharacterTypeEnum characterType, PlayerStateFX m_PlayerFX) : base(characterType, m_PlayerFX)
+        public PlayerDefenseStateFX(PlayerStateMachineFX mPlayerMachineFX) : base(mPlayerMachineFX)
         {
+        }
+
+        public override void AnticipateState(ref StateRequestData data)
+        {
+            if (data.StateTypeEnum == StateType.DDA ||
+                data.StateTypeEnum == StateType.DDJ||
+                data.StateTypeEnum == StateType.DUJ||
+                data.StateTypeEnum == StateType.DUA){
+                MPlayerMachineFX.GetState(data.StateTypeEnum).PlayAnim(data.StateTypeEnum, data.NbAnimation);
+            }
+
+
         }
 
 
@@ -17,7 +29,7 @@ namespace LF2.Visual{
         {
             if(!Anticipated)
             {
-                PlayAnim(m_PlayerFX.stateMachineViz.CurrentStateViz);
+                MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("Defense_anim");
             }
             base.Enter();
         }
@@ -28,23 +40,19 @@ namespace LF2.Visual{
             return StateType.Defense;
         }
 
-        public override bool LogicUpdate()
-        {
-            Debug.Log("Defense Visual");
-            return true;
-        }
+        public override void LogicUpdate()
+        {        }
 
 
         public override void End(){
-            m_PlayerFX.stateMachineViz.ChangeState(StateType.Idle);
+            MPlayerMachineFX.idle();
         }
 
 
-        public override void PlayAnim(StateType currentState , int nbanim = 0)
+        public override void PlayAnim(StateType state , int nbanim = 0)
         {
-            base.PlayAnim(currentState);
-            Debug.Log("Defense_anim");
-            m_PlayerFX.m_ClientVisual.OurAnimator.Play("Defense_anim");
+            base.PlayAnim(state);
+            MPlayerMachineFX.m_ClientVisual.OurAnimator.Play("Defense_anim");
         }
     }
 }

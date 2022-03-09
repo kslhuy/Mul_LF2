@@ -7,28 +7,26 @@ namespace LF2.Server{
     {
         private float runVelocity ;
 
-        public PlayerRunState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
+        public PlayerRunState(PlayerStateMachine player) : base(player)
         {
         }
 
         public override void CanChangeState(StateRequestData actionRequestData)
         {
 
-            if (actionRequestData.StateTypeEnum == StateType.Jump){
-                player.stateMachine.ChangeState(StateType.DoubleJump);
+            if (actionRequestData.StateTypeEnum == StateType.Jump ||
+                actionRequestData.StateTypeEnum == StateType.Attack){
+                player.ChangeState(actionRequestData.StateTypeEnum );
             }
-            else if (actionRequestData.StateTypeEnum == StateType.Defense){
-                player.stateMachine.ChangeState(StateType.Rolling);
-            }
-            else if (actionRequestData.StateTypeEnum == StateType.Attack)
-            {
-                player.stateMachine.ChangeState(StateType.Attack);
-            }        
+            else if (actionRequestData.StateTypeEnum == StateType.Defense)
+                player.ChangeState(StateType.Rolling);
+           
         }
 
         public override void Enter()
         {
-            base.Enter();
+            m_Data.StateTypeEnum = StateType.Run;
+            player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
             // ko cho nhay lan thu 2 khi Run
             // player.JumpState.DecreaseAmountOfJumpsLeft();
         }
@@ -47,21 +45,11 @@ namespace LF2.Server{
         public override void LogicUpdate()
         {
             base.LogicUpdate();
-        }
-
-        public override void SetMovementTarget(Vector2 position)
-        {
-            base.SetMovementTarget(position);
-        }
-        public override void PhysicsUpdate()
-        {
-            base.PhysicsUpdate();
-            if ( moveDir.z >0.9f || moveDir.z < -0.9f  ){
-                player.stateMachine.ChangeState(StateType.Idle);
+            if ( player.moveDir.z >0.9f || player.moveDir.z < -0.9f  ){
+                player.ChangeState(StateType.Sliding);
             }
-            // core.SetMovement.SetVelocityRun(runVelocity);
-
         }
+
 
 
     }

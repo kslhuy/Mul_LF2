@@ -8,16 +8,13 @@ namespace LF2.Server{
     //                 It is not explicitly targeted (so can attack to all time ), but rather detects the foe (enemy ) that was hit with a physics check.
     public class PlayerAttackState : State
     {
-        // private List<IDamageable> dectectedDamageable = new List<IDamageable>();
-        // Transform attackTransform ;
         bool m_ExecutionFired;
         float m_MaxDistance = 0.35f;
-        private static RaycastHit[] s_Hits = new RaycastHit[4];
-
 
         private ulong m_ProvisionalTarget;
+        private SkillsDescription skillsDescription;
 
-        public PlayerAttackState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
+        public PlayerAttackState(PlayerStateMachine player) : base(player)
         {
         }
 
@@ -28,26 +25,24 @@ namespace LF2.Server{
 
         public override void Enter()
         {      
-            base.Enter();
 
-
-            // m_Data.StateTypeEnum = StateType.Attack;
+            TimeStarted_Server = Time.time;
 
             IDamageable foe = DetectFoe();
 
             if (foe != null)
             {
                 // fill data to send 
+                // Debug.Log(foe);
                 m_ProvisionalTarget = foe.NetworkObjectId;
                 m_Data.TargetIds = new ulong[] { foe.NetworkObjectId };
                 if (m_Data.NbAnimation == 3 ){
                     m_Data.Direction = player.ServerCharacterMovement.FacingDirection*new Vector3(0,0.5f,0);
                 }
             }
-            
-            // Debug.Log(m_Data.NbAnimation);
-            // player.serverplayer.serverAnimationHandler.NetworkAnimator.SetTrigger(Description.Anim);
             player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
+            skillsDescription = player.SkillDescription(GetId());
+
         }
 
 
@@ -56,27 +51,24 @@ namespace LF2.Server{
             return StateType.Attack;
         }
 
-        public override void PhysicsUpdate()
+        public override void LogicUpdate()
         {
-            // Debug.Log("AttackState");
             if (!m_ExecutionFired)
             {
                 m_ExecutionFired = true;
                 var foe = DetectFoe(m_ProvisionalTarget);
                 if (foe != null)
                 {
-                    
-                    // this.player.stateMachine.ChangeState(StateType.Hurt);
-                    // player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
-                    // m_attackcombo += 1 ; 
-                    foe.ReceiveHP(this.player.serverplayer, -SkillDescription(StateType.Attack).Amount);
+                    StateRequestData dataSend = new StateRequestData();
+                    dataSend.StateTypeEnum = StateType.Hurt;
+                    foe.ReceiveHP(dataSend,skillsDescription.Amount);
                 }
             }
         }
 
         public override void End()
         {
-            player.stateMachine.ChangeState(StateType.Idle);
+            player.ChangeState(StateType.Idle);
             m_ExecutionFired = false;
         }
 

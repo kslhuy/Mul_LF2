@@ -5,38 +5,29 @@ using UnityEngine;
 namespace LF2.Server{
     public class PlayerRollingState : State
     {
-        float rollingSpeed;
-        float distanceRolling;
-        private float distanceRollingTravelled;
 
-    public PlayerRollingState(CharacterTypeEnum characterType, PlayerState player) : base(characterType, player)
-    {
-    }
-
-    public override void CanChangeState(StateRequestData actionRequestData)
-    {
-    }
-
-    public override void Enter()
+        public PlayerRollingState(PlayerStateMachine player) : base(player)
         {
-            base.Enter();
         }
 
-    public override StateType GetId()
-    {
-        return StateType.Rolling;
-    }
+        public override void CanChangeState(StateRequestData actionRequestData)
+        {
+        }
 
-    public override void LogicUpdate()
+        public override void Enter()
+        {
+            m_Data.StateTypeEnum = StateType.Rolling;
+            player.serverplayer.NetState.RecvDoActionClientRPC(m_Data);
+        }
+
+        public override StateType GetId()
+        {
+            return StateType.Rolling;
+        }
+
+        public override void LogicUpdate()
         {
             
-            // base.LogicUpdate();
-            // core.SetMovement.SetVelocityRolling(rollingSpeed);
-            // distanceRollingTravelled += rollingSpeed * Time.deltaTime;
-            // if (distanceRollingTravelled > distanceRolling){
-            //     distanceRollingTravelled = 0;
-            //     stateMachine.ChangeState(player.IdleState);
-            // }
         }
     }
 }

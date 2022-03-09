@@ -10,19 +10,61 @@ namespace LF2.Server
     /// Server specialization of Character Select game state.
     /// </summary>
     [RequireComponent(typeof(CharSelectData))]
+    [RequireComponent(typeof(BackGroundSelectData))]
+
     public class ServerCharSelectState : GameStateBehaviour
     {
         public override GameState ActiveState { get { return GameState.CharSelect; } }
         public CharSelectData CharSelectData { get; private set; }
+        public BackGroundSelectData BackGroundSelectData { get; private set; }
+
 
         private ServerGameNetPortal m_ServerNetPortal;
 
         private void Awake()
         {
             CharSelectData = GetComponent<CharSelectData>();
+            BackGroundSelectData = GetComponent<BackGroundSelectData>();
+
             m_ServerNetPortal = GameObject.FindGameObjectWithTag("GameNetPortal").GetComponent<ServerGameNetPortal>();
         }
+        public override void OnNetworkSpawn()
+        {
+            if (!IsServer)
+            {
+                enabled = false;
+            }
+            else
+            {
+                NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectCallback;
+                // Client request choose this seat or lock or unlock  
+                CharSelectData.OnClientChangedSeat += OnClientChangedSeat;
+                BackGroundSelectData.OnHostChangedBackGround += OnHostChangedBackGround;
 
+                BackGroundSelectData.OnHostStartGame += OnHostStartGame;
+
+                NetworkManager.Singleton.SceneManager.OnSceneEvent += OnSceneEvent;
+            }
+        }
+        public override void OnNetworkDespawn()
+        {
+            if (NetworkManager.Singleton)
+            {
+                NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnectCallback;
+                NetworkManager.Singleton.SceneManager.OnSceneEvent -= OnSceneEvent;
+            }
+            if (CharSelectData)
+            {
+                CharSelectData.OnClientChangedSeat -= OnClientChangedSeat;
+            }
+            if (BackGroundSelectData)
+            {
+                BackGroundSelectData.OnHostChangedBackGround -= OnHostChangedBackGround;
+                BackGroundSelectData.OnHostStartGame -= OnHostStartGame;
+            }
+        }
+
+        // Update LobbyPlayerState data in Server SIDE 
         private void OnClientChangedSeat(ulong clientId, int newSeatIdx, bool lockedIn)
         {
             int idx = FindLobbyPlayerIdx(clientId);
@@ -35,11 +77,11 @@ namespace LF2.Server
             }
 
 
-            if (CharSelectData.IsLobbyClosed.Value)
-            {
-                // The user tried to change their class after everything was locked in... too late! Discard this choice
-                return;
-            }
+            // if (CharSelectData.IsLobbyClosed.Value)
+            // {
+            //     // The user tried to change their class after (all player was locked or in process Chose BackGround)... too late! Discard this choice
+            //     return;
+            // }
 
             if ( newSeatIdx ==-1)
             {
@@ -66,6 +108,7 @@ namespace LF2.Server
                 }
             }
 
+            // Logic normal : Update   LobbyPlayerState
             CharSelectData.LobbyPlayers[idx] = new CharSelectData.LobbyPlayerState(clientId,
                 CharSelectData.LobbyPlayers[idx].PlayerName,
                 CharSelectData.LobbyPlayers[idx].PlayerNum,
@@ -90,9 +133,74 @@ namespace LF2.Server
                     }
                 }
             }
+            /// Check if , we lock in the whole lobby, begin to ChooseState
+            GotoBackGroundChooseState();
+            // BackGroundSelectData.IsChooseBackGround.Value = true;
 
+            // CloseLobbyIfReady();
+        }
+
+        #region Only Host Do
+            
+        private void OnHostChangedBackGround(bool Nextleft){
+            
+            if (BackGroundSelectData.IsLobbyClosed.Value)
+            {
+                // The user tried to change BackGround  after everything was locked in... too late! Discard this choice
+                return;
+            }
+            if (Nextleft){
+                if (GameDataSource.Instance.BackGround > 3 ){
+                    GameDataSource.Instance.BackGround = 1;    
+                }else{ 
+                    GameDataSource.Instance.BackGround += 1; 
+                }
+            }else{
+                if (GameDataSource.Instance.BackGround > 1 ){
+                    GameDataSource.Instance.BackGround -= 1; 
+                }else{
+                    GameDataSource.Instance.BackGround = 3;
+                }
+            }
+
+            // CloseLobbyIfReady();
+
+        }
+
+        // Host = Player 1
+        private void OnHostStartGame(){
             CloseLobbyIfReady();
         }
+                // HUY Change Here : Not close yet when everybody's have chosen their champs
+        /// <summary>
+        /// Looks through all our connections and sees if everyone has locked in their choice;
+        /// if so, we lock in the whole lobby, save state, and begin the transition to gameplay
+        /// </summary>
+        private void CloseLobbyIfReady()
+        {
+            foreach (CharSelectData.LobbyPlayerState playerInfo in CharSelectData.LobbyPlayers)
+            {
+                if (playerInfo.SeatState != CharSelectData.SeatState.LockedIn)
+                    return; // nope, at least one player isn't locked in yet!
+            }
+
+            // Huy here 
+            // everybody's ready at the same time! Lock it down!
+            BackGroundSelectData.IsLobbyClosed.Value = true;
+
+            // remember our choices so the next scene can use the info
+            SaveLobbyResults();
+
+            // Huy here 
+            // Delay a few seconds to give the UI time to react, then switch scenes
+            StartCoroutine(WaitToEndLobby());
+        }
+
+
+
+        #endregion
+
+
 
         /// <summary>
         /// Returns the index of a client in the master LobbyPlayer list, or -1 if not found
@@ -107,11 +215,11 @@ namespace LF2.Server
             return -1;
         }
 
+        // HUY Add new Here : 
         /// <summary>
         /// Looks through all our connections and sees if everyone has locked in their choice;
-        /// if so, we lock in the whole lobby, save state, and begin the transition to gameplay
         /// </summary>
-        private void CloseLobbyIfReady()
+        private void GotoBackGroundChooseState()
         {
             foreach (CharSelectData.LobbyPlayerState playerInfo in CharSelectData.LobbyPlayers)
             {
@@ -119,16 +227,15 @@ namespace LF2.Server
                     return; // nope, at least one player isn't locked in yet!
             }
 
-            // everybody's ready at the same time! Lock it down!
-            CharSelectData.IsLobbyClosed.Value = true;
+            // Huy here 
+            // everybody's ready at the same time! Change lobby state = ChooseBackGround  !
+            BackGroundSelectData.IsStateChooseBackGround.Value = true;
 
-            // remember our choices so the next scene can use the info
-            SaveLobbyResults();
-
-            // Delay a few seconds to give the UI time to react, then switch scenes
-            StartCoroutine(WaitToEndLobby());
         }
 
+
+
+        // TO DO : Save result background here 
         private void SaveLobbyResults()
         {
             foreach (CharSelectData.LobbyPlayerState playerInfo in CharSelectData.LobbyPlayers)
@@ -138,11 +245,12 @@ namespace LF2.Server
                 if (playerNetworkObject && playerNetworkObject.TryGetComponent(out PersistentPlayer persistentPlayer))
                 {
                     // pass avatar GUID to PersistentPlayer
-                    // it'd be great to simplify this with something like a NetworkScriptableObjects :(
+                        // CharSelectData.AvatarByHero.TryGetValue(m_PlayerSeats[seatIdx].NameChampion,out avatar);
                     persistentPlayer.NetworkAvatarGuidState.AvatarGuid.Value =
                         CharSelectData.AvatarConfiguration[playerInfo.SeatIdx].Guid.ToNetworkGuid();
                 }
             }
+  
         }
 
         private IEnumerator WaitToEndLobby()
@@ -151,33 +259,6 @@ namespace LF2.Server
             NetworkManager.SceneManager.LoadScene("LF2_Net", LoadSceneMode.Single);
         }
 
-        public override void OnNetworkDespawn()
-        {
-            if (NetworkManager.Singleton)
-            {
-                NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnectCallback;
-                NetworkManager.Singleton.SceneManager.OnSceneEvent -= OnSceneEvent;
-            }
-            if (CharSelectData)
-            {
-                CharSelectData.OnClientChangedSeat -= OnClientChangedSeat;
-            }
-        }
-
-        public override void OnNetworkSpawn()
-        {
-            if (!IsServer)
-            {
-                enabled = false;
-            }
-            else
-            {
-                NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectCallback;
-                CharSelectData.OnClientChangedSeat += OnClientChangedSeat;
-
-                NetworkManager.Singleton.SceneManager.OnSceneEvent += OnSceneEvent;
-            }
-        }
 
         private void OnSceneEvent(SceneEvent sceneEvent)
         {

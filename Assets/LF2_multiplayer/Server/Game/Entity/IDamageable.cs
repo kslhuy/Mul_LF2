@@ -1,8 +1,7 @@
 using System;
 using UnityEngine;
+using LF2;
 
-namespace LF2.Server
-{
     /// <summary>
     /// Generic interface for damageable objects in the game. This includes ServerCharacter, as well as other things like
     /// ServerBreakableLogic.
@@ -14,7 +13,7 @@ namespace LF2.Server
         /// </summary>
         /// <param name="inflicter">The Character responsible for the damage. May be null.</param>
         /// <param name="HP">The damage done. Positive value is damage, negative is healing.</param>
-        void ReceiveHP(ServerCharacter inflicter, int HP);
+        void ReceiveHP(StateRequestData stateRequestData, int HP);
 
         /// <summary>
         /// The NetworkId of this object.
@@ -48,5 +47,5 @@ namespace LF2.Server
         /// </summary>
         bool IsDamageable();
     }
-}
+
 

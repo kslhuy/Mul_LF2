@@ -37,6 +37,10 @@ namespace LF2
         public string DisplayedName;
 
         
+        [Multiline]
+        public string InfoChampion = "Bla bla";
+
+        
 
         // [Tooltip("For players, this is the class banner (when active). (Not used for monsters)")]
         // public Sprite ClassBannerLit;
